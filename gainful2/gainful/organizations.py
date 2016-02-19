@@ -3,6 +3,7 @@ import shutil
 import os
 from itertools import takewhile
 from datetime import date
+from models import Job
 
 import requests
 import PyPDF2
@@ -50,39 +51,8 @@ class Organization():
             self.csv_name = d[name]["csv_name"]
             self.name = d[name]["name"]
 
-
-class Job():
-    """ this will have to be changed from a job object to a DB entry """
-    def __init__(self):
-        self.org = None
-        self.title = None
-        self.division = None
-        self.date_open = None
-        self.date_close = None
-        self.url_detail = None
-        self.url_apply = None
-        self.salary_amount = None
-        self.salary_waged = None
-
-    def validate(self):
-        if None in [self.org, self.title, self.division, self.date_open, self.date_close, self.url_detail, self.url_apply, self.salary_amount, self.salary_waged]:
-            raise KeyError("Not all job fields were defined for {}".format(self))
-
-    def __str__(self):
-        return "{} at {}".format(self.title, self.org)
-
-    def save(self):
-        """ Validate fields for Job. If valid, save to DB.
-        TODO: at what point do we check whether this Job might be a duplicate DB entry?
-        By this point, we've already downloaded and parsed a PDF. Extremely expensive.
-        """
-        try:
-            self.validate()
-            print(self)
-            # db.save()
-        except KeyError as e:
-            print("KEYERROR", e)
-
+    def parse(self, soup):
+        raise NotImplementedError
 
 class Victoria(Organization):
     def __init__(self):
@@ -110,7 +80,6 @@ class Victoria(Organization):
         return (r_wage, r_salary)
 
     def parse(self, soup):
-        output = []
         job_table = soup.find("tbody")
         rows = job_table.find_all('tr')
         rows = rows [1:]
@@ -125,8 +94,8 @@ class Victoria(Organization):
             # information for these fields can be taken from stripped cols
             cols = [elem.text.strip() for elem in cols]
             job.title = cols[0]
-            job.org = "City of Victoria"
+            job.organization = "City of Victoria"
             job.division = cols[2]
-            job.date_close = d.parse(cols[4]).date()
-            job.date_open = date.today()
+            job.date_closing = d.parse(cols[4]).date()
+            job.date_posted = date.today()
             job.save()

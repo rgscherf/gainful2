@@ -1,4 +1,4 @@
-#!/Users/rgscherf/projects/python/gainful2/bin/python3.4
+#!/Users/rgscherf/projects/python/gainful2/bin/python3
 from django.core import management
 
 if __name__ == "__main__":
