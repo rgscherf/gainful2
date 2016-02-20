@@ -1,20 +1,18 @@
 import json
 import shutil
 import os
-from itertools import takewhile
-from datetime import date
-from models import Job
-
 import requests
 import PyPDF2
-import dateutil.parser as d
+from itertools import takewhile
+from datetime import date
 from bs4 import BeautifulSoup
+from .jobcontainer import JobContainer
+import dateutil.parser as d
 
 
 def get_pdf(url):
     """ Retrieve PDF from a URL.
     :param url: string pointing to a pdf URL
-    :param filename string with root (no file extension) of filename
     :rtype string of PDF filename
     """
     filename = 'out.pdf'
@@ -44,7 +42,7 @@ def pdf_to_string(filename):
 
 class Organization():
     def __init__(self, name):
-        with open("orgs.json") as FILE:
+        with open(os.path.join(os.path.abspath("."), "parsing/parsinglib/orgs.json")) as FILE:
             d = json.load(FILE)
             self.request_url = d[name]["request_url"]
             self.soup_find_list = d[name]["soup_find_list"]
@@ -84,10 +82,15 @@ class Victoria(Organization):
         rows = job_table.find_all('tr')
         rows = rows [1:]
         for row in rows:
-            job = Job()
+            job = JobContainer()
             cols = row.find_all('td')
             # insert these fields before tags are stripped from columns!
             job.url_detail = "http://victoria.ca/{}".format(cols[6].a["href"])
+            if job.is_unique():
+                pass
+            else:
+                print("Job already exists in DB: {}".format(job.url_detail))
+                continue
             job.url_apply = "http://www.victoria.ca/EN/main/departments/hr/{}".format(cols[5].a["href"])
             job.salary_waged, job.salary_amount = self.get_salary_from_pdf("http://victoria.ca/{}".format(cols[6].a["href"]))
 

@@ -1,6 +1,9 @@
-from bs4 import BeautifulSoup
+import os
 import requests
-import organizations
+from bs4 import BeautifulSoup
+from .parsinglib import organizations
+
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gainful2.settings")
 
 orgs = [ organizations.Victoria()
 #           organizations.Toronto()
@@ -15,16 +18,11 @@ orgs = [ organizations.Victoria()
 #         , organizations.AMCTO()
         ]
 
-def parse(o):
-    r = requests.get(o.request_url)
-    soup = BeautifulSoup(r.text, "html5lib")
-    return o.parse(soup)
-
 def main():
     for o in orgs:
-        parse(o)
+        r = requests.get(o.request_url)
+        soup = BeautifulSoup(r.text, "html5lib")
+        o.parse(soup)
 
 if __name__ == '__main__':
-    # for org in organizations:
-    #     parse(org)
     main()
