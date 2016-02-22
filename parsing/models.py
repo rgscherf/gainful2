@@ -13,4 +13,4 @@ class Job(models.Model):
     salary_amount = models.FloatField()
 
     def __str__(self):
-        return "Job: {} at {}".format(self.title, self.organization)
+        return "{} at {}".format(self.title, self.organization)

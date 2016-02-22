@@ -1,9 +1,7 @@
-import os
 import requests
 from bs4 import BeautifulSoup
-from .parsinglib import organizations
-
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gainful2.settings")
+from parsing.parsinglib import organizations
+from django.core.management.base import BaseCommand
 
 orgs = [ organizations.Victoria()
 #           organizations.Toronto()
@@ -18,11 +16,12 @@ orgs = [ organizations.Victoria()
 #         , organizations.AMCTO()
         ]
 
-def main():
-    for o in orgs:
-        r = requests.get(o.request_url)
-        soup = BeautifulSoup(r.text, "html5lib")
-        o.parse(soup)
+class Command(BaseCommand):
+    def handle(self, *args, **options):
+        for o in orgs:
+            r = requests.get(o.request_url)
+            soup = BeautifulSoup(r.text, "html5lib")
+            o.parse(soup)
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
