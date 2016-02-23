@@ -4,7 +4,7 @@ from parsing.parsinglib import organizations
 from django.core.management.base import BaseCommand
 
 orgs = [ organizations.Victoria()
-#           organizations.Toronto()
+          , organizations.Toronto()
 #         , organizations.Hamilton()
 #         , organizations.Mississauga()
 #         , organizations.CRD()
@@ -22,6 +22,3 @@ class Command(BaseCommand):
             r = requests.get(o.request_url)
             soup = BeautifulSoup(r.text, "html5lib")
             o.parse(soup)
-
-# if __name__ == '__main__':
-#     main()

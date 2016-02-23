@@ -3,7 +3,7 @@ import shutil
 import os
 import requests
 import PyPDF2
-from itertools import takewhile
+from itertools import takewhile, dropwhile
 from datetime import date
 from bs4 import BeautifulSoup
 from .jobcontainer import JobContainer
@@ -23,6 +23,7 @@ def get_pdf(url):
         return filename
     else:
         raise KeyError("Could not retrieve job description PDF.")
+
 
 def pdf_to_string(filename):
     """Return the text of a PDF.
@@ -45,12 +46,60 @@ class Organization():
         with open(os.path.join(os.path.abspath("."), "parsing/parsinglib/orgs.json")) as FILE:
             d = json.load(FILE)
             self.request_url = d[name]["request_url"]
-            self.soup_find_list = d[name]["soup_find_list"]
-            self.csv_name = d[name]["csv_name"]
-            self.name = d[name]["name"]
 
     def parse(self, soup):
         raise NotImplementedError
+
+
+class Toronto(Organization):
+    def __init__(self):
+        Organization.__init__(self, "toronto")
+
+    def parse(self, soup):
+        job_table = soup.find("table", "job_list_table")
+        rows = job_table.find_all('tr')[1:]
+        for row in rows:
+            job = JobContainer()
+            cols = row.find_all('td')
+            job.url_detail = "https://www.brainhunter.com/frontoffice/{}".format(cols[1].a["href"])
+            if job.is_unique():
+                pass
+            else:
+                print("Job already exists in DB: {}".format(job.url_detail))
+                continue
+            self.parse_detail_page(job, job.url_detail)
+
+    def parse_detail_page(self, job, url_detail):
+        """ Grab City of Toronto job info from detail page:
+        title, division, salary type and amount, posting date and closing date.
+         """
+        r = requests.get(url_detail)
+        soup = BeautifulSoup(r.text, "html5lib")
+        job.organization = "City of Toronto"
+        job.title = soup.find("div", class_="tableheadertext_job_description").text.strip()
+        rows = soup.find("table", class_="tablebackground_job_description").find_all("tr")
+
+        cols = ["Division", "Salary/Rate", "Posting Date", "Closing Date"]
+        rowdict = {}
+        for row in rows:
+            col = row.find(class_="job_header_text_bold").text.strip()
+            if col in cols:
+                rowdict[col] = row.find(class_="job_header_text").text.strip()
+        job.division = rowdict["Division"]
+        job.date_posted = d.parse(rowdict["Posting Date"]).date()
+        job.date_closing = d.parse(rowdict["Closing Date"]).date()
+        job.salary_waged, job.salary_amount = self.salary(rowdict["Salary/Rate"])
+        job.save()
+
+    def salary(self, string):
+        waged = True if "hour" in string.lower() else False
+        s = "".join(dropwhile(lambda x: not x.isdigit(), string))
+        s = "".join(takewhile(lambda x: not x.isspace(), s))
+        if "," in s:
+            s = "".join(filter(lambda a: a != ",", s))
+        amount = float("".join(s))
+        return waged, amount
+
 
 class Victoria(Organization):
     def __init__(self):
@@ -85,13 +134,12 @@ class Victoria(Organization):
             job = JobContainer()
             cols = row.find_all('td')
             # insert these fields before tags are stripped from columns!
-            job.url_detail = "http://victoria.ca/{}".format(cols[6].a["href"])
+            job.url_detail = "http://victoria.ca{}".format(cols[6].a["href"])
             if job.is_unique():
                 pass
             else:
                 print("Job already exists in DB: {}".format(job.url_detail))
                 continue
-            job.url_apply = "http://www.victoria.ca/EN/main/departments/hr/{}".format(cols[5].a["href"])
             job.salary_waged, job.salary_amount = self.get_salary_from_pdf("http://victoria.ca/{}".format(cols[6].a["href"]))
 
             # information for these fields can be taken from stripped cols

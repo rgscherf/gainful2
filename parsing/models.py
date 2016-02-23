@@ -8,7 +8,6 @@ class Job(models.Model):
     date_posted = models.DateField()
     date_closing = models.DateField()
     url_detail = models.CharField(max_length=500)
-    url_apply = models.CharField(max_length=500)
     salary_waged = models.BooleanField()
     salary_amount = models.FloatField()
 

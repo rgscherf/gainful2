@@ -1,112 +1,46 @@
 {
     "toronto": {
         "request_url": "https://www.brainhunter.com/frontoffice/searchSeekerJobAction.do?sitecode=pl389&locationPicker=Y&jobStream=&locationId=&levelIds=6&levelContent6=&keyword=&search=Search&order=&sortField=&goJobDetail=&sortedit=&externaljob=#searchSection",
-        "soup_find_list": [
-            "table", {
-                "class": "job_list_table"
-            }
-        ],
-        "csv_name": "jobs_toronto.csv",
-        "name": "Toronto"
+        "name": "City of Toronto"
     },
     "hamilton": {
         "request_url": "https://hr.hamilton.ca/psc/hr9eapps/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?PortalActualURL=https%3a%2f%2fhr.hamilton.ca%2fpsc%2fhr9eapps%2fEMPLOYEE%2fHRMS%2fc%2fHRS_HRAM.HRS_CE.GBL&amp;PortalContentURL=https%3a%2f%2fhr.hamilton.ca%2fpsc%2fhr9eapps%2fEMPLOYEE%2fHRMS%2fc%2fHRS_HRAM.HRS_CE.GBL&amp;PortalContentProvider=HRMS&amp;PortalCRefLabel=Careers&amp;PortalRegistryName=EMPLOYEE&amp;PortalServletURI=https%3a%2f%2fhr.hamilton.ca%2fpsp%2fhr9eapps%2f&amp;PortalURI=https%3a%2f%2fhr.hamilton.ca%2fpsc%2fhr9eapps%2f&amp;PortalHostNode=HRMS&amp;NoCrumbs=yes&amp;PortalKeyStruct=yes",
-        "soup_find_list": [
-            "table", {
-                "id": "tdgbrHRS_CE_JO_EXT_I$0"
-            }
-        ],
-        "csv_name": "jobs_hamilton.csv",
         "name": "Hamilton"
     },
     "mississauga": {
         "request_url": "https://careers-mississauga.icims.com/jobs/search?hashed=0&in_iframe=1",
-        "soup_find_list": [
-            "table", {
-                "class": "iCIMS_JobsTable iCIMS_Table"
-            }
-        ],
-        "csv_name": "jobs_mississauga.csv",
         "name": "Mississauga"
     },
     "victoria": {
         "request_url": "http://www.victoria.ca/EN/main/departments/hr/current-employment-opportunities.html",
-        "soup_find_list": [
-            "table", {
-                "id": "job-postings"
-            }
-        ],
-        "csv_name": "jobs_victoria.csv",
-        "name": "Victoria"
+        "name": "City of Victoria"
     },
     "crd": {
         "request_url": "https://www.crd.bc.ca/about/careers/current-opportunities",
-        "soup_find_list": [
-            "div", {
-                "id": "plcContent_TB089110D003_Col01"
-            }
-        ],
-        "csv_name": "jobs_crd.csv",
         "name": "CRD"
     },
     "ops": {
         "request_url": "https://www.gojobs.gov.on.ca/Search.aspx?Language=English&rg=REGION-TRNT&cl=CAREERLEVEL-NOTSLCTD",
-        "soup_find_list": [
-            "span", {
-                "id": "rptSearchResult_ctl00_lblHeaderInfo"
-            }
-        ],
-        "csv_name": "jobs_ops.csv",
         "name": "OPS"
     },
     "bcps": {
         "request_url": "https://search.employment.gov.bc.ca/cgi-bin/a/searchjobs_quick.cgi?a=search&page=1&search=Search%20Jobs&keywords_or=&region=Greater%20Victoria&order=open_date%20ASC&order=open_date&dir=DESC",
-        "soup_find_list": [
-            "table", {
-                "class": "tableline resultstable"
-            }
-        ],
-        "csv_name": "jobs_bcps.csv",
         "name": "BC Public Service"
     },
     "civicinfo": {
         "request_url": "http://www.civicinfo.bc.ca/careers?stext=&type=ss&region=11&location=+&procat=+&opp=by+Date+Posted+%28Newest%29#sresults",
-        "soup_find_list": [
-            "ol", {
-                "start": "1"
-            }
-        ],
-        "csv_name": "jobs_civicinfo.csv",
         "name": "CivicInfo: "
     },
     "amcto": {
         "request_url": "http://www.amcto.com/imis15/content/Careers/Municipal_Career_Opportunities/content/Careers_Pages/Career_opportunities.aspx?hkey=fe69cc3d-3946-4ab8-8879-b083c4f89b80",
-        "soup_find_list": [
-            "div", {
-                "class": "TaggedListPanel"
-            }
-        ],
-        "csv_name": "jobs_amcto.csv",
         "name": "AMCTO: "
     },
     "civicinfo_north_central": {
         "request_url": "http://www.civicinfo.bc.ca/careers?stext=&type=ss&region=10&location=+&procat=+&opp=by+Date+Posted+%28Newest%29#sresults",
-        "soup_find_list": [
-            "ol", {
-                "start": "1"
-            }
-        ],
-        "csv_name": "jobs_civicinfo_north_central.csv",
         "name": "CivicInfo: "
     },
     "civicinfo_lower_mainland": {
     "request_url": "http://www.civicinfo.bc.ca/careers?stext=&type=ss&region=9&company=+&procat=+&opp=by+Date+Posted+%28Newest%29#sresults",
-    "soup_find_list": [
-        "ol", {
-            "start": "1"
-        }
-    ],
-    "csv_name": "jobs_civicinfo_lower_mainland.csv",
     "name": "CivicInfo: "
     }
 }

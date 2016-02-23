@@ -8,7 +8,6 @@ class JobContainer():
         self.date_posted = None
         self.date_closing = None
         self.url_detail = None
-        self.url_apply = None
         self.salary_waged = None
         self.salary_amount = None
 
@@ -19,7 +18,6 @@ class JobContainer():
                 , self.date_posted
                 , self.date_closing
                 , self.url_detail
-                , self.url_apply
                 , self.salary_waged
                 , self.salary_amount
                 ]
@@ -46,7 +44,6 @@ class JobContainer():
                     , date_posted=self.date_posted
                     , date_closing=self.date_closing
                     , url_detail=self.url_detail
-                    , url_apply=self.url_apply
                     , salary_waged=self.salary_waged
                     , salary_amount=self.salary_amount
                     )
