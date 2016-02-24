@@ -11,6 +11,15 @@ class JobContainer():
         self.salary_waged = None
         self.salary_amount = None
 
+    def is_unique(self):
+        if not self.url_detail:
+            raise KeyError("Queried record uniqueness before detail URL set: {}".format(self))
+        else:
+            return True if len(Job.objects.filter(url_detail=self.url_detail)) == 0 else False
+
+    def cleanup(self):
+        self.title = self.title.title() if self.title.isupper() else self.title
+
     def get_fields(self):
         return [self.organization
                 , self.title
@@ -22,22 +31,14 @@ class JobContainer():
                 , self.salary_amount
                 ]
 
-    def __str__(self):
-        return "{} at {}".format(self.title, self.organization)
-
     def validate(self):
         return False if None in self.get_fields() else True
-
-    def is_unique(self):
-        if not self.url_detail:
-            raise KeyError("Queried record uniqueness before detail URL set: {}".format(self))
-        else:
-            return True if len(Job.objects.filter(url_detail=self.url_detail)) == 0 else False
 
     def save(self):
         if not self.validate():
             raise KeyError("Fields missing for {}".format(self))
         else:
+            self.cleanup()
             j = Job(organization=self.organization
                     , title=self.title
                     , division=self.division
@@ -48,3 +49,6 @@ class JobContainer():
                     , salary_amount=self.salary_amount
                     )
             j.save()
+
+    def __str__(self):
+        return "{} at {}".format(self.title, self.organization)

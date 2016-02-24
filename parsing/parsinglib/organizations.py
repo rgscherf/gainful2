@@ -3,11 +3,19 @@ import shutil
 import os
 import requests
 import PyPDF2
+import re
 from itertools import takewhile, dropwhile
-from datetime import date
+from datetime import date, timedelta
 from bs4 import BeautifulSoup
 from .jobcontainer import JobContainer
 import dateutil.parser as d
+
+
+def fail_re(retext, msg):
+    print(retext)
+    print()
+    print(msg)
+    raise NotImplementedError
 
 
 def get_pdf(url):
@@ -40,6 +48,13 @@ def pdf_to_string(filename):
     os.remove(filename)
     return string
 
+def dump_soup(soup):
+    ret = ""
+    for child in soup.children:
+        ret += child.text
+    return ret
+
+
 
 class Organization():
     def __init__(self, name):
@@ -49,6 +64,83 @@ class Organization():
 
     def parse(self, soup):
         raise NotImplementedError
+
+
+class Mississauga(Organization):
+    def __init__(self):
+        Organization.__init__(self, "mississauga")
+
+    def parse(self, soup):
+        job_table = soup.find(class_="iCIMS_JobsTable").tbody
+        rows = job_table.find_all("tr")
+        for row in rows:
+            job = JobContainer()
+            cols = row.find_all("td")
+            job.url_detail = cols[1].a["href"]
+            if job.is_unique():
+                pass
+            else:
+                print("Job already exists in DB: {}".format(job.url_detail))
+            job.organization = "Mississauga"
+            job.title = cols[1].a.text.strip()
+            date_posted_text = cols[3].find_all("span")[1].text.strip()
+            job.date_posted = d.parse(date_posted_text).date()
+            self.parse_detail_page(job)
+            job.save()
+
+    def parse_detail_page(self, job):
+        """ Grab mississauga info from detail page:
+        division, salary type and amount, and closing date.
+        """
+        r = requests.get(job.url_detail)
+        soup = BeautifulSoup(r.text, "html5lib")
+        job_text = soup.find(class_="iCIMS_Expandable_Text").text
+        job.salary_waged, job.salary_amount = self.salary(job_text)
+        job.division = self.division(job_text)
+        job.date_closing = self.closing(job_text)
+
+    def closing(self, text):
+        fallback = date.today() + timedelta(days=21)
+        search = re.compile(r"Closing Date:(| )([\S|\s]*[0-9](, |th, )[0-9]{4})")
+        result = search.search(text)
+        if result:
+            result = result.group(2)
+            try:
+                closing = d.parse(result).date()
+            except ValueError:
+                closing = fallback
+        else:
+            closing = fallback
+        return closing
+
+    def division(self, text):
+        if "Division:" in text:
+            search = re.compile(r"Division:(| )([\w\s]*)")
+        elif "Unit:" in text:
+            search = re.compile(r"Unit:(| )([\w\s]*)")
+        elif "Department:" in text:
+            search = re.compile(r"Department:(| )([\w\s]*)")
+        else:
+            return ""
+        result = search.search(text)
+        if result:
+            result = result.group(2)
+        else:
+            fail_re(text, "IMPLEMENT DIVISION PARSE")
+        return result
+
+    def salary(self, text):
+        waged = True if "Hourly Rate:" in text else False
+        search = re.compile(r"\$([0-9]*.[0-9]*)")
+        result = search.search(text)
+        if result:
+            result = result.group()
+            result = result[1:]
+            if "," in result:
+                result = "".join(filter(lambda x: x != ",", result))
+        else:
+            fail_re("could not find salary or hourly rate")
+        return waged, float(result)
 
 
 class Toronto(Organization):
@@ -67,13 +159,13 @@ class Toronto(Organization):
             else:
                 print("Job already exists in DB: {}".format(job.url_detail))
                 continue
-            self.parse_detail_page(job, job.url_detail)
+            self.parse_detail_page(job)
 
-    def parse_detail_page(self, job, url_detail):
+    def parse_detail_page(self, job):
         """ Grab City of Toronto job info from detail page:
         title, division, salary type and amount, posting date and closing date.
          """
-        r = requests.get(url_detail)
+        r = requests.get(job.url_detail)
         soup = BeautifulSoup(r.text, "html5lib")
         job.organization = "City of Toronto"
         job.title = soup.find("div", class_="tableheadertext_job_description").text.strip()

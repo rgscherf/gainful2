@@ -3,10 +3,10 @@ from bs4 import BeautifulSoup
 from parsing.parsinglib import organizations
 from django.core.management.base import BaseCommand
 
-orgs = [ organizations.Victoria()
+orgs = [ organizations.Mississauga()
+          , organizations.Victoria()
           , organizations.Toronto()
 #         , organizations.Hamilton()
-#         , organizations.Mississauga()
 #         , organizations.CRD()
 #         , organizations.OPS()
 #         , organizations.BCPS()
