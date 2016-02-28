@@ -11004,36 +11004,36 @@ Elm.Main.make = function (_elm) {
    $Task = Elm.Task.make(_elm);
    var _op = {};
    var individualJob = function (job) {
-      var postfix = job.salaryWaged ? " /hour" : " /year";
+      var orgAndDiv = !_U.eq(job.division,"") ? A2($Basics._op["++"],job.organization,A2($Basics._op["++"],", ",job.division)) : job.organization;
+      var postfix = job.salaryWaged ? " /hr" : " /yr";
       var stringSalary = $Basics.toString(job.salaryWaged ? job.salaryAmount : $Basics.toFloat($Basics.round(job.salaryAmount)));
       return _U.list([A2($Html.tr,
       _U.list([]),
       _U.list([A2($Html.td,_U.list([]),_U.list([A2($Html.a,_U.list([$Html$Attributes.href(job.urlDetail)]),_U.list([$Html.text(job.title)]))]))
-              ,A2($Html.td,_U.list([]),_U.list([$Html.text(job.organization)]))
+              ,A2($Html.td,_U.list([]),_U.list([$Html.text(orgAndDiv)]))
               ,A2($Html.td,
-              _U.list([]),
-              _U.list([$Html.text(_U.eq(job.salaryAmount,0) ? "???" : A2($Basics._op["++"],"$",A2($Basics._op["++"],stringSalary,postfix)))]))
-              ,A2($Html.td,_U.list([]),_U.list([$Html.text(job.dateClosing)]))]))]);
+              _U.list([$Html$Attributes.align("right")]),
+              _U.list([$Html.text(_U.eq(job.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
+              ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(job.dateClosing)]))]))]);
    };
-   var sortJobs = F2(function (sorting,model) {
-      var sortType = function () {
-         var _p0 = sorting;
-         if (_p0.ctor === "Title") {
-               return function (_) {
-                  return _.title;
-               };
-            } else {
-               return function (_) {
-                  return _.organization;
-               };
-            }
+   var sortJobs = F2(function (criteria,model) {
+      var currentJobsList = function () {    var _p0 = model.jobs;if (_p0.ctor === "Nothing") {    return _U.list([]);} else {    return _p0._0;}}();
+      var sortedCurrentList = function () {
+         var _p1 = criteria;
+         switch (_p1.ctor)
+         {case "Title": return A2($List.sortBy,function (_) {    return _.title;},currentJobsList);
+            case "Organization": return A2($List.sortBy,function (_) {    return _.organization;},currentJobsList);
+            case "Division": return A2($List.sortBy,function (_) {    return _.division;},currentJobsList);
+            case "Salary": return A2($List.sortBy,function (_) {    return _.salaryAmount;},currentJobsList);
+            default: return A2($List.sortBy,function (_) {    return _.dateClosing;},currentJobsList);}
       }();
-      var currentJobs = function () {    var _p1 = model.jobs;if (_p1.ctor === "Nothing") {    return _U.list([]);} else {    return _p1._0;}}();
-      var sortedCurrentList = A2($List.sortBy,sortType,currentJobs);
-      return _U.eq(currentJobs,sortedCurrentList) ? _U.update(model,{jobs: $Maybe.Just($List.reverse(currentJobs))}) : _U.update(model,
+      return _U.eq(currentJobsList,sortedCurrentList) ? _U.update(model,{jobs: $Maybe.Just($List.reverse(sortedCurrentList))}) : _U.update(model,
       {jobs: $Maybe.Just(sortedCurrentList)});
    });
    var Model = function (a) {    return {jobs: a};};
+   var ClosingDate = {ctor: "ClosingDate"};
+   var Salary = {ctor: "Salary"};
+   var Division = {ctor: "Division"};
    var Organization = {ctor: "Organization"};
    var Title = {ctor: "Title"};
    var Job = F7(function (a,b,c,d,e,f,g) {    return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g};});
@@ -11064,15 +11064,14 @@ Elm.Main.make = function (_elm) {
             }
       }();
       return A2($Html.table,
-      _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "width",_1: "95%"}]))]),
+      _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "width",_1: "90%"}]))]),
       A2($Basics._op["++"],
       _U.list([A2($Html.tr,
       _U.list([]),
       _U.list([A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Title))]),_U.list([$Html.text("Title")]))
               ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Organization")]))
-              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Division/Department")]))
-              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Salary/Wage")]))
-              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Closing Date")]))]))]),
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Salary))]),_U.list([$Html.text("Salary/Wage")]))
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(ClosingDate))]),_U.list([$Html.text("Closing Date")]))]))]),
       tbody));
    });
    var view = F2(function (address,model) {    return A2($Html.div,_U.list([]),_U.list([A2(viewJobs,address,model.jobs)]));});
@@ -11083,13 +11082,12 @@ Elm.Main.make = function (_elm) {
    var getJobs = $Effects.task(A2($Task.map,ShowJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
    var init = {ctor: "_Tuple2",_0: {jobs: $Maybe.Nothing},_1: getJobs};
    var update = F2(function (action,model) {
-      var jobList = function () {    var _p3 = model.jobs;if (_p3.ctor === "Nothing") {    return _U.list([]);} else {    return _p3._0;}}();
-      var _p4 = action;
-      switch (_p4.ctor)
-      {case "SortJobs": return {ctor: "_Tuple2",_0: A2(sortJobs,_p4._0,model),_1: $Effects.none};
+      var _p3 = action;
+      switch (_p3.ctor)
+      {case "SortJobs": return {ctor: "_Tuple2",_0: A2(sortJobs,_p3._0,model),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
-         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobs: _p4._0}),_1: $Effects.none};}
+         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobs: _p3._0}),_1: $Effects.none};}
    });
    var app = $StartApp.start({init: init,view: view,update: update,inputs: _U.list([])});
    var main = app.html;
@@ -11105,13 +11103,16 @@ Elm.Main.make = function (_elm) {
                              ,Job: Job
                              ,Title: Title
                              ,Organization: Organization
+                             ,Division: Division
+                             ,Salary: Salary
+                             ,ClosingDate: ClosingDate
                              ,Model: Model
                              ,init: init
                              ,update: update
                              ,sortJobs: sortJobs
                              ,view: view
-                             ,individualJob: individualJob
                              ,viewJobs: viewJobs
+                             ,individualJob: individualJob
                              ,getJobs: getJobs
                              ,decodeJob: decodeJob
                              ,decodeJobList: decodeJobList};

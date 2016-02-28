@@ -7,6 +7,10 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import Json.Decode as D exposing ((:=), Decoder)
 
+---------
+-- WIRING
+---------
+
 jobsUrl = "./jobs.json"
 
 app = StartApp.start
@@ -18,8 +22,15 @@ app = StartApp.start
 
 main = app.html
 
+init = ({jobs = Nothing}, getJobs)
+
 port tasks : Signal (Task.Task Effects.Never ())
 port tasks = app.tasks
+
+
+--------
+-- TYPES
+--------
 
 type Action
  = NoOp
@@ -40,19 +51,22 @@ type alias Job =
 type SortingCriteria
   = Title
   | Organization
+  | Division
+  | Salary
+  | ClosingDate
 
 type alias Jobs = List Job
 
 type alias Model = {jobs : Maybe Jobs}
 
-init = ({jobs = Nothing}, getJobs)
 
+---------
+-- UPDATE
+---------
+
+
+update : Action -> Model -> (Model, Effects Action)
 update action model =
-  let jobList =
-      case model.jobs of
-        Nothing -> []
-        Just list -> list
-  in
   case action of
     SortJobs s ->
       (sortJobs s model, Effects.none)
@@ -63,50 +77,36 @@ update action model =
     ShowJobs maybeJobs ->
       ({model | jobs = maybeJobs}, Effects.none)
 
+
 sortJobs : SortingCriteria -> Model -> Model
-sortJobs sorting model =
-  let currentJobs =
+sortJobs criteria model =
+  let currentJobsList =
         case model.jobs of
           Nothing -> []
           Just js -> js
-      sortType =
-        case sorting of
-          Title -> .title
-          Organization -> .organization
-      sortedCurrentList = List.sortBy sortType currentJobs
-
+      sortedCurrentList =
+        case criteria of
+          Title -> List.sortBy .title currentJobsList
+          Organization -> List.sortBy .organization currentJobsList
+          Division -> List.sortBy .division currentJobsList
+          Salary -> List.sortBy .salaryAmount currentJobsList
+          ClosingDate -> List.sortBy .dateClosing currentJobsList
   in
-    if currentJobs == sortedCurrentList
-      then { model | jobs = Just (List.reverse currentJobs) }
+    if currentJobsList == sortedCurrentList
+      then { model | jobs = Just (List.reverse sortedCurrentList) }
       else { model | jobs = Just sortedCurrentList }
 
+
+---------
+-- VIEWS
+---------
 
 view address model =
   div
     []
-    -- [ button [onClick address GetJobs] [text "Click for jobs!" ]
-
-    -- HTML for top nav
-    -- HTML for filter box
     [
       viewJobs address model.jobs
     ]
-
-individualJob : Job -> List Html
-individualJob job =
-  let stringSalary = toString <| if job.salaryWaged then job.salaryAmount else toFloat <| round job.salaryAmount
-      postfix = if job.salaryWaged then " /hour" else " /year"
-  in
-  [tr []
-    [ td [] [a
-              [href job.urlDetail]
-              [text job.title]
-            ]
-    , td [] [text job.organization]
-    , td [] [text (if job.salaryAmount == 0 then "???" else "$" ++ stringSalary ++ postfix)]
-    , td [] [text job.dateClosing]
-    ]
-  ]
 
 viewJobs address maybeJobs =
   let
@@ -120,22 +120,42 @@ viewJobs address maybeJobs =
                      , td [] []
                      ]
               ]
-            Just jobs ->
-              List.concatMap individualJob jobs
+            Just jobs -> List.concatMap individualJob jobs
   in
-    table [style [("width", "95%")]]
+    table [style [("width", "90%")]]
       (
         [ tr []
           [ th [onClick address (SortJobs Title)] [text "Title"]
           , th [onClick address (SortJobs Organization)] [text "Organization"]
-          , th [onClick address (SortJobs Organization)] [text "Division/Department"]
-          , th [onClick address (SortJobs Organization)] [text "Salary/Wage"]
-          , th [onClick address (SortJobs Organization)] [text "Closing Date"]
+          , th [onClick address (SortJobs Salary)] [text "Salary/Wage"]
+          , th [onClick address (SortJobs ClosingDate)] [text "Closing Date"]
           ]
         ]
         ++ tbody
       )
 
+individualJob : Job -> List Html
+individualJob job =
+  let stringSalary = toString <| if job.salaryWaged then job.salaryAmount else toFloat <| round job.salaryAmount
+      postfix = if job.salaryWaged then " /hr" else " /yr"
+      orgAndDiv = if job.division /= "" then job.organization ++ ", " ++ job.division else job.organization
+  in
+  [tr []
+    [ td [] [a
+              [href job.urlDetail]
+              [text job.title]
+            ]
+    , td [] [text <| orgAndDiv]
+    , td [align "right"] [text (if job.salaryAmount == 0 then "--" else "$ " ++ stringSalary ++ postfix)]
+    , td [align "right"] [text job.dateClosing]
+    ]
+  ]
+
+
+
+----------
+-- EFFECTS
+----------
 
 getJobs : Effects Action
 getJobs =
