@@ -20,10 +20,16 @@ Elm.Main.make = function (_elm) {
    $Task = Elm.Task.make(_elm);
    var _op = {};
    var individualJob = function (job) {
+      var postfix = job.salaryWaged ? " /hour" : " /year";
+      var stringSalary = $Basics.toString(job.salaryWaged ? job.salaryAmount : $Basics.toFloat($Basics.round(job.salaryAmount)));
       return _U.list([A2($Html.tr,
       _U.list([]),
       _U.list([A2($Html.td,_U.list([]),_U.list([A2($Html.a,_U.list([$Html$Attributes.href(job.urlDetail)]),_U.list([$Html.text(job.title)]))]))
-              ,A2($Html.td,_U.list([]),_U.list([$Html.text(job.organization)]))]))]);
+              ,A2($Html.td,_U.list([]),_U.list([$Html.text(job.organization)]))
+              ,A2($Html.td,
+              _U.list([]),
+              _U.list([$Html.text(_U.eq(job.salaryAmount,0) ? "???" : A2($Basics._op["++"],"$",A2($Basics._op["++"],stringSalary,postfix)))]))
+              ,A2($Html.td,_U.list([]),_U.list([$Html.text(job.dateClosing)]))]))]);
    };
    var sortJobs = F2(function (sorting,model) {
       var sortType = function () {
@@ -46,20 +52,29 @@ Elm.Main.make = function (_elm) {
    var Model = function (a) {    return {jobs: a};};
    var Organization = {ctor: "Organization"};
    var Title = {ctor: "Title"};
-   var Job = F4(function (a,b,c,d) {    return {title: a,organization: b,division: c,urlDetail: d};});
-   var decodeJob = A5($Json$Decode.object4,
+   var Job = F7(function (a,b,c,d,e,f,g) {    return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g};});
+   var decodeJob = A8($Json$Decode.object7,
    Job,
    A2($Json$Decode._op[":="],"title",$Json$Decode.string),
    A2($Json$Decode._op[":="],"organization",$Json$Decode.string),
    A2($Json$Decode._op[":="],"division",$Json$Decode.string),
-   A2($Json$Decode._op[":="],"url_detail",$Json$Decode.string));
+   A2($Json$Decode._op[":="],"url_detail",$Json$Decode.string),
+   A2($Json$Decode._op[":="],"date_closing",$Json$Decode.string),
+   A2($Json$Decode._op[":="],"salary_waged",$Json$Decode.bool),
+   A2($Json$Decode._op[":="],"salary_amount",$Json$Decode.$float));
    var decodeJobList = $Json$Decode.list(decodeJob);
    var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
    var viewJobs = F2(function (address,maybeJobs) {
       var tbody = function () {
          var _p2 = maybeJobs;
          if (_p2.ctor === "Nothing") {
-               return _U.list([A2($Html.tr,_U.list([]),_U.list([A2($Html.td,_U.list([]),_U.list([])),A2($Html.td,_U.list([]),_U.list([]))]))]);
+               return _U.list([A2($Html.tr,
+               _U.list([]),
+               _U.list([A2($Html.td,_U.list([]),_U.list([]))
+                       ,A2($Html.td,_U.list([]),_U.list([]))
+                       ,A2($Html.td,_U.list([]),_U.list([]))
+                       ,A2($Html.td,_U.list([]),_U.list([]))
+                       ,A2($Html.td,_U.list([]),_U.list([]))]))]);
             } else {
                return A2($List.concatMap,individualJob,_p2._0);
             }
@@ -70,14 +85,17 @@ Elm.Main.make = function (_elm) {
       _U.list([A2($Html.tr,
       _U.list([]),
       _U.list([A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Title))]),_U.list([$Html.text("Title")]))
-              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Organization")]))]))]),
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Organization")]))
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Division/Department")]))
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Salary/Wage")]))
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Closing Date")]))]))]),
       tbody));
    });
    var view = F2(function (address,model) {    return A2($Html.div,_U.list([]),_U.list([A2(viewJobs,address,model.jobs)]));});
    var ShowJobs = function (a) {    return {ctor: "ShowJobs",_0: a};};
    var GetJobs = {ctor: "GetJobs"};
    var NoOp = {ctor: "NoOp"};
-   var jobsUrl = "./jobs1.json";
+   var jobsUrl = "./jobs.json";
    var getJobs = $Effects.task(A2($Task.map,ShowJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
    var init = {ctor: "_Tuple2",_0: {jobs: $Maybe.Nothing},_1: getJobs};
    var update = F2(function (action,model) {

@@ -7,7 +7,7 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import Json.Decode as D exposing ((:=), Decoder)
 
-jobsUrl = "./jobs1.json"
+jobsUrl = "./jobs.json"
 
 app = StartApp.start
   { init = init
@@ -32,6 +32,9 @@ type alias Job =
   , organization : String
   , division : String
   , urlDetail : String
+  , dateClosing : String
+  , salaryWaged : Bool
+  , salaryAmount : Float
   }
 
 type SortingCriteria
@@ -91,12 +94,17 @@ view address model =
 
 individualJob : Job -> List Html
 individualJob job =
+  let stringSalary = toString <| if job.salaryWaged then job.salaryAmount else toFloat <| round job.salaryAmount
+      postfix = if job.salaryWaged then " /hour" else " /year"
+  in
   [tr []
     [ td [] [a
               [href job.urlDetail]
               [text job.title]
             ]
     , td [] [text job.organization]
+    , td [] [text (if job.salaryAmount == 0 then "???" else "$" ++ stringSalary ++ postfix)]
+    , td [] [text job.dateClosing]
     ]
   ]
 
@@ -106,7 +114,11 @@ viewJobs address maybeJobs =
         case maybeJobs of
             Nothing ->
               [tr [] [ td [] []
-                     , td [] [] ]
+                     , td [] []
+                     , td [] []
+                     , td [] []
+                     , td [] []
+                     ]
               ]
             Just jobs ->
               List.concatMap individualJob jobs
@@ -116,6 +128,9 @@ viewJobs address maybeJobs =
         [ tr []
           [ th [onClick address (SortJobs Title)] [text "Title"]
           , th [onClick address (SortJobs Organization)] [text "Organization"]
+          , th [onClick address (SortJobs Organization)] [text "Division/Department"]
+          , th [onClick address (SortJobs Organization)] [text "Salary/Wage"]
+          , th [onClick address (SortJobs Organization)] [text "Closing Date"]
           ]
         ]
         ++ tbody
@@ -132,11 +147,14 @@ getJobs =
 
 decodeJob : Decoder Job
 decodeJob =
-  D.object4 Job
+  D.object7 Job
     ("title" := D.string)
     ("organization" := D.string)
     ("division" := D.string)
     ("url_detail" := D.string)
+    ("date_closing" := D.string)
+    ("salary_waged" := D.bool)
+    ("salary_amount" := D.float)
 
 decodeJobList : Decoder Jobs
 decodeJobList = D.list decodeJob
