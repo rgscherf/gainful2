@@ -19,6 +19,7 @@ class JobContainer():
 
     def cleanup(self):
         self.title = self.title.title() if self.title.isupper() else self.title
+        self.salary_waged = True if self.salary_amount < 5000 else False # totally arbitray amount
 
     def get_fields(self):
         return [self.organization
@@ -35,10 +36,10 @@ class JobContainer():
         return False if None in self.get_fields() else True
 
     def save(self):
+        self.cleanup()
         if not self.validate():
             raise KeyError("Fields missing for {}".format(self))
         else:
-            self.cleanup()
             j = Job(organization=self.organization
                     , title=self.title
                     , division=self.division

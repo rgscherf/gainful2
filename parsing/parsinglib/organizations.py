@@ -95,7 +95,7 @@ class Mississauga(Organization):
         r = requests.get(job.url_detail)
         soup = BeautifulSoup(r.text, "html5lib")
         job_text = soup.find(class_="iCIMS_Expandable_Text").text
-        job.salary_waged, job.salary_amount = self.salary(job_text)
+        job.salary_amount = self.salary(job_text)
         job.division = self.division(job_text)
         job.date_closing = self.closing(job_text)
 
@@ -130,7 +130,6 @@ class Mississauga(Organization):
         return result
 
     def salary(self, text):
-        waged = True if "Hourly Rate:" in text else False
         search = re.compile(r"\$([0-9]*.[0-9]*)")
         result = search.search(text)
         if result:
@@ -138,9 +137,10 @@ class Mississauga(Organization):
             result = result[1:]
             if "," in result:
                 result = "".join(filter(lambda x: x != ",", result))
+            result = float(result)
         else:
             fail_re("could not find salary or hourly rate")
-        return waged, float(result)
+        return result
 
 
 class Toronto(Organization):
@@ -180,17 +180,17 @@ class Toronto(Organization):
         job.division = rowdict["Division"]
         job.date_posted = d.parse(rowdict["Posting Date"]).date()
         job.date_closing = d.parse(rowdict["Closing Date"]).date()
-        job.salary_waged, job.salary_amount = self.salary(rowdict["Salary/Rate"])
+        job.salary_amount = self.salary(rowdict["Salary/Rate"])
         job.save()
 
     def salary(self, string):
-        waged = True if "hour" in string.lower() else False
+        # waged = True if "hour" in string.lower() else False
         s = "".join(dropwhile(lambda x: not x.isdigit(), string))
         s = "".join(takewhile(lambda x: not x.isspace(), s))
         if "," in s:
             s = "".join(filter(lambda a: a != ",", s))
         amount = float("".join(s))
-        return waged, amount
+        return amount
 
 
 class Victoria(Organization):
@@ -204,7 +204,6 @@ class Victoria(Organization):
         """
         f = get_pdf(url)
         text = pdf_to_string(f)
-        r_wage = True if "per hour" in text else False
         try:
             # PDF has no structure. Best bet to search for salary is to look for a $! :(
             #... take digits until we find a space
@@ -216,7 +215,7 @@ class Victoria(Organization):
             r_salary = float(salary_text)
         except IndexError:
             r_salary = 0
-        return (r_wage, r_salary)
+        return r_salary
 
     def parse(self, soup):
         job_table = soup.find("tbody")
@@ -232,7 +231,7 @@ class Victoria(Organization):
             else:
                 print("Job already exists in DB: {}".format(job.url_detail))
                 continue
-            job.salary_waged, job.salary_amount = self.get_salary_from_pdf("http://victoria.ca/{}".format(cols[6].a["href"]))
+            job.salary_amount = self.get_salary_from_pdf("http://victoria.ca/{}".format(cols[6].a["href"]))
 
             # information for these fields can be taken from stripped cols
             cols = [elem.text.strip() for elem in cols]
