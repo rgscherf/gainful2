@@ -167,7 +167,7 @@ class Toronto(Organization):
          """
         r = requests.get(job.url_detail)
         soup = BeautifulSoup(r.text, "html5lib")
-        job.organization = "City of Toronto"
+        job.organization = "Toronto"
         job.title = soup.find("div", class_="tableheadertext_job_description").text.strip()
         rows = soup.find("table", class_="tablebackground_job_description").find_all("tr")
 

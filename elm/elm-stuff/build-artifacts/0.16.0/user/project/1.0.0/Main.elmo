@@ -1,0 +1,116 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values) return _elm.Main.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $StartApp = Elm.StartApp.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var _op = {};
+   var individualJob = function (job) {
+      return _U.list([A2($Html.tr,
+      _U.list([]),
+      _U.list([A2($Html.td,_U.list([]),_U.list([A2($Html.a,_U.list([$Html$Attributes.href(job.urlDetail)]),_U.list([$Html.text(job.title)]))]))
+              ,A2($Html.td,_U.list([]),_U.list([$Html.text(job.organization)]))]))]);
+   };
+   var sortJobs = F2(function (sorting,model) {
+      var sortType = function () {
+         var _p0 = sorting;
+         if (_p0.ctor === "Title") {
+               return function (_) {
+                  return _.title;
+               };
+            } else {
+               return function (_) {
+                  return _.organization;
+               };
+            }
+      }();
+      var currentJobs = function () {    var _p1 = model.jobs;if (_p1.ctor === "Nothing") {    return _U.list([]);} else {    return _p1._0;}}();
+      var sortedCurrentList = A2($List.sortBy,sortType,currentJobs);
+      return _U.eq(currentJobs,sortedCurrentList) ? _U.update(model,{jobs: $Maybe.Just($List.reverse(currentJobs))}) : _U.update(model,
+      {jobs: $Maybe.Just(sortedCurrentList)});
+   });
+   var Model = function (a) {    return {jobs: a};};
+   var Organization = {ctor: "Organization"};
+   var Title = {ctor: "Title"};
+   var Job = F4(function (a,b,c,d) {    return {title: a,organization: b,division: c,urlDetail: d};});
+   var decodeJob = A5($Json$Decode.object4,
+   Job,
+   A2($Json$Decode._op[":="],"title",$Json$Decode.string),
+   A2($Json$Decode._op[":="],"organization",$Json$Decode.string),
+   A2($Json$Decode._op[":="],"division",$Json$Decode.string),
+   A2($Json$Decode._op[":="],"url_detail",$Json$Decode.string));
+   var decodeJobList = $Json$Decode.list(decodeJob);
+   var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
+   var viewJobs = F2(function (address,maybeJobs) {
+      var tbody = function () {
+         var _p2 = maybeJobs;
+         if (_p2.ctor === "Nothing") {
+               return _U.list([A2($Html.tr,_U.list([]),_U.list([A2($Html.td,_U.list([]),_U.list([])),A2($Html.td,_U.list([]),_U.list([]))]))]);
+            } else {
+               return A2($List.concatMap,individualJob,_p2._0);
+            }
+      }();
+      return A2($Html.table,
+      _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "width",_1: "95%"}]))]),
+      A2($Basics._op["++"],
+      _U.list([A2($Html.tr,
+      _U.list([]),
+      _U.list([A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Title))]),_U.list([$Html.text("Title")]))
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,SortJobs(Organization))]),_U.list([$Html.text("Organization")]))]))]),
+      tbody));
+   });
+   var view = F2(function (address,model) {    return A2($Html.div,_U.list([]),_U.list([A2(viewJobs,address,model.jobs)]));});
+   var ShowJobs = function (a) {    return {ctor: "ShowJobs",_0: a};};
+   var GetJobs = {ctor: "GetJobs"};
+   var NoOp = {ctor: "NoOp"};
+   var jobsUrl = "./jobs1.json";
+   var getJobs = $Effects.task(A2($Task.map,ShowJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
+   var init = {ctor: "_Tuple2",_0: {jobs: $Maybe.Nothing},_1: getJobs};
+   var update = F2(function (action,model) {
+      var jobList = function () {    var _p3 = model.jobs;if (_p3.ctor === "Nothing") {    return _U.list([]);} else {    return _p3._0;}}();
+      var _p4 = action;
+      switch (_p4.ctor)
+      {case "SortJobs": return {ctor: "_Tuple2",_0: A2(sortJobs,_p4._0,model),_1: $Effects.none};
+         case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
+         case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
+         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobs: _p4._0}),_1: $Effects.none};}
+   });
+   var app = $StartApp.start({init: init,view: view,update: update,inputs: _U.list([])});
+   var main = app.html;
+   var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",app.tasks);
+   return _elm.Main.values = {_op: _op
+                             ,jobsUrl: jobsUrl
+                             ,app: app
+                             ,main: main
+                             ,NoOp: NoOp
+                             ,GetJobs: GetJobs
+                             ,ShowJobs: ShowJobs
+                             ,SortJobs: SortJobs
+                             ,Job: Job
+                             ,Title: Title
+                             ,Organization: Organization
+                             ,Model: Model
+                             ,init: init
+                             ,update: update
+                             ,sortJobs: sortJobs
+                             ,view: view
+                             ,individualJob: individualJob
+                             ,viewJobs: viewJobs
+                             ,getJobs: getJobs
+                             ,decodeJob: decodeJob
+                             ,decodeJobList: decodeJobList};
+};
