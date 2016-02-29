@@ -51,7 +51,6 @@ type alias Job =
 type SortingCriteria
   = Title
   | Organization
-  | Division
   | Salary
   | ClosingDate
 
@@ -85,10 +84,11 @@ sortJobs criteria model =
           Nothing -> []
           Just js -> js
       sortedCurrentList =
+        let divorg j = j.organization ++ j.division
+        in
         case criteria of
           Title -> List.sortBy .title currentJobsList
-          Organization -> List.sortBy .organization currentJobsList
-          Division -> List.sortBy .division currentJobsList
+          Organization -> List.sortBy divorg currentJobsList
           Salary -> List.sortBy .salaryAmount currentJobsList
           ClosingDate -> List.sortBy .dateClosing currentJobsList
   in
@@ -112,17 +112,10 @@ viewJobs address maybeJobs =
   let
       tbody =
         case maybeJobs of
-            Nothing ->
-              [tr [] [ td [] []
-                     , td [] []
-                     , td [] []
-                     , td [] []
-                     , td [] []
-                     ]
-              ]
+            Nothing -> [ tr [] [] ]
             Just jobs -> List.concatMap individualJob jobs
   in
-    table [style [("width", "90%")]]
+    table [align "center", style [("width", "90%")]]
       (
         [ tr []
           [ th [onClick address (SortJobs Title)] [text "Title"]

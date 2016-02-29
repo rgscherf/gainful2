@@ -11019,11 +11019,11 @@ Elm.Main.make = function (_elm) {
    var sortJobs = F2(function (criteria,model) {
       var currentJobsList = function () {    var _p0 = model.jobs;if (_p0.ctor === "Nothing") {    return _U.list([]);} else {    return _p0._0;}}();
       var sortedCurrentList = function () {
+         var divorg = function (j) {    return A2($Basics._op["++"],j.organization,j.division);};
          var _p1 = criteria;
          switch (_p1.ctor)
          {case "Title": return A2($List.sortBy,function (_) {    return _.title;},currentJobsList);
-            case "Organization": return A2($List.sortBy,function (_) {    return _.organization;},currentJobsList);
-            case "Division": return A2($List.sortBy,function (_) {    return _.division;},currentJobsList);
+            case "Organization": return A2($List.sortBy,divorg,currentJobsList);
             case "Salary": return A2($List.sortBy,function (_) {    return _.salaryAmount;},currentJobsList);
             default: return A2($List.sortBy,function (_) {    return _.dateClosing;},currentJobsList);}
       }();
@@ -11033,7 +11033,6 @@ Elm.Main.make = function (_elm) {
    var Model = function (a) {    return {jobs: a};};
    var ClosingDate = {ctor: "ClosingDate"};
    var Salary = {ctor: "Salary"};
-   var Division = {ctor: "Division"};
    var Organization = {ctor: "Organization"};
    var Title = {ctor: "Title"};
    var Job = F7(function (a,b,c,d,e,f,g) {    return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g};});
@@ -11052,19 +11051,13 @@ Elm.Main.make = function (_elm) {
       var tbody = function () {
          var _p2 = maybeJobs;
          if (_p2.ctor === "Nothing") {
-               return _U.list([A2($Html.tr,
-               _U.list([]),
-               _U.list([A2($Html.td,_U.list([]),_U.list([]))
-                       ,A2($Html.td,_U.list([]),_U.list([]))
-                       ,A2($Html.td,_U.list([]),_U.list([]))
-                       ,A2($Html.td,_U.list([]),_U.list([]))
-                       ,A2($Html.td,_U.list([]),_U.list([]))]))]);
+               return _U.list([A2($Html.tr,_U.list([]),_U.list([]))]);
             } else {
                return A2($List.concatMap,individualJob,_p2._0);
             }
       }();
       return A2($Html.table,
-      _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "width",_1: "90%"}]))]),
+      _U.list([$Html$Attributes.align("center"),$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "width",_1: "90%"}]))]),
       A2($Basics._op["++"],
       _U.list([A2($Html.tr,
       _U.list([]),
@@ -11096,6 +11089,7 @@ Elm.Main.make = function (_elm) {
                              ,jobsUrl: jobsUrl
                              ,app: app
                              ,main: main
+                             ,init: init
                              ,NoOp: NoOp
                              ,GetJobs: GetJobs
                              ,ShowJobs: ShowJobs
@@ -11103,11 +11097,9 @@ Elm.Main.make = function (_elm) {
                              ,Job: Job
                              ,Title: Title
                              ,Organization: Organization
-                             ,Division: Division
                              ,Salary: Salary
                              ,ClosingDate: ClosingDate
                              ,Model: Model
-                             ,init: init
                              ,update: update
                              ,sortJobs: sortJobs
                              ,view: view
