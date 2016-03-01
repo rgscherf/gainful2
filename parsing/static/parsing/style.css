@@ -1,0 +1,13 @@
+nav {
+  background-color: rgb(97, 189, 65);
+  border: none;
+  height: 70px;
+  font-size: 24px;
+}
+
+.logo {
+  font-family: 'Lobster', cursive;
+  font-size: 60px;
+  padding-left: 20px;
+  color: rgb(224, 226, 211)
+}

@@ -1,0 +1,20 @@
+{% load staticfiles %}
+
+<html>
+  <head>
+    <title>Gainful 2.0.3</title>
+    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type "text/css" href={% static "parsing/style.css" %} />
+    <script type="text/javascript" src={% static "parsing/elm.js" %}></script>
+  </head>
+  <body>
+    <div id="elm-page">
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    var elmDiv = document.getElementById('elm-page');
+    Elm.embed(Elm.Main, elmDiv)
+    </script>
+
+</html>

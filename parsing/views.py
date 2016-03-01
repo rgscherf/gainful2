@@ -12,3 +12,6 @@ class JobViewSet(viewsets.ModelViewSet):
     """
     queryset = Job.objects.all().order_by('url_detail')
     serializer_class = JobSerializer
+
+def index(request):
+    return render(request, 'parsing/index.html', {})

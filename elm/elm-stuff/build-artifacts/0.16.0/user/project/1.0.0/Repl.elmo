@@ -7,12 +7,12 @@ Elm.Repl.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
+   $Markdown = Elm.Markdown.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
    var tsol = {ctor: "_Tuple0"};
-   var a = _U.list([{floats: 1.2,names: "Ronny"},{floats: 3.4,names: "Bobby"},{floats: 0.8,names: "Athena"}]);
-   var deltron3030 = A2($List.sortBy,function (_) {    return _.names;},a);
-   return _elm.Repl.values = {_op: _op,a: a,deltron3030: deltron3030,tsol: tsol};
+   var deltron3030 = $Markdown.toHtml("hello works");
+   return _elm.Repl.values = {_op: _op,deltron3030: deltron3030,tsol: tsol};
 };

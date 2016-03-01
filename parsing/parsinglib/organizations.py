@@ -124,7 +124,7 @@ class Mississauga(Organization):
             return ""
         result = search.search(text)
         if result:
-            result = result.group(2)
+            result = result.group(2).strip()
         else:
             fail_re(text, "IMPLEMENT DIVISION PARSE")
         return result

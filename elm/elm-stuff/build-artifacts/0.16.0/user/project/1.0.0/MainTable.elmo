@@ -1,0 +1,52 @@
+Elm.MainTable = Elm.MainTable || {};
+Elm.MainTable.make = function (_elm) {
+   "use strict";
+   _elm.MainTable = _elm.MainTable || {};
+   if (_elm.MainTable.values) return _elm.MainTable.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var individualJob = function (job) {
+      var orgAndDiv = !_U.eq(job.division,"") ? A2($Basics._op["++"],job.organization,A2($Basics._op["++"],", ",job.division)) : job.organization;
+      var postfix = job.salaryWaged ? " /hr" : " /yr";
+      var stringSalary = $Basics.toString(job.salaryWaged ? job.salaryAmount : $Basics.toFloat($Basics.round(job.salaryAmount)));
+      return _U.list([A2($Html.tr,
+      _U.list([]),
+      _U.list([A2($Html.td,_U.list([]),_U.list([A2($Html.a,_U.list([$Html$Attributes.href(job.urlDetail)]),_U.list([$Html.text(job.title)]))]))
+              ,A2($Html.td,_U.list([]),_U.list([$Html.text(orgAndDiv)]))
+              ,A2($Html.td,
+              _U.list([$Html$Attributes.align("right")]),
+              _U.list([$Html.text(_U.eq(job.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
+              ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(job.dateClosing)]))]))]);
+   };
+   var viewJobs = F2(function (address,maybeJobs) {
+      var tbody = function () {
+         var _p0 = maybeJobs;
+         if (_p0.ctor === "Nothing") {
+               return _U.list([A2($Html.tr,_U.list([]),_U.list([]))]);
+            } else {
+               return A2($List.concatMap,individualJob,_p0._0);
+            }
+      }();
+      return A2($Html.table,
+      _U.list([$Html$Attributes.align("center"),$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "width",_1: "90%"}]))]),
+      A2($Basics._op["++"],
+      _U.list([A2($Html.tr,
+      _U.list([]),
+      _U.list([A2($Html.th,_U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Title))]),_U.list([$Html.text("Title")]))
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Organization))]),_U.list([$Html.text("Organization")]))
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Salary))]),_U.list([$Html.text("Salary/Wage")]))
+              ,A2($Html.th,_U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.ClosingDate))]),_U.list([$Html.text("Closing Date")]))]))]),
+      tbody));
+   });
+   return _elm.MainTable.values = {_op: _op,viewJobs: viewJobs,individualJob: individualJob};
+};

@@ -1,0 +1,50 @@
+Elm.Models = Elm.Models || {};
+Elm.Models.make = function (_elm) {
+   "use strict";
+   _elm.Models = _elm.Models || {};
+   if (_elm.Models.values) return _elm.Models.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var sortJobs = F2(function (criteria,model) {
+      var currentJobsList = function () {    var _p0 = model.jobs;if (_p0.ctor === "Nothing") {    return _U.list([]);} else {    return _p0._0;}}();
+      var sortedCurrentList = function () {
+         var divorg = function (j) {    return A2($Basics._op["++"],j.organization,j.division);};
+         var _p1 = criteria;
+         switch (_p1.ctor)
+         {case "Title": return A2($List.sortBy,function (_) {    return _.title;},currentJobsList);
+            case "Organization": return A2($List.sortBy,divorg,currentJobsList);
+            case "Salary": return A2($List.sortBy,function (_) {    return _.salaryAmount;},currentJobsList);
+            default: return A2($List.sortBy,function (_) {    return _.dateClosing;},currentJobsList);}
+      }();
+      return _U.eq(currentJobsList,sortedCurrentList) ? _U.update(model,{jobs: $Maybe.Just($List.reverse(sortedCurrentList))}) : _U.update(model,
+      {jobs: $Maybe.Just(sortedCurrentList)});
+   });
+   var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
+   var ShowJobs = function (a) {    return {ctor: "ShowJobs",_0: a};};
+   var GetJobs = {ctor: "GetJobs"};
+   var NoOp = {ctor: "NoOp"};
+   var Model = function (a) {    return {jobs: a};};
+   var ClosingDate = {ctor: "ClosingDate"};
+   var Salary = {ctor: "Salary"};
+   var Organization = {ctor: "Organization"};
+   var Title = {ctor: "Title"};
+   var Job = F7(function (a,b,c,d,e,f,g) {    return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g};});
+   return _elm.Models.values = {_op: _op
+                               ,Job: Job
+                               ,Title: Title
+                               ,Organization: Organization
+                               ,Salary: Salary
+                               ,ClosingDate: ClosingDate
+                               ,Model: Model
+                               ,NoOp: NoOp
+                               ,GetJobs: GetJobs
+                               ,ShowJobs: ShowJobs
+                               ,SortJobs: SortJobs
+                               ,sortJobs: sortJobs};
+};
