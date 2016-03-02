@@ -1,13 +1,80 @@
 nav {
-  background-color: rgb(97, 189, 65);
+  background-color: #8BBFA4;
+  /*background-color: rgb(123, 212, 92);*/
   border: none;
-  height: 70px;
+  height: 80px;
   font-size: 24px;
 }
 
 .logo {
-  font-family: 'Lobster', cursive;
-  font-size: 60px;
-  padding-left: 20px;
-  color: rgb(224, 226, 211)
+  font-family: 'Lobster Two', cursive;
+  position: relative;
+  float: left;
+  top: -10px;
+  left: 15px;
+  font-size: 70px;
+  color: black;
+}
+
+.nav-icon {
+  position: relative;
+  float: right;
+  top: 0px;
+}
+
+.i-twitter {
+  /*right: 45px;*/
+}
+
+.i-github {
+  /*right: 30px;*/
+}
+
+.i-about {
+  /*right: 0px;*/
+}
+
+.spacer {
+  height: 30px;
+}
+
+tr {
+  vertical-align: middle;
+}
+
+.leftHead {
+  text-align: left;
+}
+
+.rightHead {
+  text-align: right;
+}
+
+th {
+  background-color: #C2CDBD;
+}
+.shadedRow {
+  background-color: #89C6D4;
+}
+
+.unshadedRow {
+  background-color: #8BB8D6;
+}
+
+table {
+  border: 2px solid #C2CDBD;
+  /*background: #F4F08F; */
+  border-spacing: 0px;
+  font-size: 13px;
+  background: #8BBFA4;
+  -webkit-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
+  -moz-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
+  box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
+}
+
+body {
+  background: #8BBFA4;
+  font-family: 'Roboto' sans-serif;
+  /*font-family: 'Roboto', sans-serif;*/
+  /*background: linear-gradient(rgb(112, 168, 151),rgb(112, 168, 151), rgb(123,212,92), rgb(68, 214, 232), rgb(68, 236, 69), rgb(228, 110, 35));*/
 }

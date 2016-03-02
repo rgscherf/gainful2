@@ -18,6 +18,7 @@ view address model =
     []
     [
       navBar
+    , div [class "spacer"] []
     , viewJobs address model.jobs
     , aboutMessage
     ]
@@ -26,42 +27,56 @@ view address model =
 
 navBar : Html
 navBar =
-  nav [class "logo"] [text "Gainful"]
+  nav [] [ span [class "logo"] [text "Gainful"]
+         , i [class "fa fa-2x fa-fw fa-question nav-icon i-about"]
+             [ a [href "http://www.google.com"] [text " "]]
+         , i [class "fa fa-2x fa-fw fa-github nav-icon i-github"] []
+         , i [class "fa fa-2x fa-fw fa-twitter nav-icon i-twitter"] []
+         ]
 
 -- Job table
 
 viewJobs : Signal.Address Action -> Maybe Jobs -> Html
 viewJobs address maybeJobs =
   let
-      tbody =
+      jobs =
         case maybeJobs of
-            Nothing -> [ tr [] [] ]
-            Just jobs -> List.concatMap individualJob jobs
+          Nothing -> []
+          Just js -> js
+      shaded = List.concat
+                <| List.repeat (ceiling <| (toFloat <| List.length jobs) / 2)
+                [True, False]
+      jobAndClass = List.map2 (,) shaded jobs
+      tbody = List.concatMap individualJob jobAndClass
   in
     table [align "center", style [("width", "90%")]]
       (
         [ tr []
-          [ th [onClick address (SortJobs Title)] [text "Title"]
-          , th [onClick address (SortJobs Organization)] [text "Organization"]
-          , th [onClick address (SortJobs Salary)] [text "Salary/Wage"]
-          , th [onClick address (SortJobs ClosingDate)] [text "Closing Date"]
+          [
+            th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization"]
+          , th [onClick address (SortJobs Title), class "leftHead"] [text "Title"]
+          , th [onClick address (SortJobs Salary), class "rightHead"] [text "Salary/Wage"]
+          , th [onClick address (SortJobs ClosingDate), class "rightHead"] [text "Closing Date"]
           ]
         ]
         ++ tbody
       )
 
-individualJob : Job -> List Html
-individualJob job =
+individualJob : (Bool, Job) -> List Html
+individualJob bj =
   let stringSalary = toString <| if job.salaryWaged then job.salaryAmount else toFloat <| round job.salaryAmount
       postfix = if job.salaryWaged then " /hr" else " /yr"
       orgAndDiv = if job.division /= "" then job.organization ++ ", " ++ job.division else job.organization
+      rowClass = if shaded then "shadedRow" else "unshadedRow"
+      (shaded, job) = bj
   in
-  [tr []
-    [ td [] [a
+  [tr [class rowClass]
+    [
+      td [] [text <| orgAndDiv]
+    , td [] [a
               [href job.urlDetail]
               [text job.title]
             ]
-    , td [] [text <| orgAndDiv]
     , td [align "right"] [text (if job.salaryAmount == 0 then "--" else "$ " ++ stringSalary ++ postfix)]
     , td [align "right"] [text job.dateClosing]
     ]
