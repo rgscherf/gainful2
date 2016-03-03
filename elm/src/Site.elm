@@ -19,8 +19,14 @@ view address model =
     [
       navBar
     , div [class "spacer"] []
+    , div [class "filterbox"] []
+    , div [class "spacer"] []
     , viewJobs address model.jobs
-    , aboutMessage
+    , div [class "spacer"] []
+    , div [class "spacer"] []
+    , div [class "spacer"] []
+    , div [class "spacer"] []
+    -- , aboutMessage
     ]
 
 -- NAV
@@ -28,10 +34,12 @@ view address model =
 navBar : Html
 navBar =
   nav [] [ span [class "logo"] [text "Gainful"]
-         , i [class "fa fa-2x fa-fw fa-question nav-icon i-about"]
-             [ a [href "http://www.google.com"] [text " "]]
-         , i [class "fa fa-2x fa-fw fa-github nav-icon i-github"] []
-         , i [class "fa fa-2x fa-fw fa-twitter nav-icon i-twitter"] []
+         , a [href "http://www.google.com"]
+             [i [class "fa fa-2x fa-fw fa-question nav-icon i-about"] []]
+         , a [href "http://www.github.com/rgscherf/gainful2"]
+             [i [class "fa fa-2x fa-fw fa-github nav-icon i-github"] []]
+         , a [href "http://www.twitter.com/rgscherf"]
+             [i [class "fa fa-2x fa-fw fa-twitter nav-icon i-twitter"] []]
          ]
 
 -- Job table
@@ -49,7 +57,7 @@ viewJobs address maybeJobs =
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass
   in
-    table [align "center", style [("width", "90%")]]
+    table [align "center"]
       (
         [ tr []
           [
@@ -81,7 +89,6 @@ individualJob bj =
     , td [align "right"] [text job.dateClosing]
     ]
   ]
-
 
 
 -- about page

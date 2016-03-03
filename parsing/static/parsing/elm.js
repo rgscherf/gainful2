@@ -11220,7 +11220,7 @@ Elm.Site.make = function (_elm) {
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
       return A2($Html.table,
-      _U.list([$Html$Attributes.align("center"),$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "width",_1: "90%"}]))]),
+      _U.list([$Html$Attributes.align("center")]),
       A2($Basics._op["++"],
       _U.list([A2($Html.tr,
       _U.list([]),
@@ -11241,15 +11241,27 @@ Elm.Site.make = function (_elm) {
    var navBar = A2($Html.nav,
    _U.list([]),
    _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("logo")]),_U.list([$Html.text("Gainful")]))
-           ,A2($Html.i,
-           _U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-question nav-icon i-about")]),
-           _U.list([A2($Html.a,_U.list([$Html$Attributes.href("http://www.google.com")]),_U.list([$Html.text(" ")]))]))
-           ,A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-github nav-icon i-github")]),_U.list([]))
-           ,A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-twitter nav-icon i-twitter")]),_U.list([]))]));
+           ,A2($Html.a,
+           _U.list([$Html$Attributes.href("http://www.google.com")]),
+           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-question nav-icon i-about")]),_U.list([]))]))
+           ,A2($Html.a,
+           _U.list([$Html$Attributes.href("http://www.github.com/rgscherf/gainful2")]),
+           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-github nav-icon i-github")]),_U.list([]))]))
+           ,A2($Html.a,
+           _U.list([$Html$Attributes.href("http://www.twitter.com/rgscherf")]),
+           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-twitter nav-icon i-twitter")]),_U.list([]))]))]));
    var view = F2(function (address,model) {
       return A2($Html.div,
       _U.list([]),
-      _U.list([navBar,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([])),A2(viewJobs,address,model.jobs),aboutMessage]));
+      _U.list([navBar
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("filterbox")]),_U.list([]))
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
+              ,A2(viewJobs,address,model.jobs)
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))]));
    });
    return _elm.Site.values = {_op: _op,view: view,navBar: navBar,viewJobs: viewJobs,individualJob: individualJob,aboutMessage: aboutMessage};
 };
