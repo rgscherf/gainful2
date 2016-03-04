@@ -11178,6 +11178,22 @@ Elm.StartApp.make = function (_elm) {
    var Config = F4(function (a,b,c,d) {    return {init: a,update: b,view: c,inputs: d};});
    return _elm.StartApp.values = {_op: _op,start: start,Config: Config,App: App};
 };
+Elm.Helpers = Elm.Helpers || {};
+Elm.Helpers.make = function (_elm) {
+   "use strict";
+   _elm.Helpers = _elm.Helpers || {};
+   if (_elm.Helpers.values) return _elm.Helpers.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var elem = F2(function (e,ls) {    return A3($List.foldr,F2(function (x,acc) {    return acc ? true : _U.eq(e,x);}),false,ls);});
+   return _elm.Helpers.values = {_op: _op,elem: elem};
+};
 Elm.Models = Elm.Models || {};
 Elm.Models.make = function (_elm) {
    "use strict";
@@ -11215,6 +11231,7 @@ Elm.Models.make = function (_elm) {
       var newFilter = {organizations: filList};
       return _U.update(m,{jobFilter: newFilter});
    };
+   var ToggleFilter = F2(function (a,b) {    return {ctor: "ToggleFilter",_0: a,_1: b};});
    var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
    var ShowInitialJobs = function (a) {    return {ctor: "ShowInitialJobs",_0: a};};
    var GetJobs = {ctor: "GetJobs"};
@@ -11238,6 +11255,7 @@ Elm.Models.make = function (_elm) {
                                ,GetJobs: GetJobs
                                ,ShowInitialJobs: ShowInitialJobs
                                ,SortJobs: SortJobs
+                               ,ToggleFilter: ToggleFilter
                                ,makeFilter: makeFilter
                                ,sortJobs: sortJobs};
 };
@@ -11249,6 +11267,7 @@ Elm.Site.make = function (_elm) {
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
+   $Helpers = Elm.Helpers.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
@@ -11276,8 +11295,9 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text(_U.eq(_p2.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
               ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(_p2.dateClosing)]))]))]);
    };
-   var viewJobs = F2(function (address,maybeJobs) {
-      var jobs = function () {    var _p3 = maybeJobs;if (_p3.ctor === "Nothing") {    return _U.list([]);} else {    return _p3._0;}}();
+   var viewJobs = F3(function (address,fil,maybeJobs) {
+      var activeOrgs = A2($List.filterMap,function (x) {    return $Basics.snd(x) ? $Maybe.Just($Basics.fst(x)) : $Maybe.Nothing;},fil.organizations);
+      var jobs = A2($List.filter,function (j) {    return A2($Helpers.elem,j.organization,activeOrgs);},A2($Maybe.withDefault,_U.list([]),maybeJobs));
       var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
@@ -11300,6 +11320,15 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text("Closing Date")]))]))]),
       tbody));
    });
+   var filterBox = F2(function (a,f) {
+      var btn = function (x) {
+         return A2($Html.button,
+         _U.list([A2($Html$Events.onClick,a,A2($Models.ToggleFilter,$Models.Organization,$Basics.fst(x)))
+                 ,$Html$Attributes.$class($Basics.snd(x) ? "visible" : "notVisible")]),
+         _U.list([$Html.text($Basics.fst(x))]));
+      };
+      return A2($List.map,btn,A2($List.sortBy,$Basics.fst,f.organizations));
+   });
    var navBar = A2($Html.nav,
    _U.list([]),
    _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("logo")]),_U.list([$Html.text("Gainful")]))
@@ -11317,16 +11346,22 @@ Elm.Site.make = function (_elm) {
       _U.list([]),
       _U.list([navBar
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("filterbox")]),_U.list([]))
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("filterbox")]),A2(filterBox,address,model.jobFilter))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2(viewJobs,address,model.jobs)
+              ,A3(viewJobs,address,model.jobFilter,model.jobs)
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([]),_U.list([$Html.text($Basics.toString(model.jobFilter))]))]));
    });
-   return _elm.Site.values = {_op: _op,view: view,navBar: navBar,viewJobs: viewJobs,individualJob: individualJob,aboutMessage: aboutMessage};
+   return _elm.Site.values = {_op: _op
+                             ,view: view
+                             ,navBar: navBar
+                             ,filterBox: filterBox
+                             ,viewJobs: viewJobs
+                             ,individualJob: individualJob
+                             ,aboutMessage: aboutMessage};
 };
 Elm.Main = Elm.Main || {};
 Elm.Main.make = function (_elm) {
@@ -11361,14 +11396,33 @@ Elm.Main.make = function (_elm) {
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
    var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
+   var updateFilter = F3(function (field,identifier,fil) {
+      var toggleElement = F2(function (i,ls) {
+         return A2($List.map,
+         function (_p0) {
+            var _p1 = _p0;
+            var _p3 = _p1._0;
+            var _p2 = _p1._1;
+            return !_U.eq(_p3,identifier) ? {ctor: "_Tuple2",_0: _p3,_1: _p2} : {ctor: "_Tuple2",_0: _p3,_1: $Basics.not(_p2)};
+         },
+         ls);
+      });
+      var _p4 = field;
+      switch (_p4.ctor)
+      {case "Organization": return _U.update(fil,{organizations: A2(toggleElement,identifier,fil.organizations)});
+         case "Title": return fil;
+         case "Salary": return fil;
+         default: return fil;}
+   });
    var update = F2(function (action,model) {
-      var _p0 = action;
-      switch (_p0.ctor)
-      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p0._0,model),_1: $Effects.none};
+      var _p5 = action;
+      switch (_p5.ctor)
+      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p5._0,model),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
-         default: var newModel = $Models.makeFilter(_U.update(model,{jobs: _p0._0}));
-           return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};}
+         case "ShowInitialJobs": var newModel = $Models.makeFilter(_U.update(model,{jobs: _p5._0}));
+           return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};
+         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(updateFilter,_p5._0,_p5._1,model.jobFilter)}),_1: $Effects.none};}
    });
    var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([])}};
    var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
@@ -11381,6 +11435,7 @@ Elm.Main.make = function (_elm) {
                              ,startModel: startModel
                              ,init: init
                              ,update: update
+                             ,updateFilter: updateFilter
                              ,jobsUrl: jobsUrl
                              ,getJobs: getJobs
                              ,decodeJob: decodeJob

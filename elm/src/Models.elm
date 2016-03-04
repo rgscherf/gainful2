@@ -33,6 +33,7 @@ type Action
  | GetJobs
  | ShowInitialJobs (Maybe Jobs)
  | SortJobs SortingCriteria
+ | ToggleFilter SortingCriteria String
 
 
 makeFilter : Model -> Model

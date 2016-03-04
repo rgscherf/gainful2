@@ -6,6 +6,7 @@ Elm.Site.make = function (_elm) {
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
+   $Helpers = Elm.Helpers.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
@@ -33,8 +34,9 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text(_U.eq(_p2.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
               ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(_p2.dateClosing)]))]))]);
    };
-   var viewJobs = F2(function (address,maybeJobs) {
-      var jobs = function () {    var _p3 = maybeJobs;if (_p3.ctor === "Nothing") {    return _U.list([]);} else {    return _p3._0;}}();
+   var viewJobs = F3(function (address,fil,maybeJobs) {
+      var activeOrgs = A2($List.filterMap,function (x) {    return $Basics.snd(x) ? $Maybe.Just($Basics.fst(x)) : $Maybe.Nothing;},fil.organizations);
+      var jobs = A2($List.filter,function (j) {    return A2($Helpers.elem,j.organization,activeOrgs);},A2($Maybe.withDefault,_U.list([]),maybeJobs));
       var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
@@ -57,6 +59,15 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text("Closing Date")]))]))]),
       tbody));
    });
+   var filterBox = F2(function (a,f) {
+      var btn = function (x) {
+         return A2($Html.button,
+         _U.list([A2($Html$Events.onClick,a,A2($Models.ToggleFilter,$Models.Organization,$Basics.fst(x)))
+                 ,$Html$Attributes.$class($Basics.snd(x) ? "visible" : "notVisible")]),
+         _U.list([$Html.text($Basics.fst(x))]));
+      };
+      return A2($List.map,btn,A2($List.sortBy,$Basics.fst,f.organizations));
+   });
    var navBar = A2($Html.nav,
    _U.list([]),
    _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("logo")]),_U.list([$Html.text("Gainful")]))
@@ -74,14 +85,20 @@ Elm.Site.make = function (_elm) {
       _U.list([]),
       _U.list([navBar
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("filterbox")]),_U.list([]))
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("filterbox")]),A2(filterBox,address,model.jobFilter))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2(viewJobs,address,model.jobs)
+              ,A3(viewJobs,address,model.jobFilter,model.jobs)
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([]),_U.list([$Html.text($Basics.toString(model.jobFilter))]))]));
    });
-   return _elm.Site.values = {_op: _op,view: view,navBar: navBar,viewJobs: viewJobs,individualJob: individualJob,aboutMessage: aboutMessage};
+   return _elm.Site.values = {_op: _op
+                             ,view: view
+                             ,navBar: navBar
+                             ,filterBox: filterBox
+                             ,viewJobs: viewJobs
+                             ,individualJob: individualJob
+                             ,aboutMessage: aboutMessage};
 };

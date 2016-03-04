@@ -42,7 +42,6 @@ port tasks = app.tasks
 -- UPDATE
 ---------
 
-
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
@@ -55,6 +54,23 @@ update action model =
     ShowInitialJobs maybeJobs ->
       let newModel = makeFilter {model | jobs = maybeJobs}
       in (sortJobs Organization newModel, Effects.none)
+    ToggleFilter field identifier -> ({model | jobFilter = updateFilter field identifier model.jobFilter}, Effects.none )
+
+updateFilter : SortingCriteria -> String -> Filter -> Filter
+updateFilter field identifier fil =
+  let toggleElement i ls =
+        List.map (\(st, bo) ->
+                  if st /= identifier
+                  then (st, bo)
+                  else (st, not bo))
+                 ls
+  in
+  case field of
+    Organization ->
+      { fil | organizations = toggleElement identifier fil.organizations }
+    Title -> fil
+    Salary -> fil
+    ClosingDate -> fil
 
 ----------
 -- EFFECTS

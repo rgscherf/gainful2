@@ -69,3 +69,13 @@ th {
 .unshadedRow {
   background-color: #8BB8D6;
 }
+
+.notVisible {
+  color: white;
+  background-color: black;
+}
+
+.visible {
+  color: black;
+  background-color: white;
+}

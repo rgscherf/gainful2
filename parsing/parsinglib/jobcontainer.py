@@ -12,6 +12,9 @@ class JobContainer():
         self.salary_amount = None
 
     def is_unique(self):
+        """ Checks whether job (denoted by URL) already exists in DB.
+        Remember to use this function before doing any intense parsing operations.
+        """
         if not self.url_detail:
             raise KeyError("Queried record uniqueness before detail URL set: {}".format(self))
         else:
@@ -36,6 +39,10 @@ class JobContainer():
         return False if None in self.get_fields() else True
 
     def save(self):
+        """ Save job to DB, after final checks.
+        """
+        if not self.is_unique():
+            return # failsafe in case we forgot to check this earlier.
         self.cleanup()
         if not self.validate():
             raise KeyError("Fields missing for {}".format(self))

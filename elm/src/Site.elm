@@ -6,6 +6,7 @@ import Html.Events exposing (..)
 import Markdown
 
 import Models exposing (..)
+import Helpers exposing (elem)
 
 ------------
 -- MAIN VIEW
@@ -19,9 +20,9 @@ view address model =
     [
       navBar
     , div [class "spacer"] []
-    , div [class "filterbox"] []
+    , div [class "filterbox"] <| filterBox address model.jobFilter
     , div [class "spacer"] []
-    , viewJobs address model.jobs
+    , viewJobs address model.jobFilter model.jobs
     , div [class "spacer"] []
     , div [class "spacer"] []
     , div [class "spacer"] []
@@ -34,8 +35,7 @@ view address model =
 
 navBar : Html
 navBar =
-  nav [] [ span [class "logo"]
-                [text "Gainful"]
+  nav [] [ span [class "logo"] [text "Gainful"]
          , a [href "http://www.google.com"]
              [i [class "fa fa-2x fa-fw fa-info-circle nav-icon"] []]
          , a [href "http://www.github.com/rgscherf/gainful2"]
@@ -44,15 +44,31 @@ navBar =
              [i [class "fa fa-2x fa-fw fa-twitter nav-icon"] []]
          ]
 
+
+-- FILTERBOX
+
+filterBox : Signal.Address Action -> Filter -> List Html
+filterBox a f =
+  let btn x = button
+                [ onClick a (ToggleFilter Organization <| fst x)
+                , class (if snd x then "visible" else "notVisible")
+                ]
+                [ text <| fst x ]
+  in List.map btn <| List.sortBy fst f.organizations
+
 -- Job table
 
-viewJobs : Signal.Address Action -> Maybe Jobs -> Html
-viewJobs address maybeJobs =
+viewJobs : Signal.Address Action -> Filter -> Maybe Jobs -> Html
+viewJobs address fil maybeJobs =
   let
-      jobs =
-        case maybeJobs of
-          Nothing -> []
-          Just js -> js
+      activeOrgs = List.filterMap
+                    (\x ->
+                      if snd x
+                      then Just <| fst x
+                      else Nothing)
+                    fil.organizations
+      jobs = List.filter (\j -> elem j.organization activeOrgs)
+              <| Maybe.withDefault [] maybeJobs
       shaded = List.concat <| List.repeat (List.length jobs) [True, False]
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass

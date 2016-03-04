@@ -1,0 +1,16 @@
+Elm.Helpers = Elm.Helpers || {};
+Elm.Helpers.make = function (_elm) {
+   "use strict";
+   _elm.Helpers = _elm.Helpers || {};
+   if (_elm.Helpers.values) return _elm.Helpers.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var elem = F2(function (e,ls) {    return A3($List.foldr,F2(function (x,acc) {    return acc ? true : _U.eq(e,x);}),false,ls);});
+   return _elm.Helpers.values = {_op: _op,elem: elem};
+};

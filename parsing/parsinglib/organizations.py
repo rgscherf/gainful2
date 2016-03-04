@@ -81,6 +81,7 @@ class Mississauga(Organization):
                 pass
             else:
                 print("Job already exists in DB: {}".format(job.url_detail))
+                continue
             job.organization = "Mississauga"
             job.title = cols[1].a.text.strip()
             date_posted_text = cols[3].find_all("span")[1].text.strip()
@@ -139,7 +140,7 @@ class Mississauga(Organization):
                 result = "".join(filter(lambda x: x != ",", result))
             result = float(result)
         else:
-            fail_re("could not find salary or hourly rate")
+            result = 0
         return result
 
 
