@@ -41,8 +41,9 @@ class JobContainer():
     def save(self):
         """ Save job to DB, after final checks.
         """
-        if not self.is_unique():
-            return # failsafe in case we forgot to check this earlier.
+        if not self.is_unique(): # failsafe in case we forgot to check this earlier.
+            print("{} tried to save a job that is not unique!".format(self.organization))
+            return
         self.cleanup()
         if not self.validate():
             raise KeyError("Fields missing for {}".format(self))

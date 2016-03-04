@@ -77,10 +77,7 @@ class Mississauga(Organization):
             job = JobContainer()
             cols = row.find_all("td")
             job.url_detail = cols[1].a["href"]
-            if job.is_unique():
-                pass
-            else:
-                print("Job already exists in DB: {}".format(job.url_detail))
+            if not job.is_unique():
                 continue
             job.organization = "Mississauga"
             job.title = cols[1].a.text.strip()
@@ -155,10 +152,7 @@ class Toronto(Organization):
             job = JobContainer()
             cols = row.find_all('td')
             job.url_detail = "https://www.brainhunter.com/frontoffice/{}".format(cols[1].a["href"])
-            if job.is_unique():
-                pass
-            else:
-                print("Job already exists in DB: {}".format(job.url_detail))
+            if not job.is_unique():
                 continue
             self.parse_detail_page(job)
 
@@ -227,10 +221,7 @@ class Victoria(Organization):
             cols = row.find_all('td')
             # insert these fields before tags are stripped from columns!
             job.url_detail = "http://victoria.ca{}".format(cols[6].a["href"])
-            if job.is_unique():
-                pass
-            else:
-                print("Job already exists in DB: {}".format(job.url_detail))
+            if not job.is_unique():
                 continue
             job.salary_amount = self.get_salary_from_pdf("http://victoria.ca/{}".format(cols[6].a["href"]))
 
