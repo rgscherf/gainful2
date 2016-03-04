@@ -11336,25 +11336,38 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text("Closing Date")]))]))]),
       tbody));
    });
-   var filterBox = F2(function (a,f) {
-      var btn = function (x) {
-         return A2($Html.button,
-         _U.list([A2($Html$Events.onClick,a,A2($Models.ToggleFilter,$Models.Organization,$Basics.fst(x)))
-                 ,$Html$Attributes.$class($Basics.snd(x) ? "visible" : "notVisible")]),
-         _U.list([$Html.text($Basics.fst(x))]));
-      };
+   var btnsAllNone = F3(function (a,field,f) {
       var anyFieldsVisible = function (field) {    return A2($List.any,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
       var allFieldsVisible = function (field) {    return A2($List.all,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
-      return A2($Basics._op["++"],
-      _U.list([A2($Html.button,
-              _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,true))
-                      ,$Html$Attributes.$class(allFieldsVisible(function (_) {    return _.organizations;}) ? "visible" : "notVisible")]),
-              _U.list([$Html.text("Select All")]))
-              ,A2($Html.button,
-              _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,false))
-                      ,$Html$Attributes.$class(anyFieldsVisible(function (_) {    return _.organizations;}) ? "notVisible" : "visible")]),
-              _U.list([$Html.text("Unselect All")]))]),
-      A2($List.map,btn,A2($List.sortBy,$Basics.fst,f.organizations)));
+      return _U.list([A2($Html.button,
+                     _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,true))
+                             ,$Html$Attributes.$class(allFieldsVisible(function (_) {    return _.organizations;}) ? "visible" : "notVisible")]),
+                     _U.list([$Html.text("Select All")]))
+                     ,A2($Html.button,
+                     _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,false))
+                             ,$Html$Attributes.$class(anyFieldsVisible(function (_) {    return _.organizations;}) ? "notVisible" : "visible")]),
+                     _U.list([$Html.text("Unselect All")]))]);
+   });
+   var filterBox = F2(function (a,f) {
+      var btn = F2(function (field,x) {
+         return A2($Html.button,
+         _U.list([A2($Html$Events.onClick,a,A2($Models.ToggleFilter,field,$Basics.fst(x))),$Html$Attributes.$class($Basics.snd(x) ? "visible" : "notVisible")]),
+         _U.list([$Html.text($Basics.fst(x))]));
+      });
+      return _U.list([A2($Html.div,
+                     _U.list([]),
+                     A2($Basics._op["++"],
+                     _U.list([A2($Html.span,_U.list([]),_U.list([$Html.text("first")]))]),
+                     A2($Basics._op["++"],
+                     A3(btnsAllNone,a,$Models.Organization,f),
+                     A2($List.map,btn($Models.Organization),A2($List.sortBy,$Basics.fst,f.organizations)))))
+                     ,A2($Html.div,
+                     _U.list([]),
+                     A2($Basics._op["++"],
+                     _U.list([A2($Html.span,_U.list([]),_U.list([$Html.text("second")]))]),
+                     A2($Basics._op["++"],
+                     A3(btnsAllNone,a,$Models.Organization,f),
+                     A2($List.map,btn($Models.Organization),A2($List.sortBy,$Basics.fst,f.organizations)))))]);
    });
    var navBar = A2($Html.nav,
    _U.list([]),
@@ -11386,6 +11399,7 @@ Elm.Site.make = function (_elm) {
                              ,view: view
                              ,navBar: navBar
                              ,filterBox: filterBox
+                             ,btnsAllNone: btnsAllNone
                              ,viewJobs: viewJobs
                              ,individualJob: individualJob
                              ,aboutMessage: aboutMessage};
