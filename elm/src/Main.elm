@@ -14,9 +14,6 @@ import Site exposing (..)
 -- WIRING
 ---------
 
-port title : String
-port title = "Gainful 2.0.3"
-
 app : StartApp.App Model
 app = StartApp.start
   { init = init
@@ -28,8 +25,14 @@ app = StartApp.start
 main : Signal Html
 main = app.html
 
+startModel : Model
+startModel =
+  { jobs = Nothing
+  , jobFilter = { organizations = [] }
+  }
+
 init : (Model, Effects Action)
-init = ({jobs = Nothing}, getJobs)
+init = (startModel, getJobs)
 
 port tasks : Signal (Task.Task Effects.Never ())
 port tasks = app.tasks
@@ -49,9 +52,9 @@ update action model =
       (model, Effects.none)
     GetJobs ->
       ({model | jobs = Nothing}, getJobs)
-    ShowJobs maybeJobs ->
-      ({model | jobs = maybeJobs}, Effects.none)
-
+    ShowInitialJobs maybeJobs ->
+      let newModel = makeFilter {model | jobs = maybeJobs}
+      in (sortJobs Organization newModel, Effects.none)
 
 ----------
 -- EFFECTS
@@ -64,7 +67,7 @@ getJobs : Effects Action
 getJobs =
   Http.get decodeJobList jobsUrl
     |> Task.toMaybe
-    |> Task.map ShowJobs
+    |> Task.map ShowInitialJobs
     |> Effects.task
 
 

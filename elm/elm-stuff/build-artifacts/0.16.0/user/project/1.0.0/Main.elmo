@@ -30,23 +30,25 @@ Elm.Main.make = function (_elm) {
    A2($Json$Decode._op[":="],"salary_amount",$Json$Decode.$float));
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
-   var getJobs = $Effects.task(A2($Task.map,$Models.ShowJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
+   var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
    var update = F2(function (action,model) {
       var _p0 = action;
       switch (_p0.ctor)
       {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p0._0,model),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
-         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobs: _p0._0}),_1: $Effects.none};}
+         default: var newModel = $Models.makeFilter(_U.update(model,{jobs: _p0._0}));
+           return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};}
    });
-   var init = {ctor: "_Tuple2",_0: {jobs: $Maybe.Nothing},_1: getJobs};
+   var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([])}};
+   var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
    var app = $StartApp.start({init: init,view: $Site.view,update: update,inputs: _U.list([])});
    var main = app.html;
    var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",app.tasks);
-   var title = Elm.Native.Port.make(_elm).outbound("title",function (v) {    return v;},"Gainful 2.0.3");
    return _elm.Main.values = {_op: _op
                              ,app: app
                              ,main: main
+                             ,startModel: startModel
                              ,init: init
                              ,update: update
                              ,jobsUrl: jobsUrl

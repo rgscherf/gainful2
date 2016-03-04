@@ -26,6 +26,7 @@ view address model =
     , div [class "spacer"] []
     , div [class "spacer"] []
     , div [class "spacer"] []
+    , div [] [text <| toString model.jobFilter]
     -- , aboutMessage
     ]
 
@@ -33,13 +34,14 @@ view address model =
 
 navBar : Html
 navBar =
-  nav [] [ span [class "logo"] [text "Gainful"]
+  nav [] [ span [class "logo"]
+                [text "Gainful"]
          , a [href "http://www.google.com"]
-             [i [class "fa fa-2x fa-fw fa-question nav-icon i-about"] []]
+             [i [class "fa fa-2x fa-fw fa-info-circle nav-icon"] []]
          , a [href "http://www.github.com/rgscherf/gainful2"]
-             [i [class "fa fa-2x fa-fw fa-github nav-icon i-github"] []]
+             [i [class "fa fa-2x fa-fw fa-github nav-icon"] []]
          , a [href "http://www.twitter.com/rgscherf"]
-             [i [class "fa fa-2x fa-fw fa-twitter nav-icon i-twitter"] []]
+             [i [class "fa fa-2x fa-fw fa-twitter nav-icon"] []]
          ]
 
 -- Job table
@@ -51,9 +53,7 @@ viewJobs address maybeJobs =
         case maybeJobs of
           Nothing -> []
           Just js -> js
-      shaded = List.concat
-                <| List.repeat (ceiling <| (toFloat <| List.length jobs) / 2)
-                [True, False]
+      shaded = List.concat <| List.repeat (List.length jobs) [True, False]
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass
   in
@@ -71,12 +71,11 @@ viewJobs address maybeJobs =
       )
 
 individualJob : (Bool, Job) -> List Html
-individualJob bj =
+individualJob (shaded, job) =
   let stringSalary = toString <| if job.salaryWaged then job.salaryAmount else toFloat <| round job.salaryAmount
       postfix = if job.salaryWaged then " /hr" else " /yr"
       orgAndDiv = if job.division /= "" then job.organization ++ ", " ++ job.division else job.organization
       rowClass = if shaded then "shadedRow" else "unshadedRow"
-      (shaded, job) = bj
   in
   [tr [class rowClass]
     [

@@ -17,26 +17,25 @@ Elm.Site.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
    var aboutMessage = $Markdown.toHtml("\n\n# What is Gainful?\n\nJob searching is bad. Government websites are bad. This makes searching for government jobs extra bad.\n\nGainful makes government job postings simple and sane. Every day, it finds all the newest postings and present them in a table. You can filter and sort listings however you want, and save your results as a daily email newsletter.\n\nNo signups, no ads. It could not be easier.\n\n## What job sites does Gainful search?\n\nGlad you asked. Gainful searches the following sources:\n\n- City of Toronto\n- City of Victoria\n- City of Mississauga\n- Ontario Public Service in the GTA (TODO)\n- ...etc\n\n## Can I help?\n\n[twitter]: http://www.twitter.com/rgscherf\n\nYes! [Get in touch][twitter] or make a [pull request](http://www.github.com/rgscherf/gainful2).\n\n## Who wrote Gainful?\n\nGainful is written by Robert Scherf. He\'s looking for a job--[hire him][twitter]!\n\n");
-   var individualJob = function (bj) {
-      var _p0 = bj;
-      var shaded = _p0._0;
-      var job = _p0._1;
-      var rowClass = shaded ? "shadedRow" : "unshadedRow";
-      var orgAndDiv = !_U.eq(job.division,"") ? A2($Basics._op["++"],job.organization,A2($Basics._op["++"],", ",job.division)) : job.organization;
-      var postfix = job.salaryWaged ? " /hr" : " /yr";
-      var stringSalary = $Basics.toString(job.salaryWaged ? job.salaryAmount : $Basics.toFloat($Basics.round(job.salaryAmount)));
+   var individualJob = function (_p0) {
+      var _p1 = _p0;
+      var _p2 = _p1._1;
+      var rowClass = _p1._0 ? "shadedRow" : "unshadedRow";
+      var orgAndDiv = !_U.eq(_p2.division,"") ? A2($Basics._op["++"],_p2.organization,A2($Basics._op["++"],", ",_p2.division)) : _p2.organization;
+      var postfix = _p2.salaryWaged ? " /hr" : " /yr";
+      var stringSalary = $Basics.toString(_p2.salaryWaged ? _p2.salaryAmount : $Basics.toFloat($Basics.round(_p2.salaryAmount)));
       return _U.list([A2($Html.tr,
       _U.list([$Html$Attributes.$class(rowClass)]),
       _U.list([A2($Html.td,_U.list([]),_U.list([$Html.text(orgAndDiv)]))
-              ,A2($Html.td,_U.list([]),_U.list([A2($Html.a,_U.list([$Html$Attributes.href(job.urlDetail)]),_U.list([$Html.text(job.title)]))]))
+              ,A2($Html.td,_U.list([]),_U.list([A2($Html.a,_U.list([$Html$Attributes.href(_p2.urlDetail)]),_U.list([$Html.text(_p2.title)]))]))
               ,A2($Html.td,
               _U.list([$Html$Attributes.align("right")]),
-              _U.list([$Html.text(_U.eq(job.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
-              ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(job.dateClosing)]))]))]);
+              _U.list([$Html.text(_U.eq(_p2.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
+              ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(_p2.dateClosing)]))]))]);
    };
    var viewJobs = F2(function (address,maybeJobs) {
-      var jobs = function () {    var _p1 = maybeJobs;if (_p1.ctor === "Nothing") {    return _U.list([]);} else {    return _p1._0;}}();
-      var shaded = $List.concat(A2($List.repeat,$Basics.ceiling($Basics.toFloat($List.length(jobs)) / 2),_U.list([true,false])));
+      var jobs = function () {    var _p3 = maybeJobs;if (_p3.ctor === "Nothing") {    return _U.list([]);} else {    return _p3._0;}}();
+      var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
       return A2($Html.table,
@@ -63,13 +62,13 @@ Elm.Site.make = function (_elm) {
    _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("logo")]),_U.list([$Html.text("Gainful")]))
            ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.google.com")]),
-           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-question nav-icon i-about")]),_U.list([]))]))
+           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-info-circle nav-icon")]),_U.list([]))]))
            ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.github.com/rgscherf/gainful2")]),
-           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-github nav-icon i-github")]),_U.list([]))]))
+           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-github nav-icon")]),_U.list([]))]))
            ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.twitter.com/rgscherf")]),
-           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-twitter nav-icon i-twitter")]),_U.list([]))]))]));
+           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-twitter nav-icon")]),_U.list([]))]))]));
    var view = F2(function (address,model) {
       return A2($Html.div,
       _U.list([]),
@@ -81,7 +80,8 @@ Elm.Site.make = function (_elm) {
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))]));
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
+              ,A2($Html.div,_U.list([]),_U.list([$Html.text($Basics.toString(model.jobFilter))]))]));
    });
    return _elm.Site.values = {_op: _op,view: view,navBar: navBar,viewJobs: viewJobs,individualJob: individualJob,aboutMessage: aboutMessage};
 };

@@ -1,5 +1,7 @@
 module Models where
 
+import Set
+
 type alias Job =
   { title : String
   , organization : String
@@ -18,21 +20,34 @@ type SortingCriteria
 
 type alias Jobs = List Job
 
-type alias Model = {jobs : Maybe Jobs}
+type alias Model =
+  { jobs : Maybe Jobs
+  , jobFilter : Filter
+  }
+
+type alias Filter =
+  { organizations : List (String, Bool) }
 
 type Action
  = NoOp
  | GetJobs
- | ShowJobs (Maybe Jobs)
+ | ShowInitialJobs (Maybe Jobs)
  | SortJobs SortingCriteria
 
 
+makeFilter : Model -> Model
+makeFilter m =
+  let newFilter = {organizations = filList}
+      filList = List.map (\s -> (s, True))
+                <| Set.toList
+                <| Set.fromList
+                <| List.map (\j -> j.organization)
+                <| Maybe.withDefault [] m.jobs
+  in {m | jobFilter = newFilter}
+
 sortJobs : SortingCriteria -> Model -> Model
 sortJobs criteria model =
-  let currentJobsList =
-        case model.jobs of
-          Nothing -> []
-          Just js -> js
+  let currentJobsList = Maybe.withDefault [] model.jobs
       sortedCurrentList =
         let divorg j = j.organization ++ j.division
         in

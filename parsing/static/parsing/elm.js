@@ -8285,6 +8285,56 @@ Elm.Json.Decode.make = function (_elm) {
                                     ,value: value
                                     ,customDecoder: customDecoder};
 };
+Elm.Set = Elm.Set || {};
+Elm.Set.make = function (_elm) {
+   "use strict";
+   _elm.Set = _elm.Set || {};
+   if (_elm.Set.values) return _elm.Set.values;
+   var _U = Elm.Native.Utils.make(_elm),$Basics = Elm.Basics.make(_elm),$Dict = Elm.Dict.make(_elm),$List = Elm.List.make(_elm);
+   var _op = {};
+   var foldr = F3(function (f,b,_p0) {    var _p1 = _p0;return A3($Dict.foldr,F3(function (k,_p2,b) {    return A2(f,k,b);}),b,_p1._0);});
+   var foldl = F3(function (f,b,_p3) {    var _p4 = _p3;return A3($Dict.foldl,F3(function (k,_p5,b) {    return A2(f,k,b);}),b,_p4._0);});
+   var toList = function (_p6) {    var _p7 = _p6;return $Dict.keys(_p7._0);};
+   var size = function (_p8) {    var _p9 = _p8;return $Dict.size(_p9._0);};
+   var member = F2(function (k,_p10) {    var _p11 = _p10;return A2($Dict.member,k,_p11._0);});
+   var isEmpty = function (_p12) {    var _p13 = _p12;return $Dict.isEmpty(_p13._0);};
+   var Set_elm_builtin = function (a) {    return {ctor: "Set_elm_builtin",_0: a};};
+   var empty = Set_elm_builtin($Dict.empty);
+   var singleton = function (k) {    return Set_elm_builtin(A2($Dict.singleton,k,{ctor: "_Tuple0"}));};
+   var insert = F2(function (k,_p14) {    var _p15 = _p14;return Set_elm_builtin(A3($Dict.insert,k,{ctor: "_Tuple0"},_p15._0));});
+   var fromList = function (xs) {    return A3($List.foldl,insert,empty,xs);};
+   var map = F2(function (f,s) {    return fromList(A2($List.map,f,toList(s)));});
+   var remove = F2(function (k,_p16) {    var _p17 = _p16;return Set_elm_builtin(A2($Dict.remove,k,_p17._0));});
+   var union = F2(function (_p19,_p18) {    var _p20 = _p19;var _p21 = _p18;return Set_elm_builtin(A2($Dict.union,_p20._0,_p21._0));});
+   var intersect = F2(function (_p23,_p22) {    var _p24 = _p23;var _p25 = _p22;return Set_elm_builtin(A2($Dict.intersect,_p24._0,_p25._0));});
+   var diff = F2(function (_p27,_p26) {    var _p28 = _p27;var _p29 = _p26;return Set_elm_builtin(A2($Dict.diff,_p28._0,_p29._0));});
+   var filter = F2(function (p,_p30) {    var _p31 = _p30;return Set_elm_builtin(A2($Dict.filter,F2(function (k,_p32) {    return p(k);}),_p31._0));});
+   var partition = F2(function (p,_p33) {
+      var _p34 = _p33;
+      var _p35 = A2($Dict.partition,F2(function (k,_p36) {    return p(k);}),_p34._0);
+      var p1 = _p35._0;
+      var p2 = _p35._1;
+      return {ctor: "_Tuple2",_0: Set_elm_builtin(p1),_1: Set_elm_builtin(p2)};
+   });
+   return _elm.Set.values = {_op: _op
+                            ,empty: empty
+                            ,singleton: singleton
+                            ,insert: insert
+                            ,remove: remove
+                            ,isEmpty: isEmpty
+                            ,member: member
+                            ,size: size
+                            ,foldl: foldl
+                            ,foldr: foldr
+                            ,map: map
+                            ,filter: filter
+                            ,partition: partition
+                            ,union: union
+                            ,intersect: intersect
+                            ,diff: diff
+                            ,toList: toList
+                            ,fromList: fromList};
+};
 Elm.Native.Effects = {};
 Elm.Native.Effects.make = function(localRuntime) {
 
@@ -11139,14 +11189,15 @@ Elm.Models.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
+   $Set = Elm.Set.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
    var sortJobs = F2(function (criteria,model) {
-      var currentJobsList = function () {    var _p0 = model.jobs;if (_p0.ctor === "Nothing") {    return _U.list([]);} else {    return _p0._0;}}();
+      var currentJobsList = A2($Maybe.withDefault,_U.list([]),model.jobs);
       var sortedCurrentList = function () {
          var divorg = function (j) {    return A2($Basics._op["++"],j.organization,j.division);};
-         var _p1 = criteria;
-         switch (_p1.ctor)
+         var _p0 = criteria;
+         switch (_p0.ctor)
          {case "Title": return A2($List.sortBy,function (_) {    return _.title;},currentJobsList);
             case "Organization": return A2($List.sortBy,divorg,currentJobsList);
             case "Salary": return A2($List.sortBy,function (_) {    return _.salaryAmount;},currentJobsList);
@@ -11155,11 +11206,21 @@ Elm.Models.make = function (_elm) {
       return _U.eq(currentJobsList,sortedCurrentList) ? _U.update(model,{jobs: $Maybe.Just($List.reverse(sortedCurrentList))}) : _U.update(model,
       {jobs: $Maybe.Just(sortedCurrentList)});
    });
+   var makeFilter = function (m) {
+      var filList = A2($List.map,
+      function (s) {
+         return {ctor: "_Tuple2",_0: s,_1: true};
+      },
+      $Set.toList($Set.fromList(A2($List.map,function (j) {    return j.organization;},A2($Maybe.withDefault,_U.list([]),m.jobs)))));
+      var newFilter = {organizations: filList};
+      return _U.update(m,{jobFilter: newFilter});
+   };
    var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
-   var ShowJobs = function (a) {    return {ctor: "ShowJobs",_0: a};};
+   var ShowInitialJobs = function (a) {    return {ctor: "ShowInitialJobs",_0: a};};
    var GetJobs = {ctor: "GetJobs"};
    var NoOp = {ctor: "NoOp"};
-   var Model = function (a) {    return {jobs: a};};
+   var Filter = function (a) {    return {organizations: a};};
+   var Model = F2(function (a,b) {    return {jobs: a,jobFilter: b};});
    var ClosingDate = {ctor: "ClosingDate"};
    var Salary = {ctor: "Salary"};
    var Organization = {ctor: "Organization"};
@@ -11172,10 +11233,12 @@ Elm.Models.make = function (_elm) {
                                ,Salary: Salary
                                ,ClosingDate: ClosingDate
                                ,Model: Model
+                               ,Filter: Filter
                                ,NoOp: NoOp
                                ,GetJobs: GetJobs
-                               ,ShowJobs: ShowJobs
+                               ,ShowInitialJobs: ShowInitialJobs
                                ,SortJobs: SortJobs
+                               ,makeFilter: makeFilter
                                ,sortJobs: sortJobs};
 };
 Elm.Site = Elm.Site || {};
@@ -11197,26 +11260,25 @@ Elm.Site.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
    var aboutMessage = $Markdown.toHtml("\n\n# What is Gainful?\n\nJob searching is bad. Government websites are bad. This makes searching for government jobs extra bad.\n\nGainful makes government job postings simple and sane. Every day, it finds all the newest postings and present them in a table. You can filter and sort listings however you want, and save your results as a daily email newsletter.\n\nNo signups, no ads. It could not be easier.\n\n## What job sites does Gainful search?\n\nGlad you asked. Gainful searches the following sources:\n\n- City of Toronto\n- City of Victoria\n- City of Mississauga\n- Ontario Public Service in the GTA (TODO)\n- ...etc\n\n## Can I help?\n\n[twitter]: http://www.twitter.com/rgscherf\n\nYes! [Get in touch][twitter] or make a [pull request](http://www.github.com/rgscherf/gainful2).\n\n## Who wrote Gainful?\n\nGainful is written by Robert Scherf. He\'s looking for a job--[hire him][twitter]!\n\n");
-   var individualJob = function (bj) {
-      var _p0 = bj;
-      var shaded = _p0._0;
-      var job = _p0._1;
-      var rowClass = shaded ? "shadedRow" : "unshadedRow";
-      var orgAndDiv = !_U.eq(job.division,"") ? A2($Basics._op["++"],job.organization,A2($Basics._op["++"],", ",job.division)) : job.organization;
-      var postfix = job.salaryWaged ? " /hr" : " /yr";
-      var stringSalary = $Basics.toString(job.salaryWaged ? job.salaryAmount : $Basics.toFloat($Basics.round(job.salaryAmount)));
+   var individualJob = function (_p0) {
+      var _p1 = _p0;
+      var _p2 = _p1._1;
+      var rowClass = _p1._0 ? "shadedRow" : "unshadedRow";
+      var orgAndDiv = !_U.eq(_p2.division,"") ? A2($Basics._op["++"],_p2.organization,A2($Basics._op["++"],", ",_p2.division)) : _p2.organization;
+      var postfix = _p2.salaryWaged ? " /hr" : " /yr";
+      var stringSalary = $Basics.toString(_p2.salaryWaged ? _p2.salaryAmount : $Basics.toFloat($Basics.round(_p2.salaryAmount)));
       return _U.list([A2($Html.tr,
       _U.list([$Html$Attributes.$class(rowClass)]),
       _U.list([A2($Html.td,_U.list([]),_U.list([$Html.text(orgAndDiv)]))
-              ,A2($Html.td,_U.list([]),_U.list([A2($Html.a,_U.list([$Html$Attributes.href(job.urlDetail)]),_U.list([$Html.text(job.title)]))]))
+              ,A2($Html.td,_U.list([]),_U.list([A2($Html.a,_U.list([$Html$Attributes.href(_p2.urlDetail)]),_U.list([$Html.text(_p2.title)]))]))
               ,A2($Html.td,
               _U.list([$Html$Attributes.align("right")]),
-              _U.list([$Html.text(_U.eq(job.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
-              ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(job.dateClosing)]))]))]);
+              _U.list([$Html.text(_U.eq(_p2.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
+              ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(_p2.dateClosing)]))]))]);
    };
    var viewJobs = F2(function (address,maybeJobs) {
-      var jobs = function () {    var _p1 = maybeJobs;if (_p1.ctor === "Nothing") {    return _U.list([]);} else {    return _p1._0;}}();
-      var shaded = $List.concat(A2($List.repeat,$Basics.ceiling($Basics.toFloat($List.length(jobs)) / 2),_U.list([true,false])));
+      var jobs = function () {    var _p3 = maybeJobs;if (_p3.ctor === "Nothing") {    return _U.list([]);} else {    return _p3._0;}}();
+      var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
       return A2($Html.table,
@@ -11243,13 +11305,13 @@ Elm.Site.make = function (_elm) {
    _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("logo")]),_U.list([$Html.text("Gainful")]))
            ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.google.com")]),
-           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-question nav-icon i-about")]),_U.list([]))]))
+           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-info-circle nav-icon")]),_U.list([]))]))
            ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.github.com/rgscherf/gainful2")]),
-           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-github nav-icon i-github")]),_U.list([]))]))
+           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-github nav-icon")]),_U.list([]))]))
            ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.twitter.com/rgscherf")]),
-           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-twitter nav-icon i-twitter")]),_U.list([]))]))]));
+           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-twitter nav-icon")]),_U.list([]))]))]));
    var view = F2(function (address,model) {
       return A2($Html.div,
       _U.list([]),
@@ -11261,7 +11323,8 @@ Elm.Site.make = function (_elm) {
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))]));
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
+              ,A2($Html.div,_U.list([]),_U.list([$Html.text($Basics.toString(model.jobFilter))]))]));
    });
    return _elm.Site.values = {_op: _op,view: view,navBar: navBar,viewJobs: viewJobs,individualJob: individualJob,aboutMessage: aboutMessage};
 };
@@ -11297,23 +11360,25 @@ Elm.Main.make = function (_elm) {
    A2($Json$Decode._op[":="],"salary_amount",$Json$Decode.$float));
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
-   var getJobs = $Effects.task(A2($Task.map,$Models.ShowJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
+   var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
    var update = F2(function (action,model) {
       var _p0 = action;
       switch (_p0.ctor)
       {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p0._0,model),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
-         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobs: _p0._0}),_1: $Effects.none};}
+         default: var newModel = $Models.makeFilter(_U.update(model,{jobs: _p0._0}));
+           return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};}
    });
-   var init = {ctor: "_Tuple2",_0: {jobs: $Maybe.Nothing},_1: getJobs};
+   var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([])}};
+   var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
    var app = $StartApp.start({init: init,view: $Site.view,update: update,inputs: _U.list([])});
    var main = app.html;
    var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",app.tasks);
-   var title = Elm.Native.Port.make(_elm).outbound("title",function (v) {    return v;},"Gainful 2.0.3");
    return _elm.Main.values = {_op: _op
                              ,app: app
                              ,main: main
+                             ,startModel: startModel
                              ,init: init
                              ,update: update
                              ,jobsUrl: jobsUrl
