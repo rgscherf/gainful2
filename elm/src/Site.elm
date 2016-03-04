@@ -49,12 +49,31 @@ navBar =
 
 filterBox : Signal.Address Action -> Filter -> List Html
 filterBox a f =
-  let btn x = button
+  let
+      allFieldsVisible field =
+        List.all (\x -> x == True)
+          <| List.map snd
+          <| field f
+      anyFieldsVisible field =
+        List.any (\x -> x == True)
+          <| List.map snd
+          <| field f
+      btn x = button
                 [ onClick a (ToggleFilter Organization <| fst x)
                 , class (if snd x then "visible" else "notVisible")
                 ]
                 [ text <| fst x ]
-  in List.map btn <| List.sortBy fst f.organizations
+  in
+       [ button [ onClick a (ChangeAllFilter Organization True)
+                , class (if allFieldsVisible .organizations then "visible" else "notVisible")
+                ]
+                [text "Select All"]
+       , button [ onClick a (ChangeAllFilter Organization False)
+                , class (if anyFieldsVisible .organizations then "notVisible" else "visible")
+                ]
+                [text "Unselect All"]
+       ]
+       ++ (List.map btn <| List.sortBy fst f.organizations)
 
 -- Job table
 

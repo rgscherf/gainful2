@@ -35,6 +35,7 @@ Elm.Models.make = function (_elm) {
       var newFilter = {organizations: filList};
       return _U.update(m,{jobFilter: newFilter});
    };
+   var ChangeAllFilter = F2(function (a,b) {    return {ctor: "ChangeAllFilter",_0: a,_1: b};});
    var ToggleFilter = F2(function (a,b) {    return {ctor: "ToggleFilter",_0: a,_1: b};});
    var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
    var ShowInitialJobs = function (a) {    return {ctor: "ShowInitialJobs",_0: a};};
@@ -60,6 +61,7 @@ Elm.Models.make = function (_elm) {
                                ,ShowInitialJobs: ShowInitialJobs
                                ,SortJobs: SortJobs
                                ,ToggleFilter: ToggleFilter
+                               ,ChangeAllFilter: ChangeAllFilter
                                ,makeFilter: makeFilter
                                ,sortJobs: sortJobs};
 };

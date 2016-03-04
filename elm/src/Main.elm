@@ -54,7 +54,21 @@ update action model =
     ShowInitialJobs maybeJobs ->
       let newModel = makeFilter {model | jobs = maybeJobs}
       in (sortJobs Organization newModel, Effects.none)
-    ToggleFilter field identifier -> ({model | jobFilter = updateFilter field identifier model.jobFilter}, Effects.none )
+    ToggleFilter field identifier ->
+      ( { model | jobFilter = updateFilter field identifier model.jobFilter}, Effects.none )
+    ChangeAllFilter field state ->
+      ( { model | jobFilter = changeAllFilter field state model.jobFilter }, Effects.none )
+
+changeAllFilter : SortingCriteria -> Bool -> Filter -> Filter
+changeAllFilter field state fil =
+  let changeAllStates state ls =
+        List.map (\(st, bo) -> (st, state)) ls
+  in
+    case field of
+      Organization -> { fil | organizations = changeAllStates state fil.organizations }
+      Title -> fil
+      Salary -> fil
+      ClosingDate -> fil
 
 updateFilter : SortingCriteria -> String -> Filter -> Filter
 updateFilter field identifier fil =
@@ -65,12 +79,12 @@ updateFilter field identifier fil =
                   else (st, not bo))
                  ls
   in
-  case field of
-    Organization ->
-      { fil | organizations = toggleElement identifier fil.organizations }
-    Title -> fil
-    Salary -> fil
-    ClosingDate -> fil
+    case field of
+      Organization ->
+        { fil | organizations = toggleElement identifier fil.organizations }
+      Title -> fil
+      Salary -> fil
+      ClosingDate -> fil
 
 ----------
 -- EFFECTS

@@ -66,7 +66,18 @@ Elm.Site.make = function (_elm) {
                  ,$Html$Attributes.$class($Basics.snd(x) ? "visible" : "notVisible")]),
          _U.list([$Html.text($Basics.fst(x))]));
       };
-      return A2($List.map,btn,A2($List.sortBy,$Basics.fst,f.organizations));
+      var anyFieldsVisible = function (field) {    return A2($List.any,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
+      var allFieldsVisible = function (field) {    return A2($List.all,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
+      return A2($Basics._op["++"],
+      _U.list([A2($Html.button,
+              _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,true))
+                      ,$Html$Attributes.$class(allFieldsVisible(function (_) {    return _.organizations;}) ? "visible" : "notVisible")]),
+              _U.list([$Html.text("Select All")]))
+              ,A2($Html.button,
+              _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,false))
+                      ,$Html$Attributes.$class(anyFieldsVisible(function (_) {    return _.organizations;}) ? "notVisible" : "visible")]),
+              _U.list([$Html.text("Unselect All")]))]),
+      A2($List.map,btn,A2($List.sortBy,$Basics.fst,f.organizations)));
    });
    var navBar = A2($Html.nav,
    _U.list([]),

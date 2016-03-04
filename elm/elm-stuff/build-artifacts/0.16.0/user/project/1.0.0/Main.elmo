@@ -49,15 +49,27 @@ Elm.Main.make = function (_elm) {
          case "Salary": return fil;
          default: return fil;}
    });
+   var changeAllFilter = F3(function (field,state,fil) {
+      var changeAllStates = F2(function (state,ls) {
+         return A2($List.map,function (_p5) {    var _p6 = _p5;return {ctor: "_Tuple2",_0: _p6._0,_1: state};},ls);
+      });
+      var _p7 = field;
+      switch (_p7.ctor)
+      {case "Organization": return _U.update(fil,{organizations: A2(changeAllStates,state,fil.organizations)});
+         case "Title": return fil;
+         case "Salary": return fil;
+         default: return fil;}
+   });
    var update = F2(function (action,model) {
-      var _p5 = action;
-      switch (_p5.ctor)
-      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p5._0,model),_1: $Effects.none};
+      var _p8 = action;
+      switch (_p8.ctor)
+      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p8._0,model),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
-         case "ShowInitialJobs": var newModel = $Models.makeFilter(_U.update(model,{jobs: _p5._0}));
+         case "ShowInitialJobs": var newModel = $Models.makeFilter(_U.update(model,{jobs: _p8._0}));
            return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};
-         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(updateFilter,_p5._0,_p5._1,model.jobFilter)}),_1: $Effects.none};}
+         case "ToggleFilter": return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(updateFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};
+         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(changeAllFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};}
    });
    var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([])}};
    var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
@@ -70,6 +82,7 @@ Elm.Main.make = function (_elm) {
                              ,startModel: startModel
                              ,init: init
                              ,update: update
+                             ,changeAllFilter: changeAllFilter
                              ,updateFilter: updateFilter
                              ,jobsUrl: jobsUrl
                              ,getJobs: getJobs

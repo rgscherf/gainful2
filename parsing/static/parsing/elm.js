@@ -11191,7 +11191,21 @@ Elm.Helpers.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var elem = F2(function (e,ls) {    return A3($List.foldr,F2(function (x,acc) {    return acc ? true : _U.eq(e,x);}),false,ls);});
+   var elem = F2(function (e,ls) {
+      elem: while (true) {
+         var _p0 = ls;
+         if (_p0.ctor === "[]") {
+               return false;
+            } else {
+               if (_U.eq(_p0._0,e)) return true; else {
+                     var _v1 = e,_v2 = _p0._1;
+                     e = _v1;
+                     ls = _v2;
+                     continue elem;
+                  }
+            }
+      }
+   });
    return _elm.Helpers.values = {_op: _op,elem: elem};
 };
 Elm.Models = Elm.Models || {};
@@ -11231,6 +11245,7 @@ Elm.Models.make = function (_elm) {
       var newFilter = {organizations: filList};
       return _U.update(m,{jobFilter: newFilter});
    };
+   var ChangeAllFilter = F2(function (a,b) {    return {ctor: "ChangeAllFilter",_0: a,_1: b};});
    var ToggleFilter = F2(function (a,b) {    return {ctor: "ToggleFilter",_0: a,_1: b};});
    var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
    var ShowInitialJobs = function (a) {    return {ctor: "ShowInitialJobs",_0: a};};
@@ -11256,6 +11271,7 @@ Elm.Models.make = function (_elm) {
                                ,ShowInitialJobs: ShowInitialJobs
                                ,SortJobs: SortJobs
                                ,ToggleFilter: ToggleFilter
+                               ,ChangeAllFilter: ChangeAllFilter
                                ,makeFilter: makeFilter
                                ,sortJobs: sortJobs};
 };
@@ -11327,7 +11343,18 @@ Elm.Site.make = function (_elm) {
                  ,$Html$Attributes.$class($Basics.snd(x) ? "visible" : "notVisible")]),
          _U.list([$Html.text($Basics.fst(x))]));
       };
-      return A2($List.map,btn,A2($List.sortBy,$Basics.fst,f.organizations));
+      var anyFieldsVisible = function (field) {    return A2($List.any,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
+      var allFieldsVisible = function (field) {    return A2($List.all,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
+      return A2($Basics._op["++"],
+      _U.list([A2($Html.button,
+              _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,true))
+                      ,$Html$Attributes.$class(allFieldsVisible(function (_) {    return _.organizations;}) ? "visible" : "notVisible")]),
+              _U.list([$Html.text("Select All")]))
+              ,A2($Html.button,
+              _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,false))
+                      ,$Html$Attributes.$class(anyFieldsVisible(function (_) {    return _.organizations;}) ? "notVisible" : "visible")]),
+              _U.list([$Html.text("Unselect All")]))]),
+      A2($List.map,btn,A2($List.sortBy,$Basics.fst,f.organizations)));
    });
    var navBar = A2($Html.nav,
    _U.list([]),
@@ -11414,15 +11441,27 @@ Elm.Main.make = function (_elm) {
          case "Salary": return fil;
          default: return fil;}
    });
+   var changeAllFilter = F3(function (field,state,fil) {
+      var changeAllStates = F2(function (state,ls) {
+         return A2($List.map,function (_p5) {    var _p6 = _p5;return {ctor: "_Tuple2",_0: _p6._0,_1: state};},ls);
+      });
+      var _p7 = field;
+      switch (_p7.ctor)
+      {case "Organization": return _U.update(fil,{organizations: A2(changeAllStates,state,fil.organizations)});
+         case "Title": return fil;
+         case "Salary": return fil;
+         default: return fil;}
+   });
    var update = F2(function (action,model) {
-      var _p5 = action;
-      switch (_p5.ctor)
-      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p5._0,model),_1: $Effects.none};
+      var _p8 = action;
+      switch (_p8.ctor)
+      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p8._0,model),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
-         case "ShowInitialJobs": var newModel = $Models.makeFilter(_U.update(model,{jobs: _p5._0}));
+         case "ShowInitialJobs": var newModel = $Models.makeFilter(_U.update(model,{jobs: _p8._0}));
            return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};
-         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(updateFilter,_p5._0,_p5._1,model.jobFilter)}),_1: $Effects.none};}
+         case "ToggleFilter": return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(updateFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};
+         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(changeAllFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};}
    });
    var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([])}};
    var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
@@ -11435,6 +11474,7 @@ Elm.Main.make = function (_elm) {
                              ,startModel: startModel
                              ,init: init
                              ,update: update
+                             ,changeAllFilter: changeAllFilter
                              ,updateFilter: updateFilter
                              ,jobsUrl: jobsUrl
                              ,getJobs: getJobs

@@ -34,6 +34,7 @@ type Action
  | ShowInitialJobs (Maybe Jobs)
  | SortJobs SortingCriteria
  | ToggleFilter SortingCriteria String
+ | ChangeAllFilter SortingCriteria Bool
 
 
 makeFilter : Model -> Model

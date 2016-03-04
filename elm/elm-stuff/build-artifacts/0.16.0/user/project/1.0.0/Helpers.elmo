@@ -11,6 +11,20 @@ Elm.Helpers.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var elem = F2(function (e,ls) {    return A3($List.foldr,F2(function (x,acc) {    return acc ? true : _U.eq(e,x);}),false,ls);});
+   var elem = F2(function (e,ls) {
+      elem: while (true) {
+         var _p0 = ls;
+         if (_p0.ctor === "[]") {
+               return false;
+            } else {
+               if (_U.eq(_p0._0,e)) return true; else {
+                     var _v1 = e,_v2 = _p0._1;
+                     e = _v1;
+                     ls = _v2;
+                     continue elem;
+                  }
+            }
+      }
+   });
    return _elm.Helpers.values = {_op: _op,elem: elem};
 };
