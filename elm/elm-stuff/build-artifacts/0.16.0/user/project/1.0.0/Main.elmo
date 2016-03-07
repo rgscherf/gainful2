@@ -19,7 +19,7 @@ Elm.Main.make = function (_elm) {
    $StartApp = Elm.StartApp.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
-   var decodeJob = A8($Json$Decode.object7,
+   var decodeJob = A9($Json$Decode.object8,
    $Models.Job,
    A2($Json$Decode._op[":="],"title",$Json$Decode.string),
    A2($Json$Decode._op[":="],"organization",$Json$Decode.string),
@@ -27,7 +27,8 @@ Elm.Main.make = function (_elm) {
    A2($Json$Decode._op[":="],"url_detail",$Json$Decode.string),
    A2($Json$Decode._op[":="],"date_closing",$Json$Decode.string),
    A2($Json$Decode._op[":="],"salary_waged",$Json$Decode.bool),
-   A2($Json$Decode._op[":="],"salary_amount",$Json$Decode.$float));
+   A2($Json$Decode._op[":="],"salary_amount",$Json$Decode.$float),
+   A2($Json$Decode._op[":="],"region",$Json$Decode.string));
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
    var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
@@ -47,7 +48,8 @@ Elm.Main.make = function (_elm) {
       {case "Organization": return _U.update(fil,{organizations: A2(toggleElement,identifier,fil.organizations)});
          case "Title": return fil;
          case "Salary": return fil;
-         default: return fil;}
+         case "ClosingDate": return fil;
+         default: return _U.update(fil,{regions: A2(toggleElement,identifier,fil.regions)});}
    });
    var changeAllFilter = F3(function (field,state,fil) {
       var changeAllStates = F2(function (state,ls) {
@@ -58,7 +60,8 @@ Elm.Main.make = function (_elm) {
       {case "Organization": return _U.update(fil,{organizations: A2(changeAllStates,state,fil.organizations)});
          case "Title": return fil;
          case "Salary": return fil;
-         default: return fil;}
+         case "ClosingDate": return fil;
+         default: return _U.update(fil,{regions: A2(changeAllStates,state,fil.regions)});}
    });
    var update = F2(function (action,model) {
       var _p8 = action;
@@ -71,7 +74,7 @@ Elm.Main.make = function (_elm) {
          case "ToggleFilter": return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(updateFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};
          default: return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(changeAllFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};}
    });
-   var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([])}};
+   var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([]),regions: _U.list([])}};
    var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
    var app = $StartApp.start({init: init,view: $Site.view,update: update,inputs: _U.list([])});
    var main = app.html;

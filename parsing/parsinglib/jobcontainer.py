@@ -10,6 +10,7 @@ class JobContainer():
         self.url_detail = None
         self.salary_waged = None
         self.salary_amount = None
+        self.region = None
 
     def is_unique(self):
         """ Checks whether job (denoted by URL) already exists in DB.
@@ -33,6 +34,7 @@ class JobContainer():
                 , self.url_detail
                 , self.salary_waged
                 , self.salary_amount
+                , self.region
                 ]
 
     def validate(self):
@@ -56,6 +58,7 @@ class JobContainer():
                     , url_detail=self.url_detail
                     , salary_waged=self.salary_waged
                     , salary_amount=self.salary_amount
+                    , region=self.region
                     )
             j.save()
 

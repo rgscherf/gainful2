@@ -72,10 +72,10 @@ th {
 
 .notVisible {
   color: white;
-  background-color: black;
+  background-color: #8874EC;
 }
 
 .visible {
   color: black;
-  background-color: white;
+  background-color: yellow;
 }

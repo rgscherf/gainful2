@@ -79,6 +79,7 @@ class Mississauga(Organization):
             job.url_detail = cols[1].a["href"]
             if not job.is_unique():
                 continue
+            job.region = "GTA"
             job.organization = "Mississauga"
             job.title = cols[1].a.text.strip()
             date_posted_text = cols[3].find_all("span")[1].text.strip()
@@ -135,7 +136,10 @@ class Mississauga(Organization):
             result = result[1:]
             if "," in result:
                 result = "".join(filter(lambda x: x != ",", result))
-            result = float(result)
+            try:
+                result = float(result)
+            except ValueError:
+                result = 0
         else:
             result = 0
         return result
@@ -162,7 +166,8 @@ class Toronto(Organization):
          """
         r = requests.get(job.url_detail)
         soup = BeautifulSoup(r.text, "html5lib")
-        job.organization = "Toronto"
+        job.region = "GTA"
+        job.organization = "City of Toronto"
         job.title = soup.find("div", class_="tableheadertext_job_description").text.strip()
         rows = soup.find("table", class_="tablebackground_job_description").find_all("tr")
 
@@ -228,6 +233,7 @@ class Victoria(Organization):
             # information for these fields can be taken from stripped cols
             cols = [elem.text.strip() for elem in cols]
             job.title = cols[0]
+            job.region = "Vancouver Island"
             job.organization = "City of Victoria"
             job.division = cols[2]
             job.date_closing = d.parse(cols[4]).date()

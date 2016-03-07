@@ -10,6 +10,7 @@ class Job(models.Model):
     url_detail = models.CharField(max_length=500)
     salary_waged = models.BooleanField()
     salary_amount = models.FloatField()
+    region = models.CharField(max_length=100)
 
     def __str__(self):
         return "{} at {}".format(self.title, self.organization)

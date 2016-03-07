@@ -7,12 +7,13 @@ Elm.Repl.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
-   $Markdown = Elm.Markdown.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
    var tsol = {ctor: "_Tuple0"};
-   var deltron3030 = $Markdown.toHtml("hello works");
-   return _elm.Repl.values = {_op: _op,deltron3030: deltron3030,tsol: tsol};
+   var trd = function (_p0) {    var _p1 = _p0;return _p1._2;};
+   var mfst = function (_p2) {    var _p3 = _p2;return _p3._0;};
+   var deltron3030 = mfst({ctor: "_Tuple3",_0: 1,_1: 2,_2: 3});
+   return _elm.Repl.values = {_op: _op,deltron3030: deltron3030,mfst: mfst,trd: trd,tsol: tsol};
 };

@@ -28,8 +28,11 @@ main = app.html
 startModel : Model
 startModel =
   { jobs = Nothing
-  , jobFilter = { organizations = [] }
+  , jobFilter = { organizations = []
+                , regions = []
+                }
   }
+
 
 init : (Model, Effects Action)
 init = (startModel, getJobs)
@@ -59,7 +62,7 @@ update action model =
     ChangeAllFilter field state ->
       ( { model | jobFilter = changeAllFilter field state model.jobFilter }, Effects.none )
 
-changeAllFilter : SortingCriteria -> Bool -> Filter -> Filter
+changeAllFilter : JobField -> Bool -> Filter -> Filter
 changeAllFilter field state fil =
   let changeAllStates state ls =
         List.map (\(st, bo) -> (st, state)) ls
@@ -69,8 +72,9 @@ changeAllFilter field state fil =
       Title -> fil
       Salary -> fil
       ClosingDate -> fil
+      Region -> { fil | regions = changeAllStates state fil.regions }
 
-updateFilter : SortingCriteria -> String -> Filter -> Filter
+updateFilter : JobField -> String -> Filter -> Filter
 updateFilter field identifier fil =
   let toggleElement i ls =
         List.map (\(st, bo) ->
@@ -85,6 +89,8 @@ updateFilter field identifier fil =
       Title -> fil
       Salary -> fil
       ClosingDate -> fil
+      Region ->
+        { fil | regions = toggleElement identifier fil.regions }
 
 ----------
 -- EFFECTS
@@ -103,7 +109,7 @@ getJobs =
 
 decodeJob : Decoder Job
 decodeJob =
-  D.object7 Job
+  D.object8 Job
     ("title" := D.string)
     ("organization" := D.string)
     ("division" := D.string)
@@ -111,6 +117,7 @@ decodeJob =
     ("date_closing" := D.string)
     ("salary_waged" := D.bool)
     ("salary_amount" := D.float)
+    ("region" := D.string)
 
 decodeJobList : Decoder Jobs
 decodeJobList = D.list decodeJob

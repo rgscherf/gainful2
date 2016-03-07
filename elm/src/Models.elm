@@ -10,13 +10,15 @@ type alias Job =
   , dateClosing : String
   , salaryWaged : Bool
   , salaryAmount : Float
+  , region : String
   }
 
-type SortingCriteria
+type JobField
   = Title
   | Organization
   | Salary
   | ClosingDate
+  | Region
 
 type alias Jobs = List Job
 
@@ -26,28 +28,32 @@ type alias Model =
   }
 
 type alias Filter =
-  { organizations : List (String, Bool) }
+  { organizations : List (String, Bool)
+  , regions : List (String, Bool)
+  }
 
 type Action
  = NoOp
  | GetJobs
  | ShowInitialJobs (Maybe Jobs)
- | SortJobs SortingCriteria
- | ToggleFilter SortingCriteria String
- | ChangeAllFilter SortingCriteria Bool
+ | SortJobs JobField
+ | ToggleFilter JobField String
+ | ChangeAllFilter JobField Bool
 
 
 makeFilter : Model -> Model
 makeFilter m =
-  let newFilter = {organizations = filList}
-      filList = List.map (\s -> (s, True))
-                <| Set.toList
-                <| Set.fromList
-                <| List.map (\j -> j.organization)
-                <| Maybe.withDefault [] m.jobs
+  let newFilter = { organizations = filList .organization
+                  , regions = filList .region
+                  }
+      filList field = List.map (\s -> (s, True))
+                      <| Set.toList
+                      <| Set.fromList
+                      <| List.map (\j -> field j)
+                      <| Maybe.withDefault [] m.jobs
   in {m | jobFilter = newFilter}
 
-sortJobs : SortingCriteria -> Model -> Model
+sortJobs : JobField -> Model -> Model
 sortJobs criteria model =
   let currentJobsList = Maybe.withDefault [] model.jobs
       sortedCurrentList =
@@ -58,6 +64,7 @@ sortJobs criteria model =
           Organization -> List.sortBy divorg currentJobsList
           Salary -> List.sortBy .salaryAmount currentJobsList
           ClosingDate -> List.sortBy .dateClosing currentJobsList
+          _ -> currentJobsList
   in
     if currentJobsList == sortedCurrentList
       then { model | jobs = Just (List.reverse sortedCurrentList) }

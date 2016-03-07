@@ -50,6 +50,7 @@ navBar =
 filterBox : Signal.Address Action -> Filter -> List Html
 filterBox a f =
   let
+      activeRegions = List.filter (\x -> snd x) f.regions
       btn field x = button
         [ onClick a (ToggleFilter field <| fst x)
         , class (if snd x then "visible" else "notVisible")
@@ -57,18 +58,22 @@ filterBox a f =
         [ text <| fst x ]
   in
     [ div [] <|
-        [span [] [text "first"]]
-        ++ btnsAllNone a Organization f
-        ++ (List.map (btn Organization) <| List.sortBy fst f.organizations)
+        [span [] [text "Filter Regions: "]]
+        ++ btnsAllNone a Region f
+        ++ (List.map (btn Region) <| List.sortBy fst f.regions)
     , div [] <|
-        [span [] [text "second"]]
+        [span [] [text "Filter Organizations: "]]
         ++ btnsAllNone a Organization f
-        ++ (List.map (btn Organization) <| List.sortBy fst f.organizations)
     ]
 
-btnsAllNone : Signal.Address Action -> SortingCriteria -> Filter -> List Html
+btnsAllNone : Signal.Address Action -> JobField -> Filter -> List Html
 btnsAllNone a field f =
   let
+    access =
+      case field of
+        Organization -> .organizations
+        Region -> .regions
+        _ -> .organizations
     allFieldsVisible field =
       List.all (\x -> x == True)
         <| List.map snd
@@ -78,12 +83,12 @@ btnsAllNone a field f =
         <| List.map snd
         <| field f
   in
-    [ button [ onClick a (ChangeAllFilter Organization True)
-            , class (if allFieldsVisible .organizations then "visible" else "notVisible")
+    [ button [ onClick a (ChangeAllFilter field True)
+            , class (if allFieldsVisible access then "visible" else "notVisible")
             ]
             [text "Select All"]
-    , button [ onClick a (ChangeAllFilter Organization False)
-            , class (if anyFieldsVisible .organizations then "notVisible" else "visible")
+    , button [ onClick a (ChangeAllFilter field False)
+            , class (if anyFieldsVisible access then "notVisible" else "visible")
             ]
             [text "Unselect All"]
     ]
@@ -94,14 +99,10 @@ btnsAllNone a field f =
 viewJobs : Signal.Address Action -> Filter -> Maybe Jobs -> Html
 viewJobs address fil maybeJobs =
   let
-      activeOrgs = List.filterMap
-                    (\x ->
-                      if snd x
-                      then Just <| fst x
-                      else Nothing)
-                    fil.organizations
-      jobs = List.filter (\j -> elem j.organization activeOrgs)
-              <| Maybe.withDefault [] maybeJobs
+      jobs =
+        -- filterJobListOnField Organization fil
+        -- <| filterJobListOnField Region fil
+        Maybe.withDefault [] maybeJobs
       shaded = List.concat <| List.repeat (List.length jobs) [True, False]
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass
@@ -118,6 +119,23 @@ viewJobs address fil maybeJobs =
         ]
         ++ tbody
       )
+
+filterJobListOnField : JobField -> Filter -> Jobs -> Jobs
+filterJobListOnField field fil jobs =
+  let
+    activeEntries field = List.filterMap (\x -> if snd x then Just <| fst x else Nothing) <| field fil
+    sing =
+      case field of
+        Organization -> .organization
+        Region -> .region
+        _ -> .organization
+    plural =
+      case field of
+        Organization -> .organizations
+        Region -> .regions
+        _ -> .organizations
+  in List.filter (\j -> elem (sing j) <| activeEntries plural) jobs
+
 
 individualJob : (Bool, Job) -> List Html
 individualJob (shaded, job) =

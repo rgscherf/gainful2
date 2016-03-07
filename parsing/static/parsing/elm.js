@@ -11231,18 +11231,21 @@ Elm.Models.make = function (_elm) {
          {case "Title": return A2($List.sortBy,function (_) {    return _.title;},currentJobsList);
             case "Organization": return A2($List.sortBy,divorg,currentJobsList);
             case "Salary": return A2($List.sortBy,function (_) {    return _.salaryAmount;},currentJobsList);
-            default: return A2($List.sortBy,function (_) {    return _.dateClosing;},currentJobsList);}
+            case "ClosingDate": return A2($List.sortBy,function (_) {    return _.dateClosing;},currentJobsList);
+            default: return currentJobsList;}
       }();
       return _U.eq(currentJobsList,sortedCurrentList) ? _U.update(model,{jobs: $Maybe.Just($List.reverse(sortedCurrentList))}) : _U.update(model,
       {jobs: $Maybe.Just(sortedCurrentList)});
    });
    var makeFilter = function (m) {
-      var filList = A2($List.map,
-      function (s) {
-         return {ctor: "_Tuple2",_0: s,_1: true};
-      },
-      $Set.toList($Set.fromList(A2($List.map,function (j) {    return j.organization;},A2($Maybe.withDefault,_U.list([]),m.jobs)))));
-      var newFilter = {organizations: filList};
+      var filList = function (field) {
+         return A2($List.map,
+         function (s) {
+            return {ctor: "_Tuple2",_0: s,_1: true};
+         },
+         $Set.toList($Set.fromList(A2($List.map,function (j) {    return field(j);},A2($Maybe.withDefault,_U.list([]),m.jobs)))));
+      };
+      var newFilter = {organizations: filList(function (_) {    return _.organization;}),regions: filList(function (_) {    return _.region;})};
       return _U.update(m,{jobFilter: newFilter});
    };
    var ChangeAllFilter = F2(function (a,b) {    return {ctor: "ChangeAllFilter",_0: a,_1: b};});
@@ -11251,19 +11254,23 @@ Elm.Models.make = function (_elm) {
    var ShowInitialJobs = function (a) {    return {ctor: "ShowInitialJobs",_0: a};};
    var GetJobs = {ctor: "GetJobs"};
    var NoOp = {ctor: "NoOp"};
-   var Filter = function (a) {    return {organizations: a};};
+   var Filter = F2(function (a,b) {    return {organizations: a,regions: b};});
    var Model = F2(function (a,b) {    return {jobs: a,jobFilter: b};});
+   var Region = {ctor: "Region"};
    var ClosingDate = {ctor: "ClosingDate"};
    var Salary = {ctor: "Salary"};
    var Organization = {ctor: "Organization"};
    var Title = {ctor: "Title"};
-   var Job = F7(function (a,b,c,d,e,f,g) {    return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g};});
+   var Job = F8(function (a,b,c,d,e,f,g,h) {
+      return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g,region: h};
+   });
    return _elm.Models.values = {_op: _op
                                ,Job: Job
                                ,Title: Title
                                ,Organization: Organization
                                ,Salary: Salary
                                ,ClosingDate: ClosingDate
+                               ,Region: Region
                                ,Model: Model
                                ,Filter: Filter
                                ,NoOp: NoOp
@@ -11311,9 +11318,40 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text(_U.eq(_p2.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
               ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(_p2.dateClosing)]))]))]);
    };
+   var filterJobListOnField = F3(function (field,fil,jobs) {
+      var plural = function () {
+         var _p3 = field;
+         switch (_p3.ctor)
+         {case "Organization": return function (_) {
+                 return _.organizations;
+              };
+            case "Region": return function (_) {
+                 return _.regions;
+              };
+            default: return function (_) {
+                 return _.organizations;
+              };}
+      }();
+      var sing = function () {
+         var _p4 = field;
+         switch (_p4.ctor)
+         {case "Organization": return function (_) {
+                 return _.organization;
+              };
+            case "Region": return function (_) {
+                 return _.region;
+              };
+            default: return function (_) {
+                 return _.organization;
+              };}
+      }();
+      var activeEntries = function (field) {
+         return A2($List.filterMap,function (x) {    return $Basics.snd(x) ? $Maybe.Just($Basics.fst(x)) : $Maybe.Nothing;},field(fil));
+      };
+      return A2($List.filter,function (j) {    return A2($Helpers.elem,sing(j),activeEntries(plural));},jobs);
+   });
    var viewJobs = F3(function (address,fil,maybeJobs) {
-      var activeOrgs = A2($List.filterMap,function (x) {    return $Basics.snd(x) ? $Maybe.Just($Basics.fst(x)) : $Maybe.Nothing;},fil.organizations);
-      var jobs = A2($List.filter,function (j) {    return A2($Helpers.elem,j.organization,activeOrgs);},A2($Maybe.withDefault,_U.list([]),maybeJobs));
+      var jobs = A2($Maybe.withDefault,_U.list([]),maybeJobs);
       var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
@@ -11339,13 +11377,26 @@ Elm.Site.make = function (_elm) {
    var btnsAllNone = F3(function (a,field,f) {
       var anyFieldsVisible = function (field) {    return A2($List.any,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
       var allFieldsVisible = function (field) {    return A2($List.all,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
+      var access = function () {
+         var _p5 = field;
+         switch (_p5.ctor)
+         {case "Organization": return function (_) {
+                 return _.organizations;
+              };
+            case "Region": return function (_) {
+                 return _.regions;
+              };
+            default: return function (_) {
+                 return _.organizations;
+              };}
+      }();
       return _U.list([A2($Html.button,
-                     _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,true))
-                             ,$Html$Attributes.$class(allFieldsVisible(function (_) {    return _.organizations;}) ? "visible" : "notVisible")]),
+                     _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,field,true))
+                             ,$Html$Attributes.$class(allFieldsVisible(access) ? "visible" : "notVisible")]),
                      _U.list([$Html.text("Select All")]))
                      ,A2($Html.button,
-                     _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,$Models.Organization,false))
-                             ,$Html$Attributes.$class(anyFieldsVisible(function (_) {    return _.organizations;}) ? "notVisible" : "visible")]),
+                     _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,field,false))
+                             ,$Html$Attributes.$class(anyFieldsVisible(access) ? "notVisible" : "visible")]),
                      _U.list([$Html.text("Unselect All")]))]);
    });
    var filterBox = F2(function (a,f) {
@@ -11354,20 +11405,17 @@ Elm.Site.make = function (_elm) {
          _U.list([A2($Html$Events.onClick,a,A2($Models.ToggleFilter,field,$Basics.fst(x))),$Html$Attributes.$class($Basics.snd(x) ? "visible" : "notVisible")]),
          _U.list([$Html.text($Basics.fst(x))]));
       });
+      var activeRegions = A2($List.filter,function (x) {    return $Basics.snd(x);},f.regions);
       return _U.list([A2($Html.div,
                      _U.list([]),
                      A2($Basics._op["++"],
-                     _U.list([A2($Html.span,_U.list([]),_U.list([$Html.text("first")]))]),
-                     A2($Basics._op["++"],
-                     A3(btnsAllNone,a,$Models.Organization,f),
-                     A2($List.map,btn($Models.Organization),A2($List.sortBy,$Basics.fst,f.organizations)))))
+                     _U.list([A2($Html.span,_U.list([]),_U.list([$Html.text("Filter Regions: ")]))]),
+                     A2($Basics._op["++"],A3(btnsAllNone,a,$Models.Region,f),A2($List.map,btn($Models.Region),A2($List.sortBy,$Basics.fst,f.regions)))))
                      ,A2($Html.div,
                      _U.list([]),
                      A2($Basics._op["++"],
-                     _U.list([A2($Html.span,_U.list([]),_U.list([$Html.text("second")]))]),
-                     A2($Basics._op["++"],
-                     A3(btnsAllNone,a,$Models.Organization,f),
-                     A2($List.map,btn($Models.Organization),A2($List.sortBy,$Basics.fst,f.organizations)))))]);
+                     _U.list([A2($Html.span,_U.list([]),_U.list([$Html.text("Filter Organizations: ")]))]),
+                     A3(btnsAllNone,a,$Models.Organization,f)))]);
    });
    var navBar = A2($Html.nav,
    _U.list([]),
@@ -11401,6 +11449,7 @@ Elm.Site.make = function (_elm) {
                              ,filterBox: filterBox
                              ,btnsAllNone: btnsAllNone
                              ,viewJobs: viewJobs
+                             ,filterJobListOnField: filterJobListOnField
                              ,individualJob: individualJob
                              ,aboutMessage: aboutMessage};
 };
@@ -11425,7 +11474,7 @@ Elm.Main.make = function (_elm) {
    $StartApp = Elm.StartApp.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
-   var decodeJob = A8($Json$Decode.object7,
+   var decodeJob = A9($Json$Decode.object8,
    $Models.Job,
    A2($Json$Decode._op[":="],"title",$Json$Decode.string),
    A2($Json$Decode._op[":="],"organization",$Json$Decode.string),
@@ -11433,7 +11482,8 @@ Elm.Main.make = function (_elm) {
    A2($Json$Decode._op[":="],"url_detail",$Json$Decode.string),
    A2($Json$Decode._op[":="],"date_closing",$Json$Decode.string),
    A2($Json$Decode._op[":="],"salary_waged",$Json$Decode.bool),
-   A2($Json$Decode._op[":="],"salary_amount",$Json$Decode.$float));
+   A2($Json$Decode._op[":="],"salary_amount",$Json$Decode.$float),
+   A2($Json$Decode._op[":="],"region",$Json$Decode.string));
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
    var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
@@ -11453,7 +11503,8 @@ Elm.Main.make = function (_elm) {
       {case "Organization": return _U.update(fil,{organizations: A2(toggleElement,identifier,fil.organizations)});
          case "Title": return fil;
          case "Salary": return fil;
-         default: return fil;}
+         case "ClosingDate": return fil;
+         default: return _U.update(fil,{regions: A2(toggleElement,identifier,fil.regions)});}
    });
    var changeAllFilter = F3(function (field,state,fil) {
       var changeAllStates = F2(function (state,ls) {
@@ -11464,7 +11515,8 @@ Elm.Main.make = function (_elm) {
       {case "Organization": return _U.update(fil,{organizations: A2(changeAllStates,state,fil.organizations)});
          case "Title": return fil;
          case "Salary": return fil;
-         default: return fil;}
+         case "ClosingDate": return fil;
+         default: return _U.update(fil,{regions: A2(changeAllStates,state,fil.regions)});}
    });
    var update = F2(function (action,model) {
       var _p8 = action;
@@ -11477,7 +11529,7 @@ Elm.Main.make = function (_elm) {
          case "ToggleFilter": return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(updateFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};
          default: return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(changeAllFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};}
    });
-   var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([])}};
+   var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([]),regions: _U.list([])}};
    var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
    var app = $StartApp.start({init: init,view: $Site.view,update: update,inputs: _U.list([])});
    var main = app.html;
