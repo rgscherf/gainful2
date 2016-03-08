@@ -4,9 +4,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
+import Dict
 
 import Models exposing (..)
-import Helpers exposing (elem)
 
 ------------
 -- MAIN VIEW
@@ -22,7 +22,7 @@ view address model =
     , div [class "spacer"] []
     , div [class "filterbox"] <| filterBox address model.jobFilter
     , div [class "spacer"] []
-    , viewJobs address model.jobFilter model.jobs
+    , viewJobs address model.jobs
     , div [class "spacer"] []
     , div [class "spacer"] []
     , div [class "spacer"] []
@@ -50,58 +50,56 @@ navBar =
 filterBox : Signal.Address Action -> Filter -> List Html
 filterBox a f =
   let
-      activeRegions = List.filter (\x -> snd x) f.regions
-      btn field x = button
-        [ onClick a (ToggleFilter field <| fst x)
-        , class (if snd x then "visible" else "notVisible")
-        ]
-        [ text <| fst x ]
+      activeRegions = Dict.keys <| Dict.filter (\k v -> fst v == True) f
+      -- btn field x = button
+      --   [ onClick a (ToggleFilter field <| fst x)
+      --   , class (if snd x then "visible" else "notVisible")
+      --   ]
+      --   [ text <| fst x ]
   in
-    [ div [] <|
-        [span [] [text "Filter Regions: "]]
-        ++ btnsAllNone a Region f
-        ++ (List.map (btn Region) <| List.sortBy fst f.regions)
-    , div [] <|
-        [span [] [text "Filter Organizations: "]]
-        ++ btnsAllNone a Organization f
-    ]
+    List.map (\x -> span [] [text x]) activeRegions
+        -- [ div [] <|
+    --     [span [] [text "Filter Regions: "]]
+    --     ++ btnsAllNone a Region f
+    --     ++ (List.map (btn Region) <| List.sortBy fst f.regions)
+    -- , div [] <|
+    --     [span [] [text "Filter Organizations: "]]
+    --     ++ btnsAllNone a Organization f
 
-btnsAllNone : Signal.Address Action -> JobField -> Filter -> List Html
-btnsAllNone a field f =
-  let
-    access =
-      case field of
-        Organization -> .organizations
-        Region -> .regions
-        _ -> .organizations
-    allFieldsVisible field =
-      List.all (\x -> x == True)
-        <| List.map snd
-        <| field f
-    anyFieldsVisible field =
-      List.any (\x -> x == True)
-        <| List.map snd
-        <| field f
-  in
-    [ button [ onClick a (ChangeAllFilter field True)
-            , class (if allFieldsVisible access then "visible" else "notVisible")
-            ]
-            [text "Select All"]
-    , button [ onClick a (ChangeAllFilter field False)
-            , class (if anyFieldsVisible access then "notVisible" else "visible")
-            ]
-            [text "Unselect All"]
-    ]
-
+-- btnsAllNone : Signal.Address Action -> JobField -> Filter -> List Html
+-- btnsAllNone a field f =
+--   let
+--     access =
+--       case field of
+--         Organization -> .organizations
+--         Region -> .regions
+--         _ -> .organizations
+--     allFieldsVisible field =
+--       List.all (\x -> x == True)
+--         <| List.map snd
+--         <| field f
+--     anyFieldsVisible field =
+--       List.any (\x -> x == True)
+--         <| List.map snd
+--         <| field f
+--   in
+--     [ button [ onClick a (ChangeAllFilter field True)
+--             , class (if allFieldsVisible access then "visible" else "notVisible")
+--             ]
+--             [text "Select All"]
+--     , button [ onClick a (ChangeAllFilter field False)
+--             , class (if anyFieldsVisible access then "notVisible" else "visible")
+--             ]
+--             [text "Unselect All"]
+--     ]
+--
 
 -- Job table
 
-viewJobs : Signal.Address Action -> Filter -> Maybe Jobs -> Html
-viewJobs address fil maybeJobs =
+viewJobs : Signal.Address Action -> Maybe Jobs -> Html
+viewJobs address maybeJobs =
   let
       jobs =
-        -- filterJobListOnField Organization fil
-        -- <| filterJobListOnField Region fil
         Maybe.withDefault [] maybeJobs
       shaded = List.concat <| List.repeat (List.length jobs) [True, False]
       jobAndClass = List.map2 (,) shaded jobs
@@ -120,22 +118,22 @@ viewJobs address fil maybeJobs =
         ++ tbody
       )
 
-filterJobListOnField : JobField -> Filter -> Jobs -> Jobs
-filterJobListOnField field fil jobs =
-  let
-    activeEntries field = List.filterMap (\x -> if snd x then Just <| fst x else Nothing) <| field fil
-    sing =
-      case field of
-        Organization -> .organization
-        Region -> .region
-        _ -> .organization
-    plural =
-      case field of
-        Organization -> .organizations
-        Region -> .regions
-        _ -> .organizations
-  in List.filter (\j -> elem (sing j) <| activeEntries plural) jobs
-
+-- filterJobListOnField : JobField -> Filter -> Jobs -> Jobs
+-- filterJobListOnField field fil jobs =
+--   let
+--     activeEntries field = List.filterMap (\x -> if snd x then Just <| fst x else Nothing) <| field fil
+--     sing =
+--       case field of
+--         Organization -> .organization
+--         Region -> .region
+--         _ -> .organization
+--     plural =
+--       case field of
+--         Organization -> .organizations
+--         Region -> .regions
+--         _ -> .organizations
+--   in List.filter (\j -> List.member (sing j) <| activeEntries plural) jobs
+--
 
 individualJob : (Bool, Job) -> List Html
 individualJob (shaded, job) =

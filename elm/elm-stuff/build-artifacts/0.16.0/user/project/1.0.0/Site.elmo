@@ -6,7 +6,7 @@ Elm.Site.make = function (_elm) {
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
-   $Helpers = Elm.Helpers.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
@@ -34,39 +34,7 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text(_U.eq(_p2.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
               ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(_p2.dateClosing)]))]))]);
    };
-   var filterJobListOnField = F3(function (field,fil,jobs) {
-      var plural = function () {
-         var _p3 = field;
-         switch (_p3.ctor)
-         {case "Organization": return function (_) {
-                 return _.organizations;
-              };
-            case "Region": return function (_) {
-                 return _.regions;
-              };
-            default: return function (_) {
-                 return _.organizations;
-              };}
-      }();
-      var sing = function () {
-         var _p4 = field;
-         switch (_p4.ctor)
-         {case "Organization": return function (_) {
-                 return _.organization;
-              };
-            case "Region": return function (_) {
-                 return _.region;
-              };
-            default: return function (_) {
-                 return _.organization;
-              };}
-      }();
-      var activeEntries = function (field) {
-         return A2($List.filterMap,function (x) {    return $Basics.snd(x) ? $Maybe.Just($Basics.fst(x)) : $Maybe.Nothing;},field(fil));
-      };
-      return A2($List.filter,function (j) {    return A2($Helpers.elem,sing(j),activeEntries(plural));},jobs);
-   });
-   var viewJobs = F3(function (address,fil,maybeJobs) {
+   var viewJobs = F2(function (address,maybeJobs) {
       var jobs = A2($Maybe.withDefault,_U.list([]),maybeJobs);
       var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
@@ -90,48 +58,9 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text("Closing Date")]))]))]),
       tbody));
    });
-   var btnsAllNone = F3(function (a,field,f) {
-      var anyFieldsVisible = function (field) {    return A2($List.any,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
-      var allFieldsVisible = function (field) {    return A2($List.all,function (x) {    return _U.eq(x,true);},A2($List.map,$Basics.snd,field(f)));};
-      var access = function () {
-         var _p5 = field;
-         switch (_p5.ctor)
-         {case "Organization": return function (_) {
-                 return _.organizations;
-              };
-            case "Region": return function (_) {
-                 return _.regions;
-              };
-            default: return function (_) {
-                 return _.organizations;
-              };}
-      }();
-      return _U.list([A2($Html.button,
-                     _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,field,true))
-                             ,$Html$Attributes.$class(allFieldsVisible(access) ? "visible" : "notVisible")]),
-                     _U.list([$Html.text("Select All")]))
-                     ,A2($Html.button,
-                     _U.list([A2($Html$Events.onClick,a,A2($Models.ChangeAllFilter,field,false))
-                             ,$Html$Attributes.$class(anyFieldsVisible(access) ? "notVisible" : "visible")]),
-                     _U.list([$Html.text("Unselect All")]))]);
-   });
    var filterBox = F2(function (a,f) {
-      var btn = F2(function (field,x) {
-         return A2($Html.button,
-         _U.list([A2($Html$Events.onClick,a,A2($Models.ToggleFilter,field,$Basics.fst(x))),$Html$Attributes.$class($Basics.snd(x) ? "visible" : "notVisible")]),
-         _U.list([$Html.text($Basics.fst(x))]));
-      });
-      var activeRegions = A2($List.filter,function (x) {    return $Basics.snd(x);},f.regions);
-      return _U.list([A2($Html.div,
-                     _U.list([]),
-                     A2($Basics._op["++"],
-                     _U.list([A2($Html.span,_U.list([]),_U.list([$Html.text("Filter Regions: ")]))]),
-                     A2($Basics._op["++"],A3(btnsAllNone,a,$Models.Region,f),A2($List.map,btn($Models.Region),A2($List.sortBy,$Basics.fst,f.regions)))))
-                     ,A2($Html.div,
-                     _U.list([]),
-                     A2($Basics._op["++"],
-                     _U.list([A2($Html.span,_U.list([]),_U.list([$Html.text("Filter Organizations: ")]))]),
-                     A3(btnsAllNone,a,$Models.Organization,f)))]);
+      var activeRegions = $Dict.keys(A2($Dict.filter,F2(function (k,v) {    return _U.eq($Basics.fst(v),true);}),f));
+      return A2($List.map,function (x) {    return A2($Html.span,_U.list([]),_U.list([$Html.text(x)]));},activeRegions);
    });
    var navBar = A2($Html.nav,
    _U.list([]),
@@ -152,7 +81,7 @@ Elm.Site.make = function (_elm) {
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("filterbox")]),A2(filterBox,address,model.jobFilter))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A3(viewJobs,address,model.jobFilter,model.jobs)
+              ,A2(viewJobs,address,model.jobs)
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
@@ -163,9 +92,7 @@ Elm.Site.make = function (_elm) {
                              ,view: view
                              ,navBar: navBar
                              ,filterBox: filterBox
-                             ,btnsAllNone: btnsAllNone
                              ,viewJobs: viewJobs
-                             ,filterJobListOnField: filterJobListOnField
                              ,individualJob: individualJob
                              ,aboutMessage: aboutMessage};
 };

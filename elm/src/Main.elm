@@ -6,6 +6,7 @@ import StartApp
 import Effects exposing (Effects)
 import Task
 import Json.Decode as D exposing ((:=), Decoder)
+import Dict
 
 import Models exposing (..)
 import Site exposing (..)
@@ -28,9 +29,7 @@ main = app.html
 startModel : Model
 startModel =
   { jobs = Nothing
-  , jobFilter = { organizations = []
-                , regions = []
-                }
+  , jobFilter = Dict.empty
   }
 
 
@@ -55,43 +54,43 @@ update action model =
     GetJobs ->
       ({model | jobs = Nothing}, getJobs)
     ShowInitialJobs maybeJobs ->
-      let newModel = makeFilter {model | jobs = maybeJobs}
+      let newModel = makeFilter model.jobFilter {model | jobs = maybeJobs}
       in (sortJobs Organization newModel, Effects.none)
     ToggleFilter field identifier ->
-      ( { model | jobFilter = updateFilter field identifier model.jobFilter}, Effects.none )
+      ( model, Effects.none )
     ChangeAllFilter field state ->
-      ( { model | jobFilter = changeAllFilter field state model.jobFilter }, Effects.none )
+      ( model, Effects.none )
 
-changeAllFilter : JobField -> Bool -> Filter -> Filter
-changeAllFilter field state fil =
-  let changeAllStates state ls =
-        List.map (\(st, bo) -> (st, state)) ls
-  in
-    case field of
-      Organization -> { fil | organizations = changeAllStates state fil.organizations }
-      Title -> fil
-      Salary -> fil
-      ClosingDate -> fil
-      Region -> { fil | regions = changeAllStates state fil.regions }
-
-updateFilter : JobField -> String -> Filter -> Filter
-updateFilter field identifier fil =
-  let toggleElement i ls =
-        List.map (\(st, bo) ->
-                  if st /= identifier
-                  then (st, bo)
-                  else (st, not bo))
-                 ls
-  in
-    case field of
-      Organization ->
-        { fil | organizations = toggleElement identifier fil.organizations }
-      Title -> fil
-      Salary -> fil
-      ClosingDate -> fil
-      Region ->
-        { fil | regions = toggleElement identifier fil.regions }
-
+-- changeAllFilter : JobField -> Bool -> Filter -> Filter
+-- changeAllFilter field state fil =
+--   let changeAllStates state ls =
+--         List.map (\(st, bo) -> (st, state)) ls
+--   in
+--     case field of
+--       Organization -> { fil | organizations = changeAllStates state fil.organizations }
+--       Title -> fil
+--       Salary -> fil
+--       ClosingDate -> fil
+--       Region -> { fil | regions = changeAllStates state fil.regions }
+--
+-- updateFilter : JobField -> String -> Filter -> Filter
+-- updateFilter field identifier fil =
+--   let toggleElement i ls =
+--         List.map (\(st, bo) ->
+--                   if st /= identifier
+--                   then (st, bo)
+--                   else (st, not bo))
+--                  ls
+--   in
+--     case field of
+--       Organization ->
+--         { fil | organizations = toggleElement identifier fil.organizations }
+--       Title -> fil
+--       Salary -> fil
+--       ClosingDate -> fil
+--       Region ->
+--         { fil | regions = toggleElement identifier fil.regions }
+--
 ----------
 -- EFFECTS
 ----------

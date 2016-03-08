@@ -6,6 +6,7 @@ Elm.Main.make = function (_elm) {
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
    $Effects = Elm.Effects.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Http = Elm.Http.make(_elm),
@@ -32,49 +33,18 @@ Elm.Main.make = function (_elm) {
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
    var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
-   var updateFilter = F3(function (field,identifier,fil) {
-      var toggleElement = F2(function (i,ls) {
-         return A2($List.map,
-         function (_p0) {
-            var _p1 = _p0;
-            var _p3 = _p1._0;
-            var _p2 = _p1._1;
-            return !_U.eq(_p3,identifier) ? {ctor: "_Tuple2",_0: _p3,_1: _p2} : {ctor: "_Tuple2",_0: _p3,_1: $Basics.not(_p2)};
-         },
-         ls);
-      });
-      var _p4 = field;
-      switch (_p4.ctor)
-      {case "Organization": return _U.update(fil,{organizations: A2(toggleElement,identifier,fil.organizations)});
-         case "Title": return fil;
-         case "Salary": return fil;
-         case "ClosingDate": return fil;
-         default: return _U.update(fil,{regions: A2(toggleElement,identifier,fil.regions)});}
-   });
-   var changeAllFilter = F3(function (field,state,fil) {
-      var changeAllStates = F2(function (state,ls) {
-         return A2($List.map,function (_p5) {    var _p6 = _p5;return {ctor: "_Tuple2",_0: _p6._0,_1: state};},ls);
-      });
-      var _p7 = field;
-      switch (_p7.ctor)
-      {case "Organization": return _U.update(fil,{organizations: A2(changeAllStates,state,fil.organizations)});
-         case "Title": return fil;
-         case "Salary": return fil;
-         case "ClosingDate": return fil;
-         default: return _U.update(fil,{regions: A2(changeAllStates,state,fil.regions)});}
-   });
    var update = F2(function (action,model) {
-      var _p8 = action;
-      switch (_p8.ctor)
-      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p8._0,model),_1: $Effects.none};
+      var _p0 = action;
+      switch (_p0.ctor)
+      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p0._0,model),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
-         case "ShowInitialJobs": var newModel = $Models.makeFilter(_U.update(model,{jobs: _p8._0}));
+         case "ShowInitialJobs": var newModel = A2($Models.makeFilter,model.jobFilter,_U.update(model,{jobs: _p0._0}));
            return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};
-         case "ToggleFilter": return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(updateFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};
-         default: return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(changeAllFilter,_p8._0,_p8._1,model.jobFilter)}),_1: $Effects.none};}
+         case "ToggleFilter": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
+         default: return {ctor: "_Tuple2",_0: model,_1: $Effects.none};}
    });
-   var startModel = {jobs: $Maybe.Nothing,jobFilter: {organizations: _U.list([]),regions: _U.list([])}};
+   var startModel = {jobs: $Maybe.Nothing,jobFilter: $Dict.empty};
    var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
    var app = $StartApp.start({init: init,view: $Site.view,update: update,inputs: _U.list([])});
    var main = app.html;
@@ -85,8 +55,6 @@ Elm.Main.make = function (_elm) {
                              ,startModel: startModel
                              ,init: init
                              ,update: update
-                             ,changeAllFilter: changeAllFilter
-                             ,updateFilter: updateFilter
                              ,jobsUrl: jobsUrl
                              ,getJobs: getJobs
                              ,decodeJob: decodeJob
