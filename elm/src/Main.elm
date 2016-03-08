@@ -61,6 +61,10 @@ update action model =
     ChangeAllFilter field state ->
       ( model, Effects.none )
 
+
+
+
+
 -- changeAllFilter : JobField -> Bool -> Filter -> Filter
 -- changeAllFilter field state fil =
 --   let changeAllStates state ls =

@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
 import Dict
+import Debug
 
 import Models exposing (..)
 
@@ -50,14 +51,30 @@ navBar =
 filterBox : Signal.Address Action -> Filter -> List Html
 filterBox a f =
   let
-      activeRegions = Dict.keys <| Dict.filter (\k v -> fst v == True) f
+      activeRegions f = Dict.filter (\k v -> fst v == True) f
+                        |> Dict.toList
+                        |> List.map (\(x, (y, d)) -> d)
+                        |> List.concatMap Dict.toList
+      btnRegion f x =
+        button
+        [ onClick a (ToggleFilter Region <| x)
+        , class (if (fst <| Maybe.withDefault (False, Dict.empty) <| Dict.get x f) then "visible" else "notVisible")
+        ]
+        [ text x ]
+      btnOrg (name, vis) =
+        button
+        [class (if vis then "visible" else "notVisible")]
+        [text name]
+
       -- btn field x = button
       --   [ onClick a (ToggleFilter field <| fst x)
       --   , class (if snd x then "visible" else "notVisible")
       --   ]
       --   [ text <| fst x ]
   in
-    List.map (\x -> span [] [text x]) activeRegions
+    (List.map (btnRegion f) <| Dict.keys f)
+    ++
+    (List.map btnOrg <| activeRegions f)
         -- [ div [] <|
     --     [span [] [text "Filter Regions: "]]
     --     ++ btnsAllNone a Region f

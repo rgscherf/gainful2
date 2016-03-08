@@ -11274,8 +11274,28 @@ Elm.Site.make = function (_elm) {
       tbody));
    });
    var filterBox = F2(function (a,f) {
-      var activeRegions = $Dict.keys(A2($Dict.filter,F2(function (k,v) {    return _U.eq($Basics.fst(v),true);}),f));
-      return A2($List.map,function (x) {    return A2($Html.span,_U.list([]),_U.list([$Html.text(x)]));},activeRegions);
+      var btnOrg = function (_p3) {
+         var _p4 = _p3;
+         return A2($Html.button,_U.list([$Html$Attributes.$class(_p4._1 ? "visible" : "notVisible")]),_U.list([$Html.text(_p4._0)]));
+      };
+      var btnRegion = F2(function (f,x) {
+         return A2($Html.button,
+         _U.list([$Html$Attributes.$class($Basics.fst(A2($Maybe.withDefault,
+         {ctor: "_Tuple2",_0: false,_1: $Dict.empty},
+         A2($Dict.get,x,f))) ? "visible" : "notVisible")]),
+         _U.list([$Html.text(x)]));
+      });
+      var activeRegions = function (f) {
+         return A2($List.concatMap,
+         $Dict.toList,
+         A2($List.map,
+         function (_p5) {
+            var _p6 = _p5;
+            return _p6._1._1;
+         },
+         $Dict.toList(A2($Dict.filter,F2(function (k,v) {    return _U.eq($Basics.fst(v),true);}),f))));
+      };
+      return A2($Basics._op["++"],A2($List.map,btnRegion(f),$Dict.keys(f)),A2($List.map,btnOrg,activeRegions(f)));
    });
    var navBar = A2($Html.nav,
    _U.list([]),
