@@ -59,29 +59,21 @@ Elm.Site.make = function (_elm) {
       tbody));
    });
    var filterBox = F2(function (a,f) {
-      var btnOrg = function (_p3) {
-         var _p4 = _p3;
-         return A2($Html.button,_U.list([$Html$Attributes.$class(_p4._1 ? "visible" : "notVisible")]),_U.list([$Html.text(_p4._0)]));
-      };
-      var btnRegion = F2(function (f,x) {
+      var accessor = F2(function (field,fil) {
+         return _U.eq(field,$Models.Organization) ? function (_) {
+            return _.visibleOrgs;
+         }(fil) : function (_) {
+            return _.visibleRegions;
+         }(fil);
+      });
+      var btn = F3(function (fil,field,x) {
          return A2($Html.button,
-         _U.list([A2($Html$Events.onClick,a,A2($Models.ToggleFilter,$Models.Region,x))
-                 ,$Html$Attributes.$class($Basics.fst(A2($Maybe.withDefault,
-                 {ctor: "_Tuple2",_0: false,_1: $Dict.empty},
-                 A2($Dict.get,x,f))) ? "visible" : "notVisible")]),
+         _U.list([$Html$Attributes.$class(A2($List.member,x,A2(accessor,field,fil)) ? "visible" : "notVisible")
+                 ,A2($Html$Events.onClick,a,A2($Models.ToggleFilter,field,x))]),
          _U.list([$Html.text(x)]));
       });
-      var activeRegions = function (f) {
-         return A2($List.concatMap,
-         $Dict.toList,
-         A2($List.map,
-         function (_p5) {
-            var _p6 = _p5;
-            return _p6._1._1;
-         },
-         $Dict.toList(A2($Dict.filter,F2(function (k,v) {    return _U.eq($Basics.fst(v),true);}),f))));
-      };
-      return A2($Basics._op["++"],A2($List.map,btnRegion(f),$Dict.keys(f)),A2($List.map,btnOrg,activeRegions(f)));
+      return _U.list([A2($Html.div,_U.list([]),A2($List.map,A2(btn,f,$Models.Region),$Dict.keys(f.allRegions)))
+                     ,A2($Html.div,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$Dict.keys(f.allOrgs)))]);
    });
    var navBar = A2($Html.nav,
    _U.list([]),
@@ -99,6 +91,7 @@ Elm.Site.make = function (_elm) {
       return A2($Html.div,
       _U.list([]),
       _U.list([navBar
+              ,A2($Html.div,_U.list([]),_U.list([$Html.text($Basics.toString(model.jobFilter))]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("filterbox")]),A2(filterBox,address,model.jobFilter))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
@@ -106,8 +99,7 @@ Elm.Site.make = function (_elm) {
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([]),_U.list([$Html.text($Basics.toString(model.jobFilter))]))]));
+              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))]));
    });
    return _elm.Site.values = {_op: _op
                              ,view: view

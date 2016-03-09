@@ -2,6 +2,14 @@ module Models where
 
 import Dict exposing (Dict)
 
+type Action
+ = NoOp
+ | GetJobs
+ | ShowInitialJobs (Maybe Jobs)
+ | SortJobs JobField
+ | ToggleFilter JobField String
+ | ChangeAllFilter JobField Bool
+
 type alias Job =
   { title : String
   , organization : String
@@ -27,39 +35,12 @@ type alias Model =
   , jobFilter : Filter
   }
 
--- a region's name is associated with a "visible" flag
--- and a dict of (name, visible) for its associated organizations
-type alias Filter = Dict String (Bool, Dict String Bool)
-
-type Action
- = NoOp
- | GetJobs
- | ShowInitialJobs (Maybe Jobs)
- | SortJobs JobField
- | ToggleFilter JobField String
- | ChangeAllFilter JobField Bool
-
-makeFilter : Filter -> Model -> Model
-makeFilter f m =
-  {m | jobFilter = List.foldr makeFilter' f <| Maybe.withDefault [] m.jobs }
-
-makeFilter' : Job -> Filter -> Filter
-makeFilter' j f=
-  case Dict.get j.region f of
-    Nothing ->
-      Dict.insert j.region (True, Dict.singleton j.organization True) f
-    Just (b, os) ->
-      case Dict.get j.organization os of
-        Nothing -> Dict.update j.region (updateRegion j.organization) f
-        Just o -> f
-
-updateRegion : String -> Maybe (Bool, Dict String Bool) -> Maybe (Bool, Dict String Bool)
-updateRegion str mv =
-  case mv of
-    Just (b, d) ->
-      Just (b, Dict.insert str True d)
-    Nothing ->
-      Nothing
+type alias Filter =
+  { allRegions : Dict String (List String)
+  , allOrgs : Dict String String
+  , visibleRegions : List String
+  , visibleOrgs : List String
+  }
 
 
 sortJobs : JobField -> Model -> Model

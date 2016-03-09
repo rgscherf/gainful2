@@ -5,7 +5,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
 import Dict
-import Debug
 
 import Models exposing (..)
 
@@ -20,6 +19,7 @@ view address model =
     []
     [
       navBar
+    , div [] [text <| toString model.jobFilter]
     , div [class "spacer"] []
     , div [class "filterbox"] <| filterBox address model.jobFilter
     , div [class "spacer"] []
@@ -28,7 +28,6 @@ view address model =
     , div [class "spacer"] []
     , div [class "spacer"] []
     , div [class "spacer"] []
-    , div [] [text <| toString model.jobFilter]
     -- , aboutMessage
     ]
 
@@ -51,37 +50,23 @@ navBar =
 filterBox : Signal.Address Action -> Filter -> List Html
 filterBox a f =
   let
-      activeRegions f = Dict.filter (\k v -> fst v == True) f
-                        |> Dict.toList
-                        |> List.map (\(x, (y, d)) -> d)
-                        |> List.concatMap Dict.toList
-      btnRegion f x =
-        button
-        [ onClick a (ToggleFilter Region <| x)
-        , class (if (fst <| Maybe.withDefault (False, Dict.empty) <| Dict.get x f) then "visible" else "notVisible")
-        ]
+    accessor field fil =
+      if field == Organization
+      then .visibleOrgs fil
+      else .visibleRegions fil
+    btn fil field x =
+      button
+        [ class <| if List.member x <| accessor field fil
+                   then "visible"
+                   else "notVisible"
+        , onClick a (ToggleFilter  field x) ]
         [ text x ]
-      btnOrg (name, vis) =
-        button
-        [class (if vis then "visible" else "notVisible")]
-        [text name]
-
-      -- btn field x = button
-      --   [ onClick a (ToggleFilter field <| fst x)
-      --   , class (if snd x then "visible" else "notVisible")
-      --   ]
-      --   [ text <| fst x ]
   in
-    (List.map (btnRegion f) <| Dict.keys f)
-    ++
-    (List.map btnOrg <| activeRegions f)
-        -- [ div [] <|
-    --     [span [] [text "Filter Regions: "]]
-    --     ++ btnsAllNone a Region f
-    --     ++ (List.map (btn Region) <| List.sortBy fst f.regions)
-    -- , div [] <|
-    --     [span [] [text "Filter Organizations: "]]
-    --     ++ btnsAllNone a Organization f
+    [ div [] ( List.map (btn f Region) <| Dict.keys f.allRegions )
+    , div [] ( List.map (btn f Organization) <| Dict.keys f.allOrgs )
+    ]
+
+
 
 -- btnsAllNone : Signal.Address Action -> JobField -> Filter -> List Html
 -- btnsAllNone a field f =

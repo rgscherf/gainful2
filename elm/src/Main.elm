@@ -26,12 +26,19 @@ app = StartApp.start
 main : Signal Html
 main = app.html
 
+startFilter : Filter
+startFilter =
+  { allRegions = Dict.empty
+  , allOrgs = Dict.empty
+  , visibleRegions = []
+  , visibleOrgs = []
+  }
+
 startModel : Model
 startModel =
   { jobs = Nothing
-  , jobFilter = Dict.empty
+  , jobFilter = startFilter
   }
-
 
 init : (Model, Effects Action)
 init = (startModel, getJobs)
@@ -57,44 +64,86 @@ update action model =
       let newModel = makeFilter model.jobFilter {model | jobs = maybeJobs}
       in (sortJobs Organization newModel, Effects.none)
     ToggleFilter field identifier ->
-      ( model, Effects.none )
+      ( { model | jobFilter = toggleFilter field identifier model.jobFilter }
+      , Effects.none
+      )
     ChangeAllFilter field state ->
       ( model, Effects.none )
 
 
+todo: togglefilter
 
+toggleFilter : JobField -> String -> Filter -> Filter
+toggleFilter field identifier fil =
+  case field of
+    Region ->
+      if List.member identifier fil.visibleRegions
+      then -- region is currently visible
+           -- make region not visible
+           -- make all orgs connected to this region not visible
+           fil
+      else -- region is currently NOT visible
+           -- make region active
+           -- make all orgs connected to that region active }
+           fil
+    Organization ->
+      if List.member identifier fil.visibleOrgs
+      then -- orgianization is currently visible
+           -- make org not visible
+           -- if no orgs in this org's region are visible, ensure it's not visible.
+           fil
+      else -- organization is currently NOT visible
+           -- make org visible
+           -- if all orgs in this org's region are visible, ensure it's visible.
+           fil
+    _ -> fil -- we only filter on Region and Organization
 
-
--- changeAllFilter : JobField -> Bool -> Filter -> Filter
--- changeAllFilter field state fil =
---   let changeAllStates state ls =
---         List.map (\(st, bo) -> (st, state)) ls
+-- toggleFilter : JobField -> String -> Filter -> Filter
+-- toggleFilter field identifier fil =
+--   let
+--     visible x ls =
+--       if List.member x ls
+--       then List.filter (\a -> a /= x) ls
+--       else x :: ls
 --   in
 --     case field of
---       Organization -> { fil | organizations = changeAllStates state fil.organizations }
---       Title -> fil
---       Salary -> fil
---       ClosingDate -> fil
---       Region -> { fil | regions = changeAllStates state fil.regions }
---
--- updateFilter : JobField -> String -> Filter -> Filter
--- updateFilter field identifier fil =
---   let toggleElement i ls =
---         List.map (\(st, bo) ->
---                   if st /= identifier
---                   then (st, bo)
---                   else (st, not bo))
---                  ls
---   in
---     case field of
---       Organization ->
---         { fil | organizations = toggleElement identifier fil.organizations }
---       Title -> fil
---       Salary -> fil
---       ClosingDate -> fil
 --       Region ->
---         { fil | regions = toggleElement identifier fil.regions }
+--         { fil | visibleRegions = visible identifier fil.visibleRegions }
+--           |> negateOrgs
+--       Organization ->
+--         { fil | visibleOrgs = visible identifier fil.visibleOrgs }
+--       _ -> fil
 --
+-- negateOrgs : Filter -> Filter
+-- negateOrgs f =
+--     { f | visibleOrgs = List.filter (\x -> List.member (Dict.get x f.allOrgs |> Maybe.withDefault "" ) f.visibleRegions) f.visibleOrgs }
+
+makeFilter : Filter -> Model -> Model
+makeFilter f m =
+  {m | jobFilter = makeAllEntitiesVisible <| List.foldr makeFilter' f <| Maybe.withDefault [] m.jobs }
+
+makeAllEntitiesVisible : Filter -> Filter
+makeAllEntitiesVisible f =
+  { f | visibleOrgs = Dict.keys f.allOrgs
+      , visibleRegions = Dict.keys f.allRegions
+  }
+
+makeFilter' : Job -> Filter -> Filter
+makeFilter' j f =
+  case Dict.get j.region f.allRegions of
+    Nothing ->
+      { f | allRegions = Dict.insert j.region [j.organization] f.allRegions
+          , allOrgs = Dict.insert j.organization j.region f.allOrgs
+      }
+    Just os ->
+      case List.member j.organization os of
+        True ->
+          f
+        False ->
+          { f | allOrgs = Dict.insert j.organization j.region f.allOrgs
+              , allRegions = Dict.update j.region (\xs -> Just <| j.organization :: (Maybe.withDefault [] xs)) f.allRegions
+          }
+
 ----------
 -- EFFECTS
 ----------

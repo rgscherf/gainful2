@@ -33,18 +33,51 @@ Elm.Main.make = function (_elm) {
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
    var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
+   var makeFilter$ = F2(function (j,f) {
+      var _p0 = A2($Dict.get,j.region,f.allRegions);
+      if (_p0.ctor === "Nothing") {
+            return _U.update(f,
+            {allRegions: A3($Dict.insert,j.region,_U.list([j.organization]),f.allRegions),allOrgs: A3($Dict.insert,j.organization,j.region,f.allOrgs)});
+         } else {
+            var _p1 = A2($List.member,j.organization,_p0._0);
+            if (_p1 === true) {
+                  return f;
+               } else {
+                  return _U.update(f,
+                  {allOrgs: A3($Dict.insert,j.organization,j.region,f.allOrgs)
+                  ,allRegions: A3($Dict.update,
+                  j.region,
+                  function (xs) {
+                     return $Maybe.Just(A2($List._op["::"],j.organization,A2($Maybe.withDefault,_U.list([]),xs)));
+                  },
+                  f.allRegions)});
+               }
+         }
+   });
+   var makeAllEntitiesVisible = function (f) {    return _U.update(f,{visibleOrgs: $Dict.keys(f.allOrgs),visibleRegions: $Dict.keys(f.allRegions)});};
+   var makeFilter = F2(function (f,m) {
+      return _U.update(m,{jobFilter: makeAllEntitiesVisible(A3($List.foldr,makeFilter$,f,A2($Maybe.withDefault,_U.list([]),m.jobs)))});
+   });
+   var toggleFilter = F3(function (field,identifier,fil) {
+      var _p2 = field;
+      switch (_p2.ctor)
+      {case "Region": return A2($List.member,identifier,fil.visibleRegions) ? fil : fil;
+         case "Organization": return A2($List.member,identifier,fil.visibleOrgs) ? fil : fil;
+         default: return fil;}
+   });
    var update = F2(function (action,model) {
-      var _p0 = action;
-      switch (_p0.ctor)
-      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p0._0,model),_1: $Effects.none};
+      var _p3 = action;
+      switch (_p3.ctor)
+      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p3._0,model),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
-         case "ShowInitialJobs": var newModel = A2($Models.makeFilter,model.jobFilter,_U.update(model,{jobs: _p0._0}));
+         case "ShowInitialJobs": var newModel = A2(makeFilter,model.jobFilter,_U.update(model,{jobs: _p3._0}));
            return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};
-         case "ToggleFilter": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
+         case "ToggleFilter": return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(toggleFilter,_p3._0,_p3._1,model.jobFilter)}),_1: $Effects.none};
          default: return {ctor: "_Tuple2",_0: model,_1: $Effects.none};}
    });
-   var startModel = {jobs: $Maybe.Nothing,jobFilter: $Dict.empty};
+   var startFilter = {allRegions: $Dict.empty,allOrgs: $Dict.empty,visibleRegions: _U.list([]),visibleOrgs: _U.list([])};
+   var startModel = {jobs: $Maybe.Nothing,jobFilter: startFilter};
    var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
    var app = $StartApp.start({init: init,view: $Site.view,update: update,inputs: _U.list([])});
    var main = app.html;
@@ -52,9 +85,14 @@ Elm.Main.make = function (_elm) {
    return _elm.Main.values = {_op: _op
                              ,app: app
                              ,main: main
+                             ,startFilter: startFilter
                              ,startModel: startModel
                              ,init: init
                              ,update: update
+                             ,toggleFilter: toggleFilter
+                             ,makeFilter: makeFilter
+                             ,makeAllEntitiesVisible: makeAllEntitiesVisible
+                             ,makeFilter$: makeFilter$
                              ,jobsUrl: jobsUrl
                              ,getJobs: getJobs
                              ,decodeJob: decodeJob
