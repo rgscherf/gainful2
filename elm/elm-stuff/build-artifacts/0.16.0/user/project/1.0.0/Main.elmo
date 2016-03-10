@@ -15,6 +15,7 @@ Elm.Main.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
+   $Set = Elm.Set.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Site = Elm.Site.make(_elm),
    $StartApp = Elm.StartApp.make(_elm),
@@ -61,7 +62,16 @@ Elm.Main.make = function (_elm) {
    var toggleFilter = F3(function (field,identifier,fil) {
       var _p2 = field;
       switch (_p2.ctor)
-      {case "Region": return A2($List.member,identifier,fil.visibleRegions) ? fil : fil;
+      {case "Region": return A2($List.member,identifier,fil.visibleRegions) ? _U.update(fil,
+           {visibleRegions: A2($List.filter,function (x) {    return !_U.eq(x,identifier);},fil.visibleRegions)
+           ,visibleOrgs: A2($List.filter,
+           function (x) {
+              return $Basics.not(A2($List.member,x,A2($Maybe.withDefault,_U.list([]),A2($Dict.get,identifier,fil.allRegions))));
+           },
+           fil.visibleOrgs)}) : _U.update(fil,
+           {visibleOrgs: $Set.toList($Set.fromList(A2($Basics._op["++"],
+           A2($Maybe.withDefault,_U.list([]),A2($Dict.get,identifier,fil.allRegions)),
+           fil.visibleOrgs)))});
          case "Organization": return A2($List.member,identifier,fil.visibleOrgs) ? fil : fil;
          default: return fil;}
    });

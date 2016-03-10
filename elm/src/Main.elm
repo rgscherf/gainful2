@@ -7,6 +7,7 @@ import Effects exposing (Effects)
 import Task
 import Json.Decode as D exposing ((:=), Decoder)
 import Dict
+import Set
 
 import Models exposing (..)
 import Site exposing (..)
@@ -71,21 +72,30 @@ update action model =
       ( model, Effects.none )
 
 
-todo: togglefilter
-
 toggleFilter : JobField -> String -> Filter -> Filter
 toggleFilter field identifier fil =
   case field of
     Region ->
       if List.member identifier fil.visibleRegions
-      then -- region is currently visible
-           -- make region not visible
-           -- make all orgs connected to this region not visible
-           fil
-      else -- region is currently NOT visible
-           -- make region active
-           -- make all orgs connected to that region active }
-           fil
+      then
+        { fil
+          -- make region not visible
+          | visibleRegions = List.filter (\x -> x /= identifier) fil.visibleRegions
+          -- make all orgs connected to this region not visible
+          , visibleOrgs = List.filter
+                            (\x -> not <| List.member x
+                              (Maybe.withDefault [] <| Dict.get identifier fil.allRegions))
+                          fil.visibleOrgs
+        }
+      else
+        { fil
+          -- make region active
+          | visibleRegions = identifier :: fil.visibleRegions
+          -- make all orgs connected to this region active
+          , visibleOrgs = Set.toList
+                            <| Set.fromList
+                            <| (Maybe.withDefault [] <| Dict.get identifier fil.allRegions) ++ fil.visibleOrgs
+        }
     Organization ->
       if List.member identifier fil.visibleOrgs
       then -- orgianization is currently visible
@@ -97,6 +107,10 @@ toggleFilter field identifier fil =
            -- if all orgs in this org's region are visible, ensure it's visible.
            fil
     _ -> fil -- we only filter on Region and Organization
+
+
+
+
 
 -- toggleFilter : JobField -> String -> Filter -> Filter
 -- toggleFilter field identifier fil =
