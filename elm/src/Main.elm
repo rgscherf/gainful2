@@ -76,6 +76,7 @@ toggleFilter : JobField -> String -> Filter -> Filter
 toggleFilter field identifier fil =
   case field of
     Region ->
+      -- is region currently visible?
       if List.member identifier fil.visibleRegions
       then
         { fil
@@ -97,15 +98,49 @@ toggleFilter field identifier fil =
                             <| (Maybe.withDefault [] <| Dict.get identifier fil.allRegions) ++ fil.visibleOrgs
         }
     Organization ->
+      -- is org currently visible?
       if List.member identifier fil.visibleOrgs
-      then -- orgianization is currently visible
-           -- make org not visible
-           -- if no orgs in this org's region are visible, ensure it's not visible.
-           fil
-      else -- organization is currently NOT visible
+      then
+        todo: how to compose record updates so:
+        todo: when clicking an org and no orgs in the region are still active,
+        todo: the region turns not visible.
+        let newFil =
+          { fil
+            -- make org not visible
+            | visibleOrgs = List.filter (\x -> x /= identifier) fil.visibleOrgs
+          }
+        in
+          { newFil |
+          -- if no orgs in this org's region are visible, ensure that region is not visible.
+            visibleRegions =
+                -- do any orgs in this region appear in the visible list?
+                if List.any
+                  (\x -> List.member x newFil.visibleOrgs)
+                  (Maybe.withDefault []
+                    <| Dict.get
+                        (Maybe.withDefault "" <| Dict.get identifier newFil.allOrgs) -- region associated with this org
+                        newFil.allRegions) -- outer .get is the list of orgs in the region
+                -- if so, no changes
+                then newFil.visibleRegions
+                -- if not, filter out the region
+                else List.filter (\x -> x /= identifier) newFil.visibleRegions
+          }
+      else
+        { fil
            -- make org visible
+          | visibleOrgs = identifier :: fil.visibleOrgs
            -- if all orgs in this org's region are visible, ensure it's visible.
-           fil
+          , visibleRegions =
+              -- are all the orgs in this region visible?
+              if List.all (\x -> List.member x fil.visibleOrgs) (Maybe.withDefault [] <| Dict.get identifier fil.allRegions)
+              -- if so, make sure it's visible
+              then
+                if List.member (Maybe.withDefault "" <| Dict.get identifier fil.allOrgs) fil.visibleRegions
+                then fil.visibleRegions
+                else (Maybe.withDefault "" <| Dict.get identifier fil.allOrgs) :: fil.visibleRegions
+              -- if not, no changes
+              else fil.visibleRegions
+        }
     _ -> fil -- we only filter on Region and Organization
 
 

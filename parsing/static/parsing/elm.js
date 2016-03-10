@@ -11422,10 +11422,35 @@ Elm.Main.make = function (_elm) {
               return $Basics.not(A2($List.member,x,A2($Maybe.withDefault,_U.list([]),A2($Dict.get,identifier,fil.allRegions))));
            },
            fil.visibleOrgs)}) : _U.update(fil,
-           {visibleOrgs: $Set.toList($Set.fromList(A2($Basics._op["++"],
+           {visibleRegions: A2($List._op["::"],identifier,fil.visibleRegions)
+           ,visibleOrgs: $Set.toList($Set.fromList(A2($Basics._op["++"],
            A2($Maybe.withDefault,_U.list([]),A2($Dict.get,identifier,fil.allRegions)),
            fil.visibleOrgs)))});
-         case "Organization": return A2($List.member,identifier,fil.visibleOrgs) ? fil : fil;
+         case "Organization": if (A2($List.member,identifier,fil.visibleOrgs)) {
+                 var newFil = _U.update(fil,{visibleOrgs: A2($List.filter,function (x) {    return !_U.eq(x,identifier);},fil.visibleOrgs)});
+                 return _U.update(newFil,
+                 {visibleRegions: A2($List.any,
+                 function (x) {
+                    return A2($List.member,x,newFil.visibleOrgs);
+                 },
+                 A2($Maybe.withDefault,
+                 _U.list([]),
+                 A2($Dict.get,A2($Maybe.withDefault,"",A2($Dict.get,identifier,newFil.allOrgs)),newFil.allRegions))) ? newFil.visibleRegions : A2($List.filter,
+                 function (x) {
+                    return !_U.eq(x,identifier);
+                 },
+                 newFil.visibleRegions)});
+              } else return _U.update(fil,
+              {visibleOrgs: A2($List._op["::"],identifier,fil.visibleOrgs)
+              ,visibleRegions: A2($List.all,
+              function (x) {
+                 return A2($List.member,x,fil.visibleOrgs);
+              },
+              A2($Maybe.withDefault,_U.list([]),A2($Dict.get,identifier,fil.allRegions))) ? A2($List.member,
+              A2($Maybe.withDefault,"",A2($Dict.get,identifier,fil.allOrgs)),
+              fil.visibleRegions) ? fil.visibleRegions : A2($List._op["::"],
+              A2($Maybe.withDefault,"",A2($Dict.get,identifier,fil.allOrgs)),
+              fil.visibleRegions) : fil.visibleRegions});
          default: return fil;}
    });
    var update = F2(function (action,model) {
