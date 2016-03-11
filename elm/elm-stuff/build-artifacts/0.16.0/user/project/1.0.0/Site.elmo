@@ -72,8 +72,16 @@ Elm.Site.make = function (_elm) {
                  ,A2($Html$Events.onClick,a,A2($Models.ToggleFilter,field,x))]),
          _U.list([$Html.text(x)]));
       });
-      return _U.list([A2($Html.div,_U.list([]),A2($List.map,A2(btn,f,$Models.Region),$Dict.keys(f.allRegions)))
-                     ,A2($Html.div,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$Dict.keys(f.allOrgs)))]);
+      return _U.list([A2($Html.table,
+      _U.list([$Html$Attributes.$class("filterbox")]),
+      _U.list([A2($Html.tr,
+              _U.list([]),
+              _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("Filter by region:")]))
+                      ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Region),$List.sort($Dict.keys(f.allRegions))))]))
+              ,A2($Html.tr,
+              _U.list([]),
+              _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("Filter by organization:")]))
+                      ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$List.sort($Dict.keys(f.allOrgs))))]))]))]);
    });
    var navBar = A2($Html.nav,
    _U.list([]),
@@ -91,9 +99,8 @@ Elm.Site.make = function (_elm) {
       return A2($Html.div,
       _U.list([]),
       _U.list([navBar
-              ,A2($Html.div,_U.list([]),_U.list([$Html.text($Basics.toString(model.jobFilter))]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("filterbox")]),A2(filterBox,address,model.jobFilter))
+              ,A2($Html.div,_U.list([]),A2(filterBox,address,model.jobFilter))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A3(viewJobs,address,model.jobFilter,model.jobs)
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))

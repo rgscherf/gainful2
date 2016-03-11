@@ -14,14 +14,25 @@ nav {
 }
 
 .filterbox {
-  width: 90%;
   background-color: #8874EC;
   margin: auto;
-  height: 150px;
   -webkit-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
   -moz-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
   box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
 }
+
+.filtertitle {
+  margin: 5px;
+  font-family: 'Lobster Two', cursive;
+  width: 185px;
+  font-size: 1.7em;
+}
+
+button {
+  font-size: 16px;
+  border-radius: 4px;
+}
+
 
 table {
   width: 90%;
@@ -77,5 +88,5 @@ th {
 
 .visible {
   color: black;
-  background-color: yellow;
+  background-color: #60CAD4;
 }

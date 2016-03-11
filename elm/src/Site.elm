@@ -19,9 +19,9 @@ view address model =
     []
     [
       navBar
-    , div [] [text <| toString model.jobFilter]
+    -- , div [] [text <| toString model.jobFilter]
     , div [class "spacer"] []
-    , div [class "filterbox"] <| filterBox address model.jobFilter
+    , div [] <| filterBox address model.jobFilter
     , div [class "spacer"] []
     , viewJobs address model.jobFilter model.jobs
     , div [class "spacer"] []
@@ -62,10 +62,21 @@ filterBox a f =
         , onClick a (ToggleFilter  field x) ]
         [ text x ]
   in
-    [ div [] ( List.map (btn f Region) <| Dict.keys f.allRegions )
-    , div [] ( List.map (btn f Organization) <| Dict.keys f.allOrgs )
+    [table [class "filterbox"]
+      [ tr []
+        [ td [class "filtertitle"] [text "Filter by region:"]
+        , td [] <| ( List.map (btn f Region)
+                    <| List.sort
+                    <| Dict.keys f.allRegions )
+        ]
+      , tr []
+        [ td [class "filtertitle"] [text "Filter by organization:"]
+        , td [] <| ( List.map (btn f Organization)
+                    <| List.sort
+                    <| Dict.keys f.allOrgs )
+        ]
+      ]
     ]
-
 
 
 -- Job table
@@ -83,8 +94,7 @@ viewJobs address fil maybeJobs =
     table [align "center"]
       (
         [ tr []
-          [
-            th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization"]
+          [ th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization"]
           , th [onClick address (SortJobs Title), class "leftHead"] [text "Title"]
           , th [onClick address (SortJobs Salary), class "rightHead"] [text "Salary/Wage"]
           , th [onClick address (SortJobs ClosingDate), class "rightHead"] [text "Closing Date"]
@@ -92,23 +102,6 @@ viewJobs address fil maybeJobs =
         ]
         ++ tbody
       )
-
--- filterJobListOnField : JobField -> Filter -> Jobs -> Jobs
--- filterJobListOnField field fil jobs =
---   let
---     activeEntries field = List.filterMap (\x -> if snd x then Just <| fst x else Nothing) <| field fil
---     sing =
---       case field of
---         Organization -> .organization
---         Region -> .region
---         _ -> .organization
---     plural =
---       case field of
---         Organization -> .organizations
---         Region -> .regions
---         _ -> .organizations
---   in List.filter (\j -> List.member (sing j) <| activeEntries plural) jobs
---
 
 individualJob : (Bool, Job) -> List Html
 individualJob (shaded, job) =
