@@ -75,16 +75,15 @@ Elm.Main.make = function (_elm) {
            fil.visibleOrgs)))});
          case "Organization": if (A2($List.member,identifier,fil.visibleOrgs)) {
                  var newFil = _U.update(fil,{visibleOrgs: A2($List.filter,function (x) {    return !_U.eq(x,identifier);},fil.visibleOrgs)});
+                 var regionOfOrg = function (i) {    return A2($Maybe.withDefault,"",A2($Dict.get,i,newFil.allOrgs));};
                  return _U.update(newFil,
                  {visibleRegions: A2($List.any,
                  function (x) {
                     return A2($List.member,x,newFil.visibleOrgs);
                  },
-                 A2($Maybe.withDefault,
-                 _U.list([]),
-                 A2($Dict.get,A2($Maybe.withDefault,"",A2($Dict.get,identifier,newFil.allOrgs)),newFil.allRegions))) ? newFil.visibleRegions : A2($List.filter,
+                 A2($Maybe.withDefault,_U.list([]),A2($Dict.get,regionOfOrg(identifier),newFil.allRegions))) ? newFil.visibleRegions : A2($List.filter,
                  function (x) {
-                    return !_U.eq(x,identifier);
+                    return !_U.eq(x,regionOfOrg(identifier));
                  },
                  newFil.visibleRegions)});
               } else return _U.update(fil,

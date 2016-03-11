@@ -101,14 +101,13 @@ toggleFilter field identifier fil =
       -- is org currently visible?
       if List.member identifier fil.visibleOrgs
       then
-        todo: how to compose record updates so:
-        todo: when clicking an org and no orgs in the region are still active,
-        todo: the region turns not visible.
         let newFil =
-          { fil
-            -- make org not visible
-            | visibleOrgs = List.filter (\x -> x /= identifier) fil.visibleOrgs
-          }
+              { fil
+                -- make org not visible
+                | visibleOrgs = List.filter (\x -> x /= identifier) fil.visibleOrgs
+              }
+            regionOfOrg i =
+              (Maybe.withDefault "" <| Dict.get i newFil.allOrgs)
         in
           { newFil |
           -- if no orgs in this org's region are visible, ensure that region is not visible.
@@ -117,13 +116,12 @@ toggleFilter field identifier fil =
                 if List.any
                   (\x -> List.member x newFil.visibleOrgs)
                   (Maybe.withDefault []
-                    <| Dict.get
-                        (Maybe.withDefault "" <| Dict.get identifier newFil.allOrgs) -- region associated with this org
-                        newFil.allRegions) -- outer .get is the list of orgs in the region
+                    <| Dict.get (regionOfOrg identifier) newFil.allRegions) -- outer .get is the list of orgs in the region
+
                 -- if so, no changes
                 then newFil.visibleRegions
                 -- if not, filter out the region
-                else List.filter (\x -> x /= identifier) newFil.visibleRegions
+                else List.filter (\x -> x /= (regionOfOrg identifier)) newFil.visibleRegions
           }
       else
         { fil
@@ -143,29 +141,6 @@ toggleFilter field identifier fil =
         }
     _ -> fil -- we only filter on Region and Organization
 
-
-
-
-
--- toggleFilter : JobField -> String -> Filter -> Filter
--- toggleFilter field identifier fil =
---   let
---     visible x ls =
---       if List.member x ls
---       then List.filter (\a -> a /= x) ls
---       else x :: ls
---   in
---     case field of
---       Region ->
---         { fil | visibleRegions = visible identifier fil.visibleRegions }
---           |> negateOrgs
---       Organization ->
---         { fil | visibleOrgs = visible identifier fil.visibleOrgs }
---       _ -> fil
---
--- negateOrgs : Filter -> Filter
--- negateOrgs f =
---     { f | visibleOrgs = List.filter (\x -> List.member (Dict.get x f.allOrgs |> Maybe.withDefault "" ) f.visibleRegions) f.visibleOrgs }
 
 makeFilter : Filter -> Model -> Model
 makeFilter f m =
