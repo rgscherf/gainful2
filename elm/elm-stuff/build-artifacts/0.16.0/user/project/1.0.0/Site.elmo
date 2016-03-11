@@ -34,8 +34,8 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text(_U.eq(_p2.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
               ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(_p2.dateClosing)]))]))]);
    };
-   var viewJobs = F2(function (address,maybeJobs) {
-      var jobs = A2($Maybe.withDefault,_U.list([]),maybeJobs);
+   var viewJobs = F3(function (address,fil,maybeJobs) {
+      var jobs = A2($List.filter,function (j) {    return A2($List.member,j.organization,fil.visibleOrgs);},A2($Maybe.withDefault,_U.list([]),maybeJobs));
       var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
@@ -95,7 +95,7 @@ Elm.Site.make = function (_elm) {
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("filterbox")]),A2(filterBox,address,model.jobFilter))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2(viewJobs,address,model.jobs)
+              ,A3(viewJobs,address,model.jobFilter,model.jobs)
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
               ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))

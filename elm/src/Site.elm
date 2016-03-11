@@ -23,7 +23,7 @@ view address model =
     , div [class "spacer"] []
     , div [class "filterbox"] <| filterBox address model.jobFilter
     , div [class "spacer"] []
-    , viewJobs address model.jobs
+    , viewJobs address model.jobFilter model.jobs
     , div [class "spacer"] []
     , div [class "spacer"] []
     , div [class "spacer"] []
@@ -68,41 +68,14 @@ filterBox a f =
 
 
 
--- btnsAllNone : Signal.Address Action -> JobField -> Filter -> List Html
--- btnsAllNone a field f =
---   let
---     access =
---       case field of
---         Organization -> .organizations
---         Region -> .regions
---         _ -> .organizations
---     allFieldsVisible field =
---       List.all (\x -> x == True)
---         <| List.map snd
---         <| field f
---     anyFieldsVisible field =
---       List.any (\x -> x == True)
---         <| List.map snd
---         <| field f
---   in
---     [ button [ onClick a (ChangeAllFilter field True)
---             , class (if allFieldsVisible access then "visible" else "notVisible")
---             ]
---             [text "Select All"]
---     , button [ onClick a (ChangeAllFilter field False)
---             , class (if anyFieldsVisible access then "notVisible" else "visible")
---             ]
---             [text "Unselect All"]
---     ]
---
-
 -- Job table
 
-viewJobs : Signal.Address Action -> Maybe Jobs -> Html
-viewJobs address maybeJobs =
+viewJobs : Signal.Address Action -> Filter -> Maybe Jobs -> Html
+viewJobs address fil maybeJobs =
   let
       jobs =
-        Maybe.withDefault [] maybeJobs
+        List.filter (\j -> List.member j.organization fil.visibleOrgs)
+        <| Maybe.withDefault [] maybeJobs
       shaded = List.concat <| List.repeat (List.length jobs) [True, False]
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass
