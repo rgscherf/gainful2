@@ -15,23 +15,32 @@ Elm.Site.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Models = Elm.Models.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
    var _op = {};
    var aboutMessage = $Markdown.toHtml("\n\n# What is Gainful?\n\nJob searching is bad. Government websites are bad. This makes searching for government jobs extra bad.\n\nGainful makes government job postings simple and sane. Every day, it finds all the newest postings and present them in a table. You can filter and sort listings however you want, and save your results as a daily email newsletter.\n\nNo signups, no ads. It could not be easier.\n\n## What job sites does Gainful search?\n\nGlad you asked. Gainful searches the following sources:\n\n- City of Toronto\n- City of Victoria\n- City of Mississauga\n- Ontario Public Service in the GTA (TODO)\n- ...etc\n\n## Can I help?\n\n[twitter]: http://www.twitter.com/rgscherf\n\nYes! [Get in touch][twitter] or make a [pull request](http://www.github.com/rgscherf/gainful2).\n\n## Who wrote Gainful?\n\nGainful is written by Robert Scherf. He\'s looking for a job--[hire him][twitter]!\n\n");
+   var addCommas = function (amt) {
+      var start = $String.reverse($Basics.toString($Basics.round(amt)));
+      var len = $String.length(start);
+      return _U.cmp(len,4) < 0 ? $String.reverse(start) : $String.reverse(A2($Basics._op["++"],
+      A2($String.left,3,start),
+      A2($Basics._op["++"],",",A2($String.dropLeft,3,start))));
+   };
+   var salary = F2(function (amount,waged) {
+      var postfix = waged ? " /hr" : " /yr";
+      var stringSalary = waged ? $Basics.toString(amount) : addCommas(amount);
+      return _U.eq(amount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix));
+   });
    var individualJob = function (_p0) {
       var _p1 = _p0;
       var _p2 = _p1._1;
       var rowClass = _p1._0 ? "shadedRow" : "unshadedRow";
       var orgAndDiv = !_U.eq(_p2.division,"") ? A2($Basics._op["++"],_p2.organization,A2($Basics._op["++"],", ",_p2.division)) : _p2.organization;
-      var postfix = _p2.salaryWaged ? " /hr" : " /yr";
-      var stringSalary = $Basics.toString(_p2.salaryWaged ? _p2.salaryAmount : $Basics.toFloat($Basics.round(_p2.salaryAmount)));
       return _U.list([A2($Html.tr,
       _U.list([$Html$Attributes.$class(rowClass)]),
       _U.list([A2($Html.td,_U.list([]),_U.list([$Html.text(orgAndDiv)]))
               ,A2($Html.td,_U.list([]),_U.list([A2($Html.a,_U.list([$Html$Attributes.href(_p2.urlDetail)]),_U.list([$Html.text(_p2.title)]))]))
-              ,A2($Html.td,
-              _U.list([$Html$Attributes.align("right")]),
-              _U.list([$Html.text(_U.eq(_p2.salaryAmount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix)))]))
+              ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(A2(salary,_p2.salaryAmount,_p2.salaryWaged))]))
               ,A2($Html.td,_U.list([$Html$Attributes.align("right")]),_U.list([$Html.text(_p2.dateClosing)]))]))]);
    };
    var viewJobs = F3(function (address,fil,maybeJobs) {
@@ -114,5 +123,7 @@ Elm.Site.make = function (_elm) {
                              ,filterBox: filterBox
                              ,viewJobs: viewJobs
                              ,individualJob: individualJob
+                             ,salary: salary
+                             ,addCommas: addCommas
                              ,aboutMessage: aboutMessage};
 };

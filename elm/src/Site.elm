@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
 import Dict
+import String
 
 import Models exposing (..)
 
@@ -75,6 +76,11 @@ filterBox a f =
                     <| List.sort
                     <| Dict.keys f.allOrgs )
         ]
+      -- , tr [] [div [class "spacer"] []]
+      -- , tr []
+      --   [ td [] []
+      --   , td [] [button [class "btnNewsletter"] [text "Save filters as daily newsletter"]]
+      --   ]
       ]
     ]
 
@@ -105,8 +111,8 @@ viewJobs address fil maybeJobs =
 
 individualJob : (Bool, Job) -> List Html
 individualJob (shaded, job) =
-  let stringSalary = toString <| if job.salaryWaged then job.salaryAmount else toFloat <| round job.salaryAmount
-      postfix = if job.salaryWaged then " /hr" else " /yr"
+  let
+
       orgAndDiv = if job.division /= "" then job.organization ++ ", " ++ job.division else job.organization
       rowClass = if shaded then "shadedRow" else "unshadedRow"
   in
@@ -117,10 +123,26 @@ individualJob (shaded, job) =
               [href job.urlDetail]
               [text job.title]
             ]
-    , td [align "right"] [text (if job.salaryAmount == 0 then "--" else "$ " ++ stringSalary ++ postfix)]
+    , td [align "right"] [text <| salary job.salaryAmount job.salaryWaged]
     , td [align "right"] [text job.dateClosing]
     ]
   ]
+
+salary : Float -> Bool -> String
+salary amount waged =
+  let stringSalary = if waged then toString amount else addCommas amount
+      postfix = if waged then " /hr" else " /yr"
+  in
+    if amount == 0 then "--" else "$ " ++ stringSalary ++ postfix
+
+addCommas : Float -> String
+addCommas amt =
+  let start = String.reverse <| toString <| round amt
+      len = String.length start
+  in
+    if (len < 4) then String.reverse start
+    -- public service salaries will never > $999,999
+    else String.reverse <| (String.left 3 start) ++ "," ++ (String.dropLeft 3 start)
 
 
 -- about page

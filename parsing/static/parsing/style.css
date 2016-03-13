@@ -29,10 +29,19 @@ nav {
 }
 
 button {
+  background-color: #C9A8D4;
+  padding: 7px;
   font-size: 16px;
+  border: 0px;
   border-radius: 4px;
 }
 
+.notVisible {
+  box-shadow: inset 3px 3px 3px 0px #5F466B;
+}
+
+.btnNewsletter {
+}
 
 table {
   width: 90%;
@@ -42,7 +51,7 @@ table {
   font-size: 13px;
   -webkit-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
   -moz-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
-  box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
+  box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76)f
 }
 
 .nav-icon {
@@ -79,14 +88,4 @@ th {
 
 .unshadedRow {
   background-color: #8BB8D6;
-}
-
-.notVisible {
-  color: white;
-  background-color: #8874EC;
-}
-
-.visible {
-  color: black;
-  background-color: #60CAD4;
 }
