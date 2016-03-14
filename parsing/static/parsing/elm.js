@@ -11332,7 +11332,16 @@ Elm.Site.make = function (_elm) {
               ,A2($Html.tr,
               _U.list([]),
               _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("Filter by organization:")]))
-                      ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$List.sort($Dict.keys(f.allOrgs))))]))]))]);
+                      ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$List.sort($Dict.keys(f.allOrgs))))]))
+              ,A2($Html.tr,_U.list([]),_U.list([A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))]))
+              ,A2($Html.tr,
+              _U.list([]),
+              _U.list([A2($Html.td,_U.list([]),_U.list([]))
+                      ,A2($Html.td,
+                      _U.list([]),
+                      _U.list([A2($Html.button,
+                      _U.list([$Html$Attributes.$class("btnNewsletter")]),
+                      _U.list([$Html.text("Save to daily newsletter")]))]))]))]))]);
    });
    var navBar = A2($Html.nav,
    _U.list([]),

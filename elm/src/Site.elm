@@ -76,11 +76,11 @@ filterBox a f =
                     <| List.sort
                     <| Dict.keys f.allOrgs )
         ]
-      -- , tr [] [div [class "spacer"] []]
-      -- , tr []
-      --   [ td [] []
-      --   , td [] [button [class "btnNewsletter"] [text "Save filters as daily newsletter"]]
-      --   ]
+      , tr [] [div [class "spacer"] []]
+      , tr []
+        [ td [] []
+        , td [] [button [class "btnNewsletter"] [text "Save to daily newsletter"]]
+        ]
       ]
     ]
 
