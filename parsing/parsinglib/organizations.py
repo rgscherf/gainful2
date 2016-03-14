@@ -158,6 +158,7 @@ class Toronto(Organization):
             job.url_detail = "https://www.brainhunter.com/frontoffice/{}".format(cols[1].a["href"])
             if not job.is_unique():
                 continue
+            print(job.url_detail)
             self.parse_detail_page(job)
 
     def parse_detail_page(self, job):
@@ -180,7 +181,10 @@ class Toronto(Organization):
         job.division = rowdict["Division"]
         job.date_posted = d.parse(rowdict["Posting Date"]).date()
         job.date_closing = d.parse(rowdict["Closing Date"]).date()
-        job.salary_amount = self.salary(rowdict["Salary/Rate"])
+        try: # it's rare, but sometime Toronto doesn't post salary
+            job.salary_amount = self.salary(rowdict["Salary/Rate"])
+        except KeyError:
+            job.salary_amount = "0"
         job.save()
 
     def salary(self, string):
