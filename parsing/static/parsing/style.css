@@ -13,12 +13,25 @@ nav {
   color: black;
 }
 
-.filterbox {
+#filterwrapper {
+  display: flex;
+  width: 90%;
   background-color: #8874EC;
-  margin: auto;
-  -webkit-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
-  -moz-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
-  box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
+  margin-left: auto;
+  margin-right: auto;
+  align-items: center;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+#filternewsletter {
+  width: 150;
+}
+
+#filtertable {
+  flex-grow: 1;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .filtertitle {
@@ -30,28 +43,33 @@ nav {
 
 button {
   background-color: #C9A8D4;
+  margin: 3px;
   padding: 7px;
   font-size: 16px;
   border: 0px;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
 .notVisible {
   box-shadow: inset 3px 3px 3px 0px #5F466B;
 }
 
-.btnNewsletter {
+
+#jobtable {
+  width: 90%;
+}
+
+.shadow {
+  -webkit-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
+  -moz-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
+  box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76)f
 }
 
 table {
-  width: 90%;
   vertical-align: middle;
   background-color: #8874EC;
   border-spacing: 0px;
   font-size: 13px;
-  -webkit-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
-  -moz-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
-  box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76)f
 }
 
 .nav-icon {

@@ -11291,7 +11291,7 @@ Elm.Site.make = function (_elm) {
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
       return A2($Html.table,
-      _U.list([$Html$Attributes.align("center")]),
+      _U.list([$Html$Attributes.align("center"),$Html$Attributes.id("jobtable"),$Html$Attributes.$class("shadow")]),
       A2($Basics._op["++"],
       _U.list([A2($Html.tr,
       _U.list([]),
@@ -11323,25 +11323,24 @@ Elm.Site.make = function (_elm) {
                  ,A2($Html$Events.onClick,a,A2($Models.ToggleFilter,field,x))]),
          _U.list([$Html.text(x)]));
       });
-      return _U.list([A2($Html.table,
-      _U.list([$Html$Attributes.$class("filterbox")]),
-      _U.list([A2($Html.tr,
+      return _U.list([A2($Html.div,
+      _U.list([$Html$Attributes.id("filterwrapper"),$Html$Attributes.$class("shadow")]),
+      _U.list([A2($Html.div,
+              _U.list([$Html$Attributes.id("filtertable")]),
+              _U.list([A2($Html.table,
               _U.list([]),
-              _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("Filter by region:")]))
-                      ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Region),$List.sort($Dict.keys(f.allRegions))))]))
-              ,A2($Html.tr,
-              _U.list([]),
-              _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("Filter by organization:")]))
-                      ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$List.sort($Dict.keys(f.allOrgs))))]))
-              ,A2($Html.tr,_U.list([]),_U.list([A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))]))
-              ,A2($Html.tr,
-              _U.list([]),
-              _U.list([A2($Html.td,_U.list([]),_U.list([]))
-                      ,A2($Html.td,
+              _U.list([A2($Html.tr,
                       _U.list([]),
-                      _U.list([A2($Html.button,
-                      _U.list([$Html$Attributes.$class("btnNewsletter")]),
-                      _U.list([$Html.text("Save to daily newsletter")]))]))]))]))]);
+                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("Filter by region:")]))
+                              ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Region),$List.sort($Dict.keys(f.allRegions))))]))
+                      ,A2($Html.tr,
+                      _U.list([]),
+                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("Filter by organization:")]))
+                              ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$List.sort($Dict.keys(f.allOrgs))))]))]))]))
+              ,A2($Html.div,
+              _U.list([$Html$Attributes.id("filternewsletter")]),
+              _U.list([A2($Html.button,_U.list([]),_U.list([$Html.text("Save filters to daily newsletter")]))
+                      ,A2($Html.button,_U.list([]),_U.list([$Html.text("Save filters for next visit")]))]))]))]);
    });
    var navBar = A2($Html.nav,
    _U.list([]),

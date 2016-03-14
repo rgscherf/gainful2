@@ -63,24 +63,28 @@ filterBox a f =
         , onClick a (ToggleFilter  field x) ]
         [ text x ]
   in
-    [table [class "filterbox"]
-      [ tr []
-        [ td [class "filtertitle"] [text "Filter by region:"]
-        , td [] <| ( List.map (btn f Region)
-                    <| List.sort
-                    <| Dict.keys f.allRegions )
+    [div [id "filterwrapper", class "shadow"]
+      [ div
+        [id "filtertable"]
+        [table []
+          [ tr []
+            [ td [class "filtertitle"] [text "Filter by region:"]
+            , td [] <| ( List.map (btn f Region)
+                        <| List.sort
+                        <| Dict.keys f.allRegions )
+            ]
+          , tr []
+            [ td [class "filtertitle"] [text "Filter by organization:"]
+            , td [] <| ( List.map (btn f Organization)
+                        <| List.sort
+                        <| Dict.keys f.allOrgs )
+            ]
+          ]
         ]
-      , tr []
-        [ td [class "filtertitle"] [text "Filter by organization:"]
-        , td [] <| ( List.map (btn f Organization)
-                    <| List.sort
-                    <| Dict.keys f.allOrgs )
-        ]
-      , tr [] [div [class "spacer"] []]
-      , tr []
-        [ td [] []
-        , td [] [button [class "btnNewsletter"] [text "Save to daily newsletter"]]
-        ]
+      , div
+          [id "filternewsletter"]
+          [ button [] [text "Save filters to daily newsletter"]
+          , button [] [text "Save filters for next visit"] ]
       ]
     ]
 
@@ -97,7 +101,7 @@ viewJobs address fil maybeJobs =
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass
   in
-    table [align "center"]
+    table [id "jobtable", class "shadow"]
       (
         [ tr []
           [ th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization"]
