@@ -11208,7 +11208,7 @@ Elm.Models.make = function (_elm) {
       {jobs: $Maybe.Just(sortedCurrentList)});
    });
    var Filter = F4(function (a,b,c,d) {    return {allRegions: a,allOrgs: b,visibleRegions: c,visibleOrgs: d};});
-   var Model = F2(function (a,b) {    return {jobs: a,jobFilter: b};});
+   var Model = F3(function (a,b,c) {    return {jobs: a,jobFilter: b,fromStorage: c};});
    var Region = {ctor: "Region"};
    var ClosingDate = {ctor: "ClosingDate"};
    var Salary = {ctor: "Salary"};
@@ -11217,7 +11217,7 @@ Elm.Models.make = function (_elm) {
    var Job = F8(function (a,b,c,d,e,f,g,h) {
       return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g,region: h};
    });
-   var ChangeAllFilter = F2(function (a,b) {    return {ctor: "ChangeAllFilter",_0: a,_1: b};});
+   var FromStorage = function (a) {    return {ctor: "FromStorage",_0: a};};
    var ToggleFilter = F2(function (a,b) {    return {ctor: "ToggleFilter",_0: a,_1: b};});
    var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
    var ShowInitialJobs = function (a) {    return {ctor: "ShowInitialJobs",_0: a};};
@@ -11229,7 +11229,7 @@ Elm.Models.make = function (_elm) {
                                ,ShowInitialJobs: ShowInitialJobs
                                ,SortJobs: SortJobs
                                ,ToggleFilter: ToggleFilter
-                               ,ChangeAllFilter: ChangeAllFilter
+                               ,FromStorage: FromStorage
                                ,Job: Job
                                ,Title: Title
                                ,Organization: Organization
@@ -11291,7 +11291,7 @@ Elm.Site.make = function (_elm) {
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
       return A2($Html.table,
-      _U.list([$Html$Attributes.align("center"),$Html$Attributes.id("jobtable"),$Html$Attributes.$class("shadow")]),
+      _U.list([$Html$Attributes.id("jobtable"),$Html$Attributes.$class("shadow")]),
       A2($Basics._op["++"],
       _U.list([A2($Html.tr,
       _U.list([]),
@@ -11339,8 +11339,7 @@ Elm.Site.make = function (_elm) {
                               ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$List.sort($Dict.keys(f.allOrgs))))]))]))]))
               ,A2($Html.div,
               _U.list([$Html$Attributes.id("filternewsletter")]),
-              _U.list([A2($Html.button,_U.list([]),_U.list([$Html.text("Save filters to daily newsletter")]))
-                      ,A2($Html.button,_U.list([]),_U.list([$Html.text("Save filters for next visit")]))]))]))]);
+              _U.list([A2($Html.button,_U.list([]),_U.list([$Html.text("Save filters to daily newsletter")]))]))]))]);
    });
    var navBar = A2($Html.nav,
    _U.list([]),
@@ -11398,6 +11397,7 @@ Elm.Main.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Site = Elm.Site.make(_elm),
    $StartApp = Elm.StartApp.make(_elm),
+   $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
    var decodeJob = A9($Json$Decode.object8,
@@ -11434,13 +11434,23 @@ Elm.Main.make = function (_elm) {
                }
          }
    });
-   var makeAllEntitiesVisible = function (f) {    return _U.update(f,{visibleOrgs: $Dict.keys(f.allOrgs),visibleRegions: $Dict.keys(f.allRegions)});};
+   var makeEntitiesVisible = F2(function (str,f) {
+      var _p2 = str;
+      if (_p2 === "") {
+            return _U.update(f,{visibleOrgs: $Dict.keys(f.allOrgs),visibleRegions: $Dict.keys(f.allRegions)});
+         } else {
+            var ls = A2($String.split,",",_p2);
+            return _U.update(f,
+            {visibleOrgs: ls
+            ,visibleRegions: $Set.toList($Set.fromList(A2($List.map,function (x) {    return A2($Maybe.withDefault,"",A2($Dict.get,x,f.allOrgs));},ls)))});
+         }
+   });
    var makeFilter = F2(function (f,m) {
-      return _U.update(m,{jobFilter: makeAllEntitiesVisible(A3($List.foldr,makeFilter$,f,A2($Maybe.withDefault,_U.list([]),m.jobs)))});
+      return _U.update(m,{jobFilter: A2(makeEntitiesVisible,m.fromStorage,A3($List.foldr,makeFilter$,f,A2($Maybe.withDefault,_U.list([]),m.jobs)))});
    });
    var toggleFilter = F3(function (field,identifier,fil) {
-      var _p2 = field;
-      switch (_p2.ctor)
+      var _p3 = field;
+      switch (_p3.ctor)
       {case "Region": return A2($List.member,identifier,fil.visibleRegions) ? _U.update(fil,
            {visibleRegions: A2($List.filter,function (x) {    return !_U.eq(x,identifier);},fil.visibleRegions)
            ,visibleOrgs: A2($List.filter,
@@ -11478,21 +11488,39 @@ Elm.Main.make = function (_elm) {
               fil.visibleRegions) : fil.visibleRegions});
          default: return fil;}
    });
+   var makeString = function (l) {    return A3($List.foldl,F2(function (x,y) {    return A2($Basics._op["++"],x,y);}),"",A2($List.intersperse,",",l));};
+   var jobsToStorage = $Signal.mailbox("");
    var update = F2(function (action,model) {
-      var _p3 = action;
-      switch (_p3.ctor)
-      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p3._0,model),_1: $Effects.none};
+      var _p4 = action;
+      switch (_p4.ctor)
+      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p4._0,model),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
-         case "GetJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: $Maybe.Nothing}),_1: getJobs};
-         case "ShowInitialJobs": var newModel = A2(makeFilter,model.jobFilter,_U.update(model,{jobs: _p3._0}));
+         case "GetJobs": return {ctor: "_Tuple2",_0: model,_1: getJobs};
+         case "ShowInitialJobs": var newModel = A2(makeFilter,model.jobFilter,_U.update(model,{jobs: _p4._0}));
            return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};
-         case "ToggleFilter": return {ctor: "_Tuple2",_0: _U.update(model,{jobFilter: A3(toggleFilter,_p3._0,_p3._1,model.jobFilter)}),_1: $Effects.none};
-         default: return {ctor: "_Tuple2",_0: model,_1: $Effects.none};}
+         case "FromStorage": var newModel = _U.update(model,{fromStorage: _p4._0});
+           return {ctor: "_Tuple2",_0: A2(makeFilter,newModel.jobFilter,newModel),_1: $Effects.none};
+         default: var newModel = _U.update(model,{jobFilter: A3(toggleFilter,_p4._0,_p4._1,model.jobFilter)});
+           var toLocalStorage = $Effects.task(A2($Task.andThen,
+           A2($Signal.send,jobsToStorage.address,makeString(newModel.jobFilter.visibleOrgs)),
+           function (_p5) {
+              return $Task.succeed($Models.NoOp);
+           }));
+           return {ctor: "_Tuple2",_0: newModel,_1: toLocalStorage};}
+   });
+   var localStorageFromElm = Elm.Native.Port.make(_elm).outboundSignal("localStorageFromElm",function (v) {    return v;},jobsToStorage.signal);
+   var localStorageToElm = Elm.Native.Port.make(_elm).inboundSignal("localStorageToElm",
+   "String",
+   function (v) {
+      return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",v);
    });
    var startFilter = {allRegions: $Dict.empty,allOrgs: $Dict.empty,visibleRegions: _U.list([]),visibleOrgs: _U.list([])};
-   var startModel = {jobs: $Maybe.Nothing,jobFilter: startFilter};
+   var startModel = {jobs: $Maybe.Nothing,jobFilter: startFilter,fromStorage: ""};
    var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
-   var app = $StartApp.start({init: init,view: $Site.view,update: update,inputs: _U.list([])});
+   var app = $StartApp.start({init: init
+                             ,view: $Site.view
+                             ,update: update
+                             ,inputs: _U.list([A2($Signal.map,function (s) {    return $Models.FromStorage(s);},localStorageToElm)])});
    var main = app.html;
    var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",app.tasks);
    return _elm.Main.values = {_op: _op
@@ -11501,10 +11529,12 @@ Elm.Main.make = function (_elm) {
                              ,startFilter: startFilter
                              ,startModel: startModel
                              ,init: init
+                             ,jobsToStorage: jobsToStorage
                              ,update: update
+                             ,makeString: makeString
                              ,toggleFilter: toggleFilter
                              ,makeFilter: makeFilter
-                             ,makeAllEntitiesVisible: makeAllEntitiesVisible
+                             ,makeEntitiesVisible: makeEntitiesVisible
                              ,makeFilter$: makeFilter$
                              ,jobsUrl: jobsUrl
                              ,getJobs: getJobs

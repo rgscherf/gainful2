@@ -8,6 +8,7 @@ import Task
 import Json.Decode as D exposing ((:=), Decoder)
 import Dict
 import Set
+import String
 
 import Models exposing (..)
 import Site exposing (..)
@@ -21,7 +22,7 @@ app = StartApp.start
   { init = init
   , view = view
   , update = update
-  , inputs = []
+  , inputs = [Signal.map (\s -> FromStorage s) localStorageToElm]
   }
 
 main : Signal Html
@@ -39,6 +40,7 @@ startModel : Model
 startModel =
   { jobs = Nothing
   , jobFilter = startFilter
+  , fromStorage = ""
   }
 
 init : (Model, Effects Action)
@@ -47,6 +49,13 @@ init = (startModel, getJobs)
 port tasks : Signal (Task.Task Effects.Never ())
 port tasks = app.tasks
 
+port localStorageToElm : Signal String
+
+port localStorageFromElm : Signal String
+port localStorageFromElm = jobsToStorage.signal
+
+jobsToStorage : Signal.Mailbox String
+jobsToStorage = Signal.mailbox ""
 
 ---------
 -- UPDATE
@@ -60,17 +69,24 @@ update action model =
     NoOp ->
       (model, Effects.none)
     GetJobs ->
-      ({model | jobs = Nothing}, getJobs)
+      (model, getJobs)
     ShowInitialJobs maybeJobs ->
       let newModel = makeFilter model.jobFilter {model | jobs = maybeJobs}
       in (sortJobs Organization newModel, Effects.none)
+    FromStorage str ->
+      let newModel = {model | fromStorage = str}
+      in ( makeFilter newModel.jobFilter newModel, Effects.none )
     ToggleFilter field identifier ->
-      ( { model | jobFilter = toggleFilter field identifier model.jobFilter }
-      , Effects.none
-      )
-    ChangeAllFilter field state ->
-      ( model, Effects.none )
+      let newModel = { model | jobFilter = toggleFilter field identifier model.jobFilter }
+          toLocalStorage = ( Signal.send jobsToStorage.address <| makeString newModel.jobFilter.visibleOrgs )
+                      `Task.andThen` (\_ -> Task.succeed NoOp)
+                        |> Effects.task
+      in (newModel, toLocalStorage)
 
+makeString : List String -> String
+makeString l =
+  List.intersperse "," l
+    |> List.foldl (++) ""
 
 toggleFilter : JobField -> String -> Filter -> Filter
 toggleFilter field identifier fil =
@@ -144,13 +160,27 @@ toggleFilter field identifier fil =
 
 makeFilter : Filter -> Model -> Model
 makeFilter f m =
-  {m | jobFilter = makeAllEntitiesVisible <| List.foldr makeFilter' f <| Maybe.withDefault [] m.jobs }
+  {m | jobFilter = makeEntitiesVisible m.fromStorage <| List.foldr makeFilter' f <| Maybe.withDefault [] m.jobs }
 
-makeAllEntitiesVisible : Filter -> Filter
-makeAllEntitiesVisible f =
-  { f | visibleOrgs = Dict.keys f.allOrgs
-      , visibleRegions = Dict.keys f.allRegions
-  }
+makeEntitiesVisible : String -> Filter -> Filter
+makeEntitiesVisible str f =
+  -- two cases here.
+  -- if localstorage is empty (first visit or last transformation was to zero out orgs)
+  -- then show all orgs and regions.
+  -- else, show orgs from localstorage and their associated regions
+  case str of
+    "" ->
+      { f | visibleOrgs = Dict.keys f.allOrgs
+          , visibleRegions = Dict.keys f.allRegions
+      }
+    a ->
+      let ls = String.split "," a
+      in
+        {f | visibleOrgs = ls
+           , visibleRegions = List.map (\x -> Dict.get x f.allOrgs |> Maybe.withDefault "") ls
+                                |> Set.fromList
+                                |> Set.toList
+        }
 
 makeFilter' : Job -> Filter -> Filter
 makeFilter' j f =

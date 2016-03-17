@@ -15,7 +15,20 @@
 
   <script type="text/javascript">
     var elmDiv = document.getElementById('elm-page');
-    Elm.embed(Elm.Main, elmDiv)
-    </script>
+    var gainful = Elm.embed(Elm.Main, elmDiv, {localStorageToElm: ""})
+
+    // initialize visibleOrgs from previous session
+    var store = localStorage['visibleOrgs']
+    if(!store) {
+      localStorage['visibleOrgs'] = "";
+    } else {
+      gainful.ports.localStorageToElm.send(store);
+    }
+
+    // update the list of visible organizations on every model change
+    gainful.ports.localStorageFromElm.subscribe(function(x) {
+      localStorage['visibleOrgs'] = x;
+    })
+  </script>
 
 </html>

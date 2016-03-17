@@ -83,8 +83,7 @@ filterBox a f =
         ]
       , div
           [id "filternewsletter"]
-          [ button [] [text "Save filters to daily newsletter"]
-          , button [] [text "Save filters for next visit"] ]
+          [ button [] [text "Save filters to daily newsletter"]]
       ]
     ]
 

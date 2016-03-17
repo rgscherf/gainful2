@@ -28,7 +28,7 @@ Elm.Models.make = function (_elm) {
       {jobs: $Maybe.Just(sortedCurrentList)});
    });
    var Filter = F4(function (a,b,c,d) {    return {allRegions: a,allOrgs: b,visibleRegions: c,visibleOrgs: d};});
-   var Model = F2(function (a,b) {    return {jobs: a,jobFilter: b};});
+   var Model = F3(function (a,b,c) {    return {jobs: a,jobFilter: b,fromStorage: c};});
    var Region = {ctor: "Region"};
    var ClosingDate = {ctor: "ClosingDate"};
    var Salary = {ctor: "Salary"};
@@ -37,7 +37,7 @@ Elm.Models.make = function (_elm) {
    var Job = F8(function (a,b,c,d,e,f,g,h) {
       return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g,region: h};
    });
-   var ChangeAllFilter = F2(function (a,b) {    return {ctor: "ChangeAllFilter",_0: a,_1: b};});
+   var FromStorage = function (a) {    return {ctor: "FromStorage",_0: a};};
    var ToggleFilter = F2(function (a,b) {    return {ctor: "ToggleFilter",_0: a,_1: b};});
    var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
    var ShowInitialJobs = function (a) {    return {ctor: "ShowInitialJobs",_0: a};};
@@ -49,7 +49,7 @@ Elm.Models.make = function (_elm) {
                                ,ShowInitialJobs: ShowInitialJobs
                                ,SortJobs: SortJobs
                                ,ToggleFilter: ToggleFilter
-                               ,ChangeAllFilter: ChangeAllFilter
+                               ,FromStorage: FromStorage
                                ,Job: Job
                                ,Title: Title
                                ,Organization: Organization

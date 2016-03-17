@@ -8,7 +8,7 @@ type Action
  | ShowInitialJobs (Maybe Jobs)
  | SortJobs JobField
  | ToggleFilter JobField String
- | ChangeAllFilter JobField Bool
+ | FromStorage String
 
 type alias Job =
   { title : String
@@ -33,6 +33,7 @@ type alias Jobs = List Job
 type alias Model =
   { jobs : Maybe Jobs
   , jobFilter : Filter
+  , fromStorage : String
   }
 
 type alias Filter =
@@ -41,7 +42,6 @@ type alias Filter =
   , visibleRegions : List String
   , visibleOrgs : List String
   }
-
 
 sortJobs : JobField -> Model -> Model
 sortJobs criteria model =
