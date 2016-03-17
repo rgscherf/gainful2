@@ -160,7 +160,7 @@ toggleFilter field identifier fil =
 
 makeFilter : Filter -> Model -> Model
 makeFilter f m =
-  {m | jobFilter = makeEntitiesVisible m.fromStorage <| List.foldr makeFilter' f <| Maybe.withDefault [] m.jobs }
+  {m | jobFilter = makeEntitiesVisible m.fromStorage <| List.foldr makeSingleEntity f <| Maybe.withDefault [] m.jobs }
 
 makeEntitiesVisible : String -> Filter -> Filter
 makeEntitiesVisible str f =
@@ -182,8 +182,8 @@ makeEntitiesVisible str f =
                                 |> Set.toList
         }
 
-makeFilter' : Job -> Filter -> Filter
-makeFilter' j f =
+makeSingleEntity : Job -> Filter -> Filter
+makeSingleEntity j f =
   case Dict.get j.region f.allRegions of
     Nothing ->
       { f | allRegions = Dict.insert j.region [j.organization] f.allRegions

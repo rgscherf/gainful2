@@ -35,7 +35,7 @@ Elm.Main.make = function (_elm) {
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
    var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
-   var makeFilter$ = F2(function (j,f) {
+   var makeSingleEntity = F2(function (j,f) {
       var _p0 = A2($Dict.get,j.region,f.allRegions);
       if (_p0.ctor === "Nothing") {
             return _U.update(f,
@@ -68,7 +68,7 @@ Elm.Main.make = function (_elm) {
          }
    });
    var makeFilter = F2(function (f,m) {
-      return _U.update(m,{jobFilter: A2(makeEntitiesVisible,m.fromStorage,A3($List.foldr,makeFilter$,f,A2($Maybe.withDefault,_U.list([]),m.jobs)))});
+      return _U.update(m,{jobFilter: A2(makeEntitiesVisible,m.fromStorage,A3($List.foldr,makeSingleEntity,f,A2($Maybe.withDefault,_U.list([]),m.jobs)))});
    });
    var toggleFilter = F3(function (field,identifier,fil) {
       var _p3 = field;
@@ -157,7 +157,7 @@ Elm.Main.make = function (_elm) {
                              ,toggleFilter: toggleFilter
                              ,makeFilter: makeFilter
                              ,makeEntitiesVisible: makeEntitiesVisible
-                             ,makeFilter$: makeFilter$
+                             ,makeSingleEntity: makeSingleEntity
                              ,jobsUrl: jobsUrl
                              ,getJobs: getJobs
                              ,decodeJob: decodeJob
