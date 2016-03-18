@@ -90,6 +90,11 @@ body {
   height: 20px;
 }
 
+.jobTableHeader {
+  font-size: 1.1em;
+  height: 30px;
+}
+
 .leftHead {
   text-align: left;
 }

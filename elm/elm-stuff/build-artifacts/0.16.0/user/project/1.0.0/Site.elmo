@@ -55,7 +55,7 @@ Elm.Site.make = function (_elm) {
       _U.list([$Html$Attributes.id("jobtable"),$Html$Attributes.$class("shadow")]),
       A2($Basics._op["++"],
       _U.list([A2($Html.tr,
-      _U.list([]),
+      _U.list([$Html$Attributes.$class("jobTableHeader")]),
       _U.list([A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Organization)),$Html$Attributes.$class("leftHead")]),
               _U.list([$Html.text(A2(sortIndicator,"Organization",$Models.Organization))]))

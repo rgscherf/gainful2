@@ -11289,26 +11289,26 @@ Elm.Site.make = function (_elm) {
       var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
-      var sortingAppend = F2(function (s,f) {
+      var sortIndicator = F2(function (s,f) {
          return A2($Basics._op["++"],_U.eq(A2($Models.sortJobs,f,$Maybe.Just(jobs)),$Maybe.Just($List.reverse(jobs))) ? "v " : "^ ",s);
       });
       return A2($Html.table,
       _U.list([$Html$Attributes.id("jobtable"),$Html$Attributes.$class("shadow")]),
       A2($Basics._op["++"],
       _U.list([A2($Html.tr,
-      _U.list([]),
+      _U.list([$Html$Attributes.$class("jobTableHeader")]),
       _U.list([A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Organization)),$Html$Attributes.$class("leftHead")]),
-              _U.list([$Html.text(A2(sortingAppend,"Organization",$Models.Organization))]))
+              _U.list([$Html.text(A2(sortIndicator,"Organization",$Models.Organization))]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Title)),$Html$Attributes.$class("leftHead")]),
-              _U.list([$Html.text(A2(sortingAppend,"Title",$Models.Title))]))
+              _U.list([$Html.text(A2(sortIndicator,"Title",$Models.Title))]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Salary)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text(A2(sortingAppend,"Salary/Wage",$Models.Salary))]))
+              _U.list([$Html.text(A2(sortIndicator,"Salary/Wage",$Models.Salary))]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.ClosingDate)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text(A2(sortingAppend,"Closing Date",$Models.ClosingDate))]))]))]),
+              _U.list([$Html.text(A2(sortIndicator,"Closing Date",$Models.ClosingDate))]))]))]),
       tbody));
    });
    var filterBox = F2(function (a,f) {

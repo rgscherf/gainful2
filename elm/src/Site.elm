@@ -100,11 +100,12 @@ viewJobs address fil maybeJobs =
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass
       sortIndicator s f =
+        -- TODO change "v" and "^" to indicators from FontAwesome
         ( if sortJobs f (Just jobs) == Just (List.reverse jobs) then "v " else "^ " ) ++ s
   in
     table [id "jobtable", class "shadow"]
       (
-        [ tr []
+        [ tr [class "jobTableHeader"]
           [ th [onClick address (SortJobs Organization), class "leftHead"] [text <| sortIndicator "Organization" Organization]
           , th [onClick address (SortJobs Title), class "leftHead"] [text <| sortIndicator "Title" Title]
           , th [onClick address (SortJobs Salary), class "rightHead"] [text <| sortIndicator "Salary/Wage" Salary]

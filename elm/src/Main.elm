@@ -133,7 +133,6 @@ toggleFilter field identifier fil =
                   (\x -> List.member x newFil.visibleOrgs)
                   (Maybe.withDefault []
                     <| Dict.get (regionOfOrg identifier) newFil.allRegions) -- outer .get is the list of orgs in the region
-
                 -- if so, no changes
                 then newFil.visibleRegions
                 -- if not, filter out the region
