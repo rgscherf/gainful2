@@ -43,9 +43,9 @@ type alias Filter =
   , visibleOrgs : List String
   }
 
-sortJobs : JobField -> Model -> Model
-sortJobs criteria model =
-  let currentJobsList = Maybe.withDefault [] model.jobs
+sortJobs : JobField -> Maybe Jobs -> Maybe Jobs
+sortJobs criteria jobs = 
+  let currentJobsList = Maybe.withDefault [] jobs
       sortedCurrentList =
         let divorg j = j.organization ++ j.division
         in
@@ -57,5 +57,5 @@ sortJobs criteria model =
           _ -> currentJobsList
   in
     if currentJobsList == sortedCurrentList
-      then { model | jobs = Just (List.reverse sortedCurrentList) }
-      else { model | jobs = Just sortedCurrentList }
+      then Just (List.reverse sortedCurrentList)
+      else Just sortedCurrentList

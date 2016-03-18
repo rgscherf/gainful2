@@ -11192,8 +11192,8 @@ Elm.Models.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var sortJobs = F2(function (criteria,model) {
-      var currentJobsList = A2($Maybe.withDefault,_U.list([]),model.jobs);
+   var sortJobs = F2(function (criteria,jobs) {
+      var currentJobsList = A2($Maybe.withDefault,_U.list([]),jobs);
       var sortedCurrentList = function () {
          var divorg = function (j) {    return A2($Basics._op["++"],j.organization,j.division);};
          var _p0 = criteria;
@@ -11204,8 +11204,7 @@ Elm.Models.make = function (_elm) {
             case "ClosingDate": return A2($List.sortBy,function (_) {    return _.dateClosing;},currentJobsList);
             default: return currentJobsList;}
       }();
-      return _U.eq(currentJobsList,sortedCurrentList) ? _U.update(model,{jobs: $Maybe.Just($List.reverse(sortedCurrentList))}) : _U.update(model,
-      {jobs: $Maybe.Just(sortedCurrentList)});
+      return _U.eq(currentJobsList,sortedCurrentList) ? $Maybe.Just($List.reverse(sortedCurrentList)) : $Maybe.Just(sortedCurrentList);
    });
    var Filter = F4(function (a,b,c,d) {    return {allRegions: a,allOrgs: b,visibleRegions: c,visibleOrgs: d};});
    var Model = F3(function (a,b,c) {    return {jobs: a,jobFilter: b,fromStorage: c};});
@@ -11290,6 +11289,9 @@ Elm.Site.make = function (_elm) {
       var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
+      var sortingAppend = F2(function (s,f) {
+         return A2($Basics._op["++"],_U.eq(A2($Models.sortJobs,f,$Maybe.Just(jobs)),$Maybe.Just($List.reverse(jobs))) ? "v " : "^ ",s);
+      });
       return A2($Html.table,
       _U.list([$Html$Attributes.id("jobtable"),$Html$Attributes.$class("shadow")]),
       A2($Basics._op["++"],
@@ -11297,16 +11299,16 @@ Elm.Site.make = function (_elm) {
       _U.list([]),
       _U.list([A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Organization)),$Html$Attributes.$class("leftHead")]),
-              _U.list([$Html.text("Organization")]))
+              _U.list([$Html.text(A2(sortingAppend,"Organization",$Models.Organization))]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Title)),$Html$Attributes.$class("leftHead")]),
-              _U.list([$Html.text("Title")]))
+              _U.list([$Html.text(A2(sortingAppend,"Title",$Models.Title))]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Salary)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text("Salary/Wage")]))
+              _U.list([$Html.text(A2(sortingAppend,"Salary/Wage",$Models.Salary))]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.ClosingDate)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text("Closing Date")]))]))]),
+              _U.list([$Html.text(A2(sortingAppend,"Closing Date",$Models.ClosingDate))]))]))]),
       tbody));
    });
    var filterBox = F2(function (a,f) {
@@ -11413,7 +11415,7 @@ Elm.Main.make = function (_elm) {
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
    var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
-   var makeFilter$ = F2(function (j,f) {
+   var makeSingleEntity = F2(function (j,f) {
       var _p0 = A2($Dict.get,j.region,f.allRegions);
       if (_p0.ctor === "Nothing") {
             return _U.update(f,
@@ -11446,7 +11448,7 @@ Elm.Main.make = function (_elm) {
          }
    });
    var makeFilter = F2(function (f,m) {
-      return _U.update(m,{jobFilter: A2(makeEntitiesVisible,m.fromStorage,A3($List.foldr,makeFilter$,f,A2($Maybe.withDefault,_U.list([]),m.jobs)))});
+      return _U.update(m,{jobFilter: A2(makeEntitiesVisible,m.fromStorage,A3($List.foldr,makeSingleEntity,f,A2($Maybe.withDefault,_U.list([]),m.jobs)))});
    });
    var toggleFilter = F3(function (field,identifier,fil) {
       var _p3 = field;
@@ -11493,11 +11495,11 @@ Elm.Main.make = function (_elm) {
    var update = F2(function (action,model) {
       var _p4 = action;
       switch (_p4.ctor)
-      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p4._0,model),_1: $Effects.none};
+      {case "SortJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: A2($Models.sortJobs,_p4._0,model.jobs)}),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: model,_1: getJobs};
          case "ShowInitialJobs": var newModel = A2(makeFilter,model.jobFilter,_U.update(model,{jobs: _p4._0}));
-           return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};
+           return {ctor: "_Tuple2",_0: _U.update(newModel,{jobs: A2($Models.sortJobs,$Models.Organization,newModel.jobs)}),_1: $Effects.none};
          case "FromStorage": var newModel = _U.update(model,{fromStorage: _p4._0});
            return {ctor: "_Tuple2",_0: A2(makeFilter,newModel.jobFilter,newModel),_1: $Effects.none};
          default: var newModel = _U.update(model,{jobFilter: A3(toggleFilter,_p4._0,_p4._1,model.jobFilter)});
@@ -11535,7 +11537,7 @@ Elm.Main.make = function (_elm) {
                              ,toggleFilter: toggleFilter
                              ,makeFilter: makeFilter
                              ,makeEntitiesVisible: makeEntitiesVisible
-                             ,makeFilter$: makeFilter$
+                             ,makeSingleEntity: makeSingleEntity
                              ,jobsUrl: jobsUrl
                              ,getJobs: getJobs
                              ,decodeJob: decodeJob

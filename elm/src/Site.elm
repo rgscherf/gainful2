@@ -99,14 +99,16 @@ viewJobs address fil maybeJobs =
       shaded = List.concat <| List.repeat (List.length jobs) [True, False]
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass
+      sortIndicator s f =
+        ( if sortJobs f (Just jobs) == Just (List.reverse jobs) then "v " else "^ " ) ++ s
   in
     table [id "jobtable", class "shadow"]
       (
         [ tr []
-          [ th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization"]
-          , th [onClick address (SortJobs Title), class "leftHead"] [text "Title"]
-          , th [onClick address (SortJobs Salary), class "rightHead"] [text "Salary/Wage"]
-          , th [onClick address (SortJobs ClosingDate), class "rightHead"] [text "Closing Date"]
+          [ th [onClick address (SortJobs Organization), class "leftHead"] [text <| sortIndicator "Organization" Organization]
+          , th [onClick address (SortJobs Title), class "leftHead"] [text <| sortIndicator "Title" Title]
+          , th [onClick address (SortJobs Salary), class "rightHead"] [text <| sortIndicator "Salary/Wage" Salary]
+          , th [onClick address (SortJobs ClosingDate), class "rightHead"] [text <| sortIndicator "Closing Date" ClosingDate]
           ]
         ]
         ++ tbody
@@ -115,7 +117,6 @@ viewJobs address fil maybeJobs =
 individualJob : (Bool, Job) -> List Html
 individualJob (shaded, job) =
   let
-
       orgAndDiv = if job.division /= "" then job.organization ++ ", " ++ job.division else job.organization
       rowClass = if shaded then "shadedRow" else "unshadedRow"
   in

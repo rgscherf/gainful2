@@ -115,11 +115,11 @@ Elm.Main.make = function (_elm) {
    var update = F2(function (action,model) {
       var _p4 = action;
       switch (_p4.ctor)
-      {case "SortJobs": return {ctor: "_Tuple2",_0: A2($Models.sortJobs,_p4._0,model),_1: $Effects.none};
+      {case "SortJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: A2($Models.sortJobs,_p4._0,model.jobs)}),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "GetJobs": return {ctor: "_Tuple2",_0: model,_1: getJobs};
          case "ShowInitialJobs": var newModel = A2(makeFilter,model.jobFilter,_U.update(model,{jobs: _p4._0}));
-           return {ctor: "_Tuple2",_0: A2($Models.sortJobs,$Models.Organization,newModel),_1: $Effects.none};
+           return {ctor: "_Tuple2",_0: _U.update(newModel,{jobs: A2($Models.sortJobs,$Models.Organization,newModel.jobs)}),_1: $Effects.none};
          case "FromStorage": var newModel = _U.update(model,{fromStorage: _p4._0});
            return {ctor: "_Tuple2",_0: A2(makeFilter,newModel.jobFilter,newModel),_1: $Effects.none};
          default: var newModel = _U.update(model,{jobFilter: A3(toggleFilter,_p4._0,_p4._1,model.jobFilter)});
