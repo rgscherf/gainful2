@@ -4,7 +4,7 @@ from parsing.parsinglib import organizations
 from django.core.management.base import BaseCommand
 
 orgs = [ organizations.Mississauga()
-          , organizations.Victoria()
+        #   , organizations.Victoria() # removed because nonwaged salaries are no longer posted.
           , organizations.Toronto()
 #         , organizations.Hamilton()
 #         , organizations.CRD()

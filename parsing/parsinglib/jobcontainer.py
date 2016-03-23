@@ -1,4 +1,5 @@
 from ..models import Job
+import datetime
 
 class JobContainer():
     def __init__(self):
@@ -7,6 +8,7 @@ class JobContainer():
         self.division = None
         self.date_posted = None
         self.date_closing = None
+        self.date_collected = None
         self.url_detail = None
         self.salary_waged = None
         self.salary_amount = None
@@ -24,18 +26,20 @@ class JobContainer():
     def cleanup(self):
         self.title = self.title.title() if self.title.isupper() else self.title
         self.salary_waged = True if self.salary_amount < 5000 else False # totally arbitray amount
+        self.date_collected = datetime.date.today()
 
     def get_fields(self):
-        return [self.organization
-                , self.title
-                , self.division
-                , self.date_posted
-                , self.date_closing
-                , self.url_detail
-                , self.salary_waged
-                , self.salary_amount
-                , self.region
-                ]
+        return [ self.organization
+               , self.title
+               , self.division
+               , self.date_posted
+               , self.date_closing
+               , self.date_collected
+               , self.url_detail
+               , self.salary_waged
+               , self.salary_amount
+               , self.region
+               ]
 
     def validate(self):
         return False if None in self.get_fields() else True
@@ -59,6 +63,7 @@ class JobContainer():
                     , salary_waged=self.salary_waged
                     , salary_amount=self.salary_amount
                     , region=self.region
+                    , date_collected = self.date_collected
                     )
             j.save()
 

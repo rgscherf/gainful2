@@ -228,10 +228,11 @@ class Victoria(Organization):
             job = JobContainer()
             cols = row.find_all('td')
             # insert these fields before tags are stripped from columns!
-            job.url_detail = "http://victoria.ca{}".format(cols[6].a["href"])
+            job.url_detail = cols[0].a["href"]
+            print(job.url_detail)
             if not job.is_unique():
                 continue
-            job.salary_amount = self.get_salary_from_pdf("http://victoria.ca/{}".format(cols[6].a["href"]))
+            job.salary_amount = self.get_salary_from_pdf(job.url_detail)
 
             # information for these fields can be taken from stripped cols
             cols = [elem.text.strip() for elem in cols]
