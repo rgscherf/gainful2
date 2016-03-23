@@ -1,3 +1,5 @@
+/* PAGE HEADER */
+
 nav {
   background-color: #8BBFA4;
   height: 80px;
@@ -13,9 +15,19 @@ nav {
   color: black;
 }
 
+.nav-icon {
+  position: relative;
+  float: right;
+  top: 20px;
+  color: black;
+}
+
+
+/* FILTER BOX */
+
 #filterwrapper {
   display: flex;
-  width: 90%;
+  width: 95%;
   background-color: #8874EC;
   margin-left: auto;
   margin-right: auto;
@@ -25,7 +37,7 @@ nav {
 }
 
 #filternewsletter {
-  padding-left: 10px;
+  padding-left: 15px;
   padding-right: 10px;
   border-left: 1px solid black;
   width: 150px;
@@ -39,7 +51,7 @@ nav {
 
 #filterannounce {
   width: 130px;
-  padding-left: 10px;
+  padding-left: 5px;
   font-family: 'Lobster Two', cursive;
   font-size: 2em;
   text-align: center;
@@ -68,6 +80,9 @@ button:focus {
   outline: none;
 }
 
+
+/* JOB TABLE */
+
 .notVisible {
   box-shadow: inset 3px 3px 3px 0px #5F466B;
 }
@@ -76,8 +91,43 @@ button:focus {
 #jobtable {
   margin-left: auto;
   margin-right: auto;
-  width: 90%;
+  width: 95%;
 }
+
+td {
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.jobTableHeader {
+  font-size: 1.1em;
+  height: 30px;
+}
+
+.leftHead {
+  text-align: left;
+  padding-left: 3px;
+}
+
+.rightHead {
+  text-align: right;
+  padding-right: 3px;
+}
+
+th {
+  background-color: #8874EC;
+}
+
+.shadedRow {
+  background-color: #89C6D4;
+}
+
+.unshadedRow {
+  background-color: #8BB8D6;
+}
+
+
+/* GENERAL */
 
 .shadow {
   -webkit-box-shadow: 7px 6px 22px -12px rgba(0,0,0,0.76);
@@ -92,13 +142,6 @@ table {
   font-size: 13px;
 }
 
-.nav-icon {
-  position: relative;
-  float: right;
-  top: 20px;
-  color: black;
-}
-
 body {
   background: #8BBFA4;
   font-family: 'Roboto', 'Open Sans', sans-serif;
@@ -110,29 +153,4 @@ html {
 
 .spacer {
   height: 20px;
-}
-
-.jobTableHeader {
-  font-size: 1.1em;
-  height: 30px;
-}
-
-.leftHead {
-  text-align: left;
-}
-
-.rightHead {
-  text-align: right;
-}
-
-th {
-  background-color: #8874EC;
-}
-
-.shadedRow {
-  background-color: #89C6D4;
-}
-
-.unshadedRow {
-  background-color: #8BB8D6;
 }

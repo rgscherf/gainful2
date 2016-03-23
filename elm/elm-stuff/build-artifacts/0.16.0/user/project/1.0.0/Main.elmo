@@ -22,16 +22,27 @@ Elm.Main.make = function (_elm) {
    $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
-   var decodeJob = A9($Json$Decode.object8,
-   $Models.Job,
-   A2($Json$Decode._op[":="],"title",$Json$Decode.string),
-   A2($Json$Decode._op[":="],"organization",$Json$Decode.string),
-   A2($Json$Decode._op[":="],"division",$Json$Decode.string),
-   A2($Json$Decode._op[":="],"url_detail",$Json$Decode.string),
-   A2($Json$Decode._op[":="],"date_closing",$Json$Decode.string),
-   A2($Json$Decode._op[":="],"salary_waged",$Json$Decode.bool),
-   A2($Json$Decode._op[":="],"salary_amount",$Json$Decode.$float),
-   A2($Json$Decode._op[":="],"region",$Json$Decode.string));
+   var decodeJob = function () {
+      var cons = $Json$Decode.succeed;
+      var apply = $Json$Decode.object2(F2(function (x,y) {    return x(y);}));
+      return A2(apply,
+      A2(apply,
+      A2(apply,
+      A2(apply,
+      A2(apply,
+      A2(apply,
+      A2(apply,
+      A2(apply,
+      A2(apply,cons($Models.Job),A2($Json$Decode._op[":="],"title",$Json$Decode.string)),
+      A2($Json$Decode._op[":="],"organization",$Json$Decode.string)),
+      A2($Json$Decode._op[":="],"division",$Json$Decode.string)),
+      A2($Json$Decode._op[":="],"url_detail",$Json$Decode.string)),
+      A2($Json$Decode._op[":="],"date_closing",$Json$Decode.string)),
+      A2($Json$Decode._op[":="],"salary_waged",$Json$Decode.bool)),
+      A2($Json$Decode._op[":="],"salary_amount",$Json$Decode.$float)),
+      A2($Json$Decode._op[":="],"region",$Json$Decode.string)),
+      A2($Json$Decode._op[":="],"date_posted",$Json$Decode.string));
+   }();
    var decodeJobList = $Json$Decode.list(decodeJob);
    var jobsUrl = "http://localhost:8000/jobs/";
    var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));

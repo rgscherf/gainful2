@@ -19,6 +19,7 @@ type alias Job =
   , salaryWaged : Bool
   , salaryAmount : Float
   , region : String
+  , datePosted : String
   }
 
 type JobField
@@ -26,6 +27,7 @@ type JobField
   | Organization
   | Salary
   | ClosingDate
+  | PostingDate
   | Region
 
 type alias Jobs = List Job
@@ -44,7 +46,7 @@ type alias Filter =
   }
 
 sortJobs : JobField -> Maybe Jobs -> Maybe Jobs
-sortJobs criteria jobs = 
+sortJobs criteria jobs =
   let currentJobsList = Maybe.withDefault [] jobs
       sortedCurrentList =
         let divorg j = j.organization ++ j.division
@@ -54,6 +56,7 @@ sortJobs criteria jobs =
           Organization -> List.sortBy divorg currentJobsList
           Salary -> List.sortBy .salaryAmount currentJobsList
           ClosingDate -> List.sortBy .dateClosing currentJobsList
+          PostingDate -> List.sortBy .datePosted currentJobsList
           _ -> currentJobsList
   in
     if currentJobsList == sortedCurrentList

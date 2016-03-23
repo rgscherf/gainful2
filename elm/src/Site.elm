@@ -101,17 +101,18 @@ viewJobs address fil maybeJobs =
       shaded = List.concat <| List.repeat (List.length jobs) [True, False]
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass
-      sortIndicator s f =
-        -- TODO change "v" and "^" to indicators from FontAwesome
-        ( if sortJobs f (Just jobs) == Just (List.reverse jobs) then "v " else "^ " ) ++ s
+      -- sortIndicator s f =
+      --   -- TODO change "v" and "^" to indicators from FontAwesome
+      --   ( if sortJobs f (Just jobs) == Just (List.reverse jobs) then "v " else "^ " ) ++ s
   in
     table [id "jobtable", class "shadow"]
       (
         [ tr [class "jobTableHeader"]
-          [ th [onClick address (SortJobs Organization), class "leftHead"] [text <| sortIndicator "Organization" Organization]
-          , th [onClick address (SortJobs Title), class "leftHead"] [text <| sortIndicator "Title" Title]
-          , th [onClick address (SortJobs Salary), class "rightHead"] [text <| sortIndicator "Salary/Wage" Salary]
-          , th [onClick address (SortJobs ClosingDate), class "rightHead"] [text <| sortIndicator "Closing Date" ClosingDate]
+          [ th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization"]
+          , th [onClick address (SortJobs Title), class "leftHead"] [text "Title"]
+          , th [onClick address (SortJobs Salary), class "rightHead"] [text "Salary/Wage"]
+          , th [onClick address (SortJobs PostingDate), class "rightHead"] [text "Posted"]
+          , th [onClick address (SortJobs ClosingDate), class "rightHead"] [text "Closing"]
           ]
         ]
         ++ tbody
@@ -131,6 +132,7 @@ individualJob (shaded, job) =
               [text job.title]
             ]
     , td [align "right"] [text <| salary job.salaryAmount job.salaryWaged]
+    , td [align "right"] [text <| job.datePosted]
     , td [align "right"] [text job.dateClosing]
     ]
   ]

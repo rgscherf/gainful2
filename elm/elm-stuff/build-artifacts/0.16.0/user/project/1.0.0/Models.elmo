@@ -22,6 +22,7 @@ Elm.Models.make = function (_elm) {
             case "Organization": return A2($List.sortBy,divorg,currentJobsList);
             case "Salary": return A2($List.sortBy,function (_) {    return _.salaryAmount;},currentJobsList);
             case "ClosingDate": return A2($List.sortBy,function (_) {    return _.dateClosing;},currentJobsList);
+            case "PostingDate": return A2($List.sortBy,function (_) {    return _.datePosted;},currentJobsList);
             default: return currentJobsList;}
       }();
       return _U.eq(currentJobsList,sortedCurrentList) ? $Maybe.Just($List.reverse(sortedCurrentList)) : $Maybe.Just(sortedCurrentList);
@@ -29,12 +30,13 @@ Elm.Models.make = function (_elm) {
    var Filter = F4(function (a,b,c,d) {    return {allRegions: a,allOrgs: b,visibleRegions: c,visibleOrgs: d};});
    var Model = F3(function (a,b,c) {    return {jobs: a,jobFilter: b,fromStorage: c};});
    var Region = {ctor: "Region"};
+   var PostingDate = {ctor: "PostingDate"};
    var ClosingDate = {ctor: "ClosingDate"};
    var Salary = {ctor: "Salary"};
    var Organization = {ctor: "Organization"};
    var Title = {ctor: "Title"};
-   var Job = F8(function (a,b,c,d,e,f,g,h) {
-      return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g,region: h};
+   var Job = F9(function (a,b,c,d,e,f,g,h,i) {
+      return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g,region: h,datePosted: i};
    });
    var FromStorage = function (a) {    return {ctor: "FromStorage",_0: a};};
    var ToggleFilter = F2(function (a,b) {    return {ctor: "ToggleFilter",_0: a,_1: b};});
@@ -54,6 +56,7 @@ Elm.Models.make = function (_elm) {
                                ,Organization: Organization
                                ,Salary: Salary
                                ,ClosingDate: ClosingDate
+                               ,PostingDate: PostingDate
                                ,Region: Region
                                ,Model: Model
                                ,Filter: Filter

@@ -214,15 +214,19 @@ getJobs =
 
 decodeJob : Decoder Job
 decodeJob =
-  D.object8 Job
-    ("title" := D.string)
-    ("organization" := D.string)
-    ("division" := D.string)
-    ("url_detail" := D.string)
-    ("date_closing" := D.string)
-    ("salary_waged" := D.bool)
-    ("salary_amount" := D.float)
-    ("region" := D.string)
+    let apply = D.object2 (<|)
+        cons = D.succeed
+    in
+    cons Job
+      `apply` ("title" := D.string)
+      `apply` ("organization" := D.string)
+      `apply` ("division" := D.string)
+      `apply` ("url_detail" := D.string)
+      `apply` ("date_closing" := D.string)
+      `apply` ("salary_waged" := D.bool)
+      `apply` ("salary_amount" := D.float)
+      `apply` ("region" := D.string)
+      `apply` ("date_posted" := D.string)
 
 decodeJobList : Decoder Jobs
 decodeJobList = D.list decodeJob
