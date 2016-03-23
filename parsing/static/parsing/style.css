@@ -50,6 +50,10 @@ button {
   border-radius: 5px;
 }
 
+button:focus {
+  outline: none;
+}
+
 .notVisible {
   box-shadow: inset 3px 3px 3px 0px #5F466B;
 }
