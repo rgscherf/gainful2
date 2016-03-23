@@ -65,22 +65,24 @@ filterBox a f =
   in
     [div [id "filterwrapper", class "shadow"]
       [ div
+        [ id "filterannounce" ]
+        [ text <| "Filter jobs" ]
+      , div
         [id "filtertable"]
-        [table []
+        [ table
+          []
           [ tr []
-            [ td [class "filtertitle"] [text "Filter by region:"]
+            [ td [class "filtertitle"] [text "...by region:"]
             , td [] <| ( List.map (btn f Region)
                         <| List.sort
                         <| Dict.keys f.allRegions )
             ]
+          , tr [] [td [] [text <| " "]]
           , tr []
-            [ td [class "filtertitle"] [text "Filter by organization:"]
+            [ td [class "filtertitle"] [text "...by organization:"]
             , td [] <| ( List.map (btn f Organization)
                         <| List.sort
-                        <| Dict.keys f.allOrgs )
-            ]
-          ]
-        ]
+                        <| Dict.keys f.allOrgs )]]]
       , div
           [id "filternewsletter"]
           [ button [] [text "Save filters to daily newsletter"]]

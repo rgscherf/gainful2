@@ -11327,17 +11327,19 @@ Elm.Site.make = function (_elm) {
       });
       return _U.list([A2($Html.div,
       _U.list([$Html$Attributes.id("filterwrapper"),$Html$Attributes.$class("shadow")]),
-      _U.list([A2($Html.div,
+      _U.list([A2($Html.div,_U.list([$Html$Attributes.id("filterannounce")]),_U.list([$Html.text("Filter jobs")]))
+              ,A2($Html.div,
               _U.list([$Html$Attributes.id("filtertable")]),
               _U.list([A2($Html.table,
               _U.list([]),
               _U.list([A2($Html.tr,
                       _U.list([]),
-                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("Filter by region:")]))
+                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("...by region:")]))
                               ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Region),$List.sort($Dict.keys(f.allRegions))))]))
+                      ,A2($Html.tr,_U.list([]),_U.list([A2($Html.td,_U.list([]),_U.list([$Html.text(" ")]))]))
                       ,A2($Html.tr,
                       _U.list([]),
-                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("Filter by organization:")]))
+                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("...by organization:")]))
                               ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$List.sort($Dict.keys(f.allOrgs))))]))]))]))
               ,A2($Html.div,
               _U.list([$Html$Attributes.id("filternewsletter")]),

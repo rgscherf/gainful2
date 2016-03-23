@@ -25,7 +25,10 @@ nav {
 }
 
 #filternewsletter {
-  width: 150;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-left: 1px solid black;
+  width: 150px;
 }
 
 #filtertable {
@@ -34,11 +37,22 @@ nav {
   margin-right: auto;
 }
 
+#filterannounce {
+  width: 130px;
+  padding-left: 10px;
+  font-family: 'Lobster Two', cursive;
+  font-size: 2em;
+  text-align: center;
+
+}
+
 .filtertitle {
   margin: 5px;
+  padding-right: 10px;
   font-family: 'Lobster Two', cursive;
-  width: 185px;
+  width: 150px;
   font-size: 1.7em;
+  text-align: right;
 }
 
 button {
@@ -88,6 +102,10 @@ table {
 body {
   background: #8BBFA4;
   font-family: 'Roboto', 'Open Sans', sans-serif;
+}
+
+html {
+    height: 102%;
 }
 
 .spacer {
