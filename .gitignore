@@ -1,6 +1,9 @@
 # Elm build stuff
 elm/elm-stuff
 
+# Vim swapfiles
+*.swp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
