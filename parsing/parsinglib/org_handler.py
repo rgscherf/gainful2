@@ -4,120 +4,47 @@
 # import os
 import requests
 import re
-from itertools import takewhile, dropwhile
 from datetime import date, timedelta
+from itertools import takewhile, dropwhile
 from bs4 import BeautifulSoup
 from .jobcontainer import JobContainer
-from .org_urls import urls as u
+from .org_urls import urls
+from .icims_utils import get_icims_jobs
 import dateutil.parser as d
 
 
-def fail_re(retext, msg):
-    print(retext)
-    print()
-    print(msg)
-    raise NotImplementedError
-
-def dump_soup(soup):
-    ret = ""
-    for child in soup.children:
-        ret += child.text
-    return ret
-
-
 class Organization():
-    def __init__(self, name):
-        self.request_url = u[name]
+    def __init__(self, org_name):
+        request_url = urls[org_name]
+        r = requests.get(request_url)
+        self.soup = BeautifulSoup(r.text, "html5lib")
 
     def parse(self, soup):
         raise NotImplementedError
+
+
+class PeelRegion(Organization):
+    def __init__(self):
+        Organization.__init__(self, "peel_region")
+
+    def parse(self):
+        get_icims_jobs("GTA - Peel", "Peel Region", self.soup)
 
 
 class Mississauga(Organization):
     def __init__(self):
         Organization.__init__(self, "mississauga")
 
-    def parse(self, soup):
-        job_table = soup.find(class_="iCIMS_JobsTable").tbody
-        rows = job_table.find_all("tr")
-        for row in rows:
-            job = JobContainer()
-            cols = row.find_all("td")
-            job.url_detail = cols[1].a["href"]
-            if not job.is_unique():
-                continue
-            job.region = "GTA - Peel"
-            job.organization = "Mississauga"
-            job.title = cols[1].a.text.strip()
-            date_posted_text = cols[3].find_all("span")[1].text.strip()
-            job.date_posted = d.parse(date_posted_text).date()
-            self.parse_detail_page(job)
-            job.save()
-
-    def parse_detail_page(self, job):
-        """ Grab mississauga info from detail page:
-        division, salary type and amount, and closing date.
-        """
-        r = requests.get(job.url_detail)
-        soup = BeautifulSoup(r.text, "html5lib")
-        job_text = soup.find(class_="iCIMS_Expandable_Text").text
-        job.salary_amount = self.salary(job_text)
-        job.division = self.division(job_text)
-        job.date_closing = self.closing(job_text)
-
-    def closing(self, text):
-        fallback = date.today() + timedelta(days=21)
-        search = re.compile(r"Closing Date:(| )([\S|\s]*[0-9](, |th, )[0-9]{4})")
-        result = search.search(text)
-        if result:
-            result = result.group(2)
-            try:
-                closing = d.parse(result).date()
-            except ValueError:
-                closing = fallback
-        else:
-            closing = fallback
-        return closing
-
-    def division(self, text):
-        if "Division:" in text:
-            search = re.compile(r"Division:(| )([\w\s]*)")
-        elif "Unit:" in text:
-            search = re.compile(r"Unit:(| )([\w\s]*)")
-        elif "Department:" in text:
-            search = re.compile(r"Department:(| )([\w\s]*)")
-        else:
-            return ""
-        result = search.search(text)
-        if result:
-            result = result.group(2).strip()
-        else:
-            fail_re(text, "IMPLEMENT DIVISION PARSE")
-        return result
-
-    def salary(self, text):
-        search = re.compile(r"\$([0-9]*.[0-9]*)")
-        result = search.search(text)
-        if result:
-            result = result.group()
-            result = result[1:]
-            if "," in result:
-                result = "".join(filter(lambda x: x != ",", result))
-            try:
-                result = float(result)
-            except ValueError:
-                result = 0
-        else:
-            result = 0
-        return result
+    def parse(self):
+        get_icims_jobs("GTA - Peel", "Mississauga", self.soup)
 
 
 class Toronto(Organization):
     def __init__(self):
         Organization.__init__(self, "toronto")
 
-    def parse(self, soup):
-        job_table = soup.find("table", "job_list_table")
+    def parse(self):
+        job_table = self.soup.find("table", "job_list_table")
         rows = job_table.find_all('tr')[1:]
         for row in rows:
             job = JobContainer()
@@ -133,7 +60,7 @@ class Toronto(Organization):
          """
         r = requests.get(job.url_detail)
         soup = BeautifulSoup(r.text, "html5lib")
-        job.region = "GTA"
+        job.region = "GTA - Toronto"
         job.organization = "Toronto"
         job.title = soup.find("div", class_="tableheadertext_job_description").text.strip()
         rows = soup.find("table", class_="tablebackground_job_description").find_all("tr")
@@ -161,9 +88,19 @@ class Toronto(Organization):
         amount = float("".join(s))
         return amount
 
-current_orgs = [ Toronto()
+
+
+# the main parse util calls find_jobs to kick off web scraping.
+# make sure current_orgs is always up to date.
+
+current_orgs = [ PeelRegion()
                , Mississauga()
+               , Toronto()
                ]
+
+def find_jobs():
+    for o in current_orgs:
+        o.parse()
 
 # def get_pdf(url):
 #     """ Retrieve PDF from a URL.

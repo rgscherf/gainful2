@@ -21,7 +21,11 @@ class JobContainer():
         if not self.url_detail:
             raise KeyError("Queried record uniqueness before detail URL set: {}".format(self))
         else:
-            return True if len(Job.objects.filter(url_detail=self.url_detail)) == 0 else False
+            if len(Job.objects.filter(url_detail=self.url_detail)) == 0:
+                return True
+            else:
+                print("Job already exists in DB: {}".format(self.url_detail))
+                return False
 
     def cleanup(self):
         self.title = self.title.title() if self.title.isupper() else self.title
@@ -54,6 +58,7 @@ class JobContainer():
         if not self.validate():
             raise KeyError("Fields missing for {}".format(self))
         else:
+            print("Saved job to DB: {}".format(self))
             j = Job(organization=self.organization
                     , title=self.title
                     , division=self.division
