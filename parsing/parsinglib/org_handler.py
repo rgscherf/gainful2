@@ -1,13 +1,14 @@
-import json
-import shutil
-import os
+# import shutil
+# import PyPDF2
+# import json
+# import os
 import requests
-import PyPDF2
 import re
 from itertools import takewhile, dropwhile
 from datetime import date, timedelta
 from bs4 import BeautifulSoup
 from .jobcontainer import JobContainer
+from .org_urls import urls as u
 import dateutil.parser as d
 
 
@@ -17,37 +18,6 @@ def fail_re(retext, msg):
     print(msg)
     raise NotImplementedError
 
-
-def get_pdf(url):
-    """ Retrieve PDF from a URL.
-    :param url: string pointing to a pdf URL
-    :rtype string of PDF filename
-    """
-    filename = 'out.pdf'
-    r = requests.get(url, stream=True)
-    if r.status_code == 200:
-        with open(filename, 'wb') as OUTFILE:
-            shutil.copyfileobj(r.raw, OUTFILE)
-        return filename
-    else:
-        raise KeyError("Could not retrieve job description PDF.")
-
-
-def pdf_to_string(filename):
-    """Return the text of a PDF.
-    :param filename: string with root (no file extension) of filename
-    :rtype string of text in PDF
-    """
-    pdf = open(filename, 'rb')
-    pdfr = PyPDF2.PdfFileReader(pdf)
-    string = ""
-    for i in range(pdfr.getNumPages()):
-        page = pdfr.getPage(i)
-        string += page.extractText()
-    pdf.close()
-    os.remove(filename)
-    return string
-
 def dump_soup(soup):
     ret = ""
     for child in soup.children:
@@ -55,12 +25,9 @@ def dump_soup(soup):
     return ret
 
 
-
 class Organization():
     def __init__(self, name):
-        with open(os.path.join(os.path.abspath("."), "parsing/parsinglib/orgs.json")) as FILE:
-            d = json.load(FILE)
-            self.request_url = d[name]["request_url"]
+        self.request_url = u[name]
 
     def parse(self, soup):
         raise NotImplementedError
@@ -79,7 +46,7 @@ class Mississauga(Organization):
             job.url_detail = cols[1].a["href"]
             if not job.is_unique():
                 continue
-            job.region = "GTA"
+            job.region = "GTA - Peel"
             job.organization = "Mississauga"
             job.title = cols[1].a.text.strip()
             date_posted_text = cols[3].find_all("span")[1].text.strip()
@@ -167,7 +134,7 @@ class Toronto(Organization):
         r = requests.get(job.url_detail)
         soup = BeautifulSoup(r.text, "html5lib")
         job.region = "GTA"
-        job.organization = "City of Toronto"
+        job.organization = "Toronto"
         job.title = soup.find("div", class_="tableheadertext_job_description").text.strip()
         rows = soup.find("table", class_="tablebackground_job_description").find_all("tr")
 
@@ -187,7 +154,6 @@ class Toronto(Organization):
         job.save()
 
     def salary(self, string):
-        # waged = True if "hour" in string.lower() else False
         s = "".join(dropwhile(lambda x: not x.isdigit(), string))
         s = "".join(takewhile(lambda x: not x.isspace(), s))
         if "," in s:
@@ -195,51 +161,84 @@ class Toronto(Organization):
         amount = float("".join(s))
         return amount
 
+current_orgs = [ Toronto()
+               , Mississauga()
+               ]
 
-class Victoria(Organization):
-    def __init__(self):
-        Organization.__init__(self, "victoria")
+# def get_pdf(url):
+#     """ Retrieve PDF from a URL.
+#     :param url: string pointing to a pdf URL
+#     :rtype string of PDF filename
+#     """
+#     filename = 'out.pdf'
+#     r = requests.get(url, stream=True)
+#     if r.status_code == 200:
+#         with open(filename, 'wb') as OUTFILE:
+#             shutil.copyfileobj(r.raw, OUTFILE)
+#         return filename
+#     else:
+#         raise KeyError("Could not retrieve job description PDF.")
+#
+#
+# def pdf_to_string(filename):
+#     """Return the text of a PDF.
+#     :param filename: string with root (no file extension) of filename
+#     :rtype string of text in PDF
+#     """
+#     pdf = open(filename, 'rb')
+#     pdfr = PyPDF2.PdfFileReader(pdf)
+#     string = ""
+#     for i in range(pdfr.getNumPages()):
+#         page = pdfr.getPage(i)
+#         string += page.extractText()
+#     pdf.close()
+#     os.remove(filename)
+#     return string
 
-    def get_salary_from_pdf(self, url):
-        """ Pull PDF from a URL and search it for salary information.
-        :param url: URL to pull PDF from
-        :rtype tuple of (is_job_waged, pay_amount [where 0 indicates no posted salary])
-        """
-        f = get_pdf(url)
-        text = pdf_to_string(f)
-        try:
-            # PDF has no structure. Best bet to search for salary is to look for a $! :(
-            #... take digits until we find a space
-            #... and then cast that flattened list of digits into a float
-            text = text.split("$")[1]
-            salary_text = list(takewhile(lambda x: x != " ", text))
-            salary_text = filter(lambda x: x != "\n", salary_text)
-            salary_text = "".join(salary_text)
-            r_salary = float(salary_text)
-        except IndexError:
-            r_salary = 0
-        return r_salary
-
-    def parse(self, soup):
-        job_table = soup.find("tbody")
-        rows = job_table.find_all('tr')
-        rows = rows [1:]
-        for row in rows:
-            job = JobContainer()
-            cols = row.find_all('td')
-            # insert these fields before tags are stripped from columns!
-            job.url_detail = cols[0].a["href"]
-            print(job.url_detail)
-            if not job.is_unique():
-                continue
-            job.salary_amount = self.get_salary_from_pdf(job.url_detail)
-
-            # information for these fields can be taken from stripped cols
-            cols = [elem.text.strip() for elem in cols]
-            job.title = cols[0]
-            job.region = "Vancouver Island"
-            job.organization = "City of Victoria"
-            job.division = cols[2]
-            job.date_closing = d.parse(cols[4]).date()
-            job.date_posted = date.today()
-            job.save()
+# class Victoria(Organization):
+#     def __init__(self):
+#         Organization.__init__(self, "victoria")
+#
+#     def get_salary_from_pdf(self, url):
+#         """ Pull PDF from a URL and search it for salary information.
+#         :param url: URL to pull PDF from
+#         :rtype tuple of (is_job_waged, pay_amount [where 0 indicates no posted salary])
+#         """
+#         f = get_pdf(url)
+#         text = pdf_to_string(f)
+#         try:
+#             # PDF has no structure. Best bet to search for salary is to look for a $! :(
+#             #... take digits until we find a space
+#             #... and then cast that flattened list of digits into a float
+#             text = text.split("$")[1]
+#             salary_text = list(takewhile(lambda x: x != " ", text))
+#             salary_text = filter(lambda x: x != "\n", salary_text)
+#             salary_text = "".join(salary_text)
+#             r_salary = float(salary_text)
+#         except IndexError:
+#             r_salary = 0
+#         return r_salary
+#
+#     def parse(self, soup):
+#         job_table = soup.find("tbody")
+#         rows = job_table.find_all('tr')
+#         rows = rows [1:]
+#         for row in rows:
+#             job = JobContainer()
+#             cols = row.find_all('td')
+#             # insert these fields before tags are stripped from columns!
+#             job.url_detail = cols[0].a["href"]
+#             print(job.url_detail)
+#             if not job.is_unique():
+#                 continue
+#             job.salary_amount = self.get_salary_from_pdf(job.url_detail)
+#
+#             # information for these fields can be taken from stripped cols
+#             cols = [elem.text.strip() for elem in cols]
+#             job.title = cols[0]
+#             job.region = "Vancouver Island"
+#             job.organization = "City of Victoria"
+#             job.division = cols[2]
+#             job.date_closing = d.parse(cols[4]).date()
+#             job.date_posted = date.today()
+#             job.save()

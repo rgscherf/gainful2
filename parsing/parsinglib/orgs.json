@@ -1,27 +1,15 @@
 {
     "toronto": {
-        "request_url": "https://www.brainhunter.com/frontoffice/searchSeekerJobAction.do?sitecode=pl389&locationPicker=Y&jobStream=&locationId=&levelIds=6&levelContent6=&keyword=&search=Search&order=&sortField=&goJobDetail=&sortedit=&externaljob=#searchSection",
-        "name": "City of Toronto"
+        "request_url": "https://www.brainhunter.com/frontoffice/searchSeekerJobAction.do?sitecode=pl389&locationPicker=Y&jobStream=&locationId=&levelIds=6&levelContent6=&keyword=&search=Search&order=&sortField=&goJobDetail=&sortedit=&externaljob=#searchSection"
     },
     "hamilton": {
-        "request_url": "https://hr.hamilton.ca/psc/hr9eapps/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?PortalActualURL=https%3a%2f%2fhr.hamilton.ca%2fpsc%2fhr9eapps%2fEMPLOYEE%2fHRMS%2fc%2fHRS_HRAM.HRS_CE.GBL&amp;PortalContentURL=https%3a%2f%2fhr.hamilton.ca%2fpsc%2fhr9eapps%2fEMPLOYEE%2fHRMS%2fc%2fHRS_HRAM.HRS_CE.GBL&amp;PortalContentProvider=HRMS&amp;PortalCRefLabel=Careers&amp;PortalRegistryName=EMPLOYEE&amp;PortalServletURI=https%3a%2f%2fhr.hamilton.ca%2fpsp%2fhr9eapps%2f&amp;PortalURI=https%3a%2f%2fhr.hamilton.ca%2fpsc%2fhr9eapps%2f&amp;PortalHostNode=HRMS&amp;NoCrumbs=yes&amp;PortalKeyStruct=yes",
-        "name": "Hamilton"
+        "request_url": "https://hr.hamilton.ca/psc/hr9eapps/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?PortalActualURL=https%3a%2f%2fhr.hamilton.ca%2fpsc%2fhr9eapps%2fEMPLOYEE%2fHRMS%2fc%2fHRS_HRAM.HRS_CE.GBL&amp;PortalContentURL=https%3a%2f%2fhr.hamilton.ca%2fpsc%2fhr9eapps%2fEMPLOYEE%2fHRMS%2fc%2fHRS_HRAM.HRS_CE.GBL&amp;PortalContentProvider=HRMS&amp;PortalCRefLabel=Careers&amp;PortalRegistryName=EMPLOYEE&amp;PortalServletURI=https%3a%2f%2fhr.hamilton.ca%2fpsp%2fhr9eapps%2f&amp;PortalURI=https%3a%2f%2fhr.hamilton.ca%2fpsc%2fhr9eapps%2f&amp;PortalHostNode=HRMS&amp;NoCrumbs=yes&amp;PortalKeyStruct=yes"
     },
     "mississauga": {
-        "request_url": "https://careers-mississauga.icims.com/jobs/search?hashed=0&in_iframe=1",
-        "name": "Mississauga"
-    },
-    "victoria": {
-        "request_url": "https://careersen-victoria.icims.com/jobs/search?ss=1&amp&amp&hashed=-435680149&amp&amp&in_iframe=1&in_iframe=1",
-        "name": "City of Victoria"
-    },
-    "crd": {
-        "request_url": "https://www.crd.bc.ca/about/careers/current-opportunities",
-        "name": "CRD"
+        "request_url": "https://careers-mississauga.icims.com/jobs/search?hashed=0&in_iframe=1"
     },
     "ops": {
-        "request_url": "https://www.gojobs.gov.on.ca/Search.aspx?Language=English&rg=REGION-TRNT&cl=CAREERLEVEL-NOTSLCTD",
-        "name": "OPS"
+        "request_url": "https://www.gojobs.gov.on.ca/Search.aspx?Language=English&rg=REGION-TRNT&cl=CAREERLEVEL-NOTSLCTD"
     },
     "bcps": {
         "request_url": "https://search.employment.gov.bc.ca/cgi-bin/a/searchjobs_quick.cgi?a=search&page=1&search=Search%20Jobs&keywords_or=&region=Greater%20Victoria&order=open_date%20ASC&order=open_date&dir=DESC",

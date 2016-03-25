@@ -1,20 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-from parsing.parsinglib import organizations
+from parsing.parsinglib import org_handler
 from django.core.management.base import BaseCommand
 
-orgs = [ organizations.Mississauga()
-        #   , organizations.Victoria() # removed because nonwaged salaries are no longer posted.
-          , organizations.Toronto()
-#         , organizations.Hamilton()
-#         , organizations.CRD()
-#         , organizations.OPS()
-#         , organizations.BCPS()
-#         , organizations.CivicInfo()
-#         , organizations.CivicInfo_North_Central()
-#         , organizations.CivicInfo_Lower_Mainland()
-#         , organizations.AMCTO()
-        ]
+orgs = org_handler.current_orgs
 
 class Command(BaseCommand):
     def handle(self, *args, **options):

@@ -7,19 +7,23 @@ Think about rendering OPS and Federal jobs for each region?
 - DONE Toronto
 
 ## GTA - Peel
+- DONE Mississauga
+- Peel Region
 - Brampton
 - Caledon
-- DONE Mississauga
 
 ## GTA - York
+- York Region
 - Vaughan
 - Markham
 
 ## GTA - Durham
+- Durham Region
 - Oshawa
 - Pickering/Ajax?
 
 ## GTA - Halton
+- Halton Region
 - Oakville
 - Burlington
 - Milton
