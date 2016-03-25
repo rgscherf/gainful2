@@ -12,7 +12,6 @@ Elm.Repl.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
    var tsol = {ctor: "_Tuple0"};
-   var b = $Maybe.Nothing;
-   var deltron3030 = b;
-   return _elm.Repl.values = {_op: _op,b: b,deltron3030: deltron3030,tsol: tsol};
+   var deltron3030 = _U.eq(_U.list([1,2,3,4]),_U.list([4,3,2,1]));
+   return _elm.Repl.values = {_op: _op,deltron3030: deltron3030,tsol: tsol};
 };

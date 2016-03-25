@@ -29,6 +29,7 @@ type JobField
   | ClosingDate
   | PostingDate
   | Region
+  | URL
 
 type alias Jobs = List Job
 
@@ -45,20 +46,39 @@ type alias Filter =
   , visibleOrgs : List String
   }
 
+
 sortJobs : JobField -> Maybe Jobs -> Maybe Jobs
 sortJobs criteria jobs =
   let currentJobsList = Maybe.withDefault [] jobs
-      sortedCurrentList =
-        let divorg j = j.organization ++ j.division
-        in
-        case criteria of
-          Title -> List.sortBy .title currentJobsList
-          Organization -> List.sortBy divorg currentJobsList
-          Salary -> List.sortBy .salaryAmount currentJobsList
-          ClosingDate -> List.sortBy .dateClosing currentJobsList
-          PostingDate -> List.sortBy .datePosted currentJobsList
-          _ -> currentJobsList
+      sortedCurrentList = List.sortWith (compareJob criteria) currentJobsList
   in
     if currentJobsList == sortedCurrentList
       then Just (List.reverse sortedCurrentList)
       else Just sortedCurrentList
+
+compareJob : JobField -> Job -> Job -> Order
+compareJob f j k =
+  -- we use a special sorting function to deal with secondary sorting fields.
+  -- on Chrome, List.sortBy acted nondeterministically when comparing jobs with
+  -- identical fields in currentList and sortedCurrentList.
+  -- With this solution, if the compared fields on two jobs are equal, we compare the URL
+  -- fields to determine sort order. URLs are guaranteed to be unique.
+  -- (A job won't be entered into the database unless its URL is unique.)
+  let divorg a = a.organization ++ a.division
+      comp af bf a b = if af == bf then compareJob URL a b else if af > bf then GT else LT
+  in
+    case f of
+      URL ->
+        comp j.urlDetail k.urlDetail j k
+      Title ->
+        comp j.title k.title j k
+      Organization ->
+        comp (divorg j) (divorg k) j k
+      Salary ->
+        comp j.salaryAmount k.salaryAmount j k
+      PostingDate ->
+        comp j.datePosted k.datePosted j k
+      ClosingDate ->
+        comp j.dateClosing k.dateClosing j k
+      _ ->
+        comp j.urlDetail k.urlDetail j k

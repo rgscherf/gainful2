@@ -11192,23 +11192,27 @@ Elm.Models.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   var sortJobs = F2(function (criteria,jobs) {
-      var currentJobsList = A2($Maybe.withDefault,_U.list([]),jobs);
-      var sortedCurrentList = function () {
-         var divorg = function (j) {    return A2($Basics._op["++"],j.organization,j.division);};
-         var _p0 = criteria;
-         switch (_p0.ctor)
-         {case "Title": return A2($List.sortBy,function (_) {    return _.title;},currentJobsList);
-            case "Organization": return A2($List.sortBy,divorg,currentJobsList);
-            case "Salary": return A2($List.sortBy,function (_) {    return _.salaryAmount;},currentJobsList);
-            case "ClosingDate": return A2($List.sortBy,function (_) {    return _.dateClosing;},currentJobsList);
-            case "PostingDate": return A2($List.sortBy,function (_) {    return _.datePosted;},currentJobsList);
-            default: return currentJobsList;}
-      }();
-      return _U.eq(currentJobsList,sortedCurrentList) ? $Maybe.Just($List.reverse(sortedCurrentList)) : $Maybe.Just(sortedCurrentList);
-   });
    var Filter = F4(function (a,b,c,d) {    return {allRegions: a,allOrgs: b,visibleRegions: c,visibleOrgs: d};});
    var Model = F3(function (a,b,c) {    return {jobs: a,jobFilter: b,fromStorage: c};});
+   var URL = {ctor: "URL"};
+   var compareJob = F3(function (f,j,k) {
+      var comp = F4(function (af,bf,a,b) {    return _U.eq(af,bf) ? A3(compareJob,URL,a,b) : _U.cmp(af,bf) > 0 ? $Basics.GT : $Basics.LT;});
+      var divorg = function (a) {    return A2($Basics._op["++"],a.organization,a.division);};
+      var _p0 = f;
+      switch (_p0.ctor)
+      {case "URL": return A4(comp,j.urlDetail,k.urlDetail,j,k);
+         case "Title": return A4(comp,j.title,k.title,j,k);
+         case "Organization": return A4(comp,divorg(j),divorg(k),j,k);
+         case "Salary": return A4(comp,j.salaryAmount,k.salaryAmount,j,k);
+         case "PostingDate": return A4(comp,j.datePosted,k.datePosted,j,k);
+         case "ClosingDate": return A4(comp,j.dateClosing,k.dateClosing,j,k);
+         default: return A4(comp,j.urlDetail,k.urlDetail,j,k);}
+   });
+   var sortJobs = F2(function (criteria,jobs) {
+      var currentJobsList = A2($Maybe.withDefault,_U.list([]),jobs);
+      var sortedCurrentList = A2($List.sortWith,compareJob(criteria),currentJobsList);
+      return _U.eq(currentJobsList,sortedCurrentList) ? $Maybe.Just($List.reverse(sortedCurrentList)) : $Maybe.Just(sortedCurrentList);
+   });
    var Region = {ctor: "Region"};
    var PostingDate = {ctor: "PostingDate"};
    var ClosingDate = {ctor: "ClosingDate"};
@@ -11238,9 +11242,11 @@ Elm.Models.make = function (_elm) {
                                ,ClosingDate: ClosingDate
                                ,PostingDate: PostingDate
                                ,Region: Region
+                               ,URL: URL
                                ,Model: Model
                                ,Filter: Filter
-                               ,sortJobs: sortJobs};
+                               ,sortJobs: sortJobs
+                               ,compareJob: compareJob};
 };
 Elm.Site = Elm.Site || {};
 Elm.Site.make = function (_elm) {
