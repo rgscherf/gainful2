@@ -1,8 +1,12 @@
 # Elm build stuff
 elm/elm-stuff
 
-# Vim swapfiles
+# Vim
 *.swp
+*.un~
+
+# sqlite
+*.sqlite3
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
