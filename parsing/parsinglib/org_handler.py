@@ -39,6 +39,16 @@ class Mississauga(Organization):
         get_icims_jobs("GTA - Peel", "Mississauga", self.soup)
 
 
+class Brampton(Organization):
+    # brampton works, but does not capture closing dates for season vacancies
+    # (these dates are written inline on the page)
+    def __init__(self):
+        Organization.__init__(self, "brampton")
+
+    def parse(self):
+        get_icims_jobs("GTA - Peel", "Brampton", self.soup)
+
+
 class Toronto(Organization):
     def __init__(self):
         Organization.__init__(self, "toronto")
@@ -93,7 +103,8 @@ class Toronto(Organization):
 # the main parse util calls find_jobs to kick off web scraping.
 # make sure current_orgs is always up to date.
 
-current_orgs = [ PeelRegion()
+current_orgs = [ Brampton()
+               , PeelRegion()
                , Mississauga()
                , Toronto()
                ]

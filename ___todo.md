@@ -8,7 +8,7 @@ Think about rendering OPS and Federal jobs for each region?
 
 ## GTA - Peel
 - DONE Mississauga
-- Peel Region
+- DONE Peel Region
 - Brampton
 - Caledon
 
