@@ -9,7 +9,7 @@ from itertools import takewhile, dropwhile
 from bs4 import BeautifulSoup
 from .jobcontainer import JobContainer
 from .org_urls import urls
-from .icims_utils import get_icims_jobs
+from .utils_icims import get_icims_jobs
 import dateutil.parser as d
 
 
