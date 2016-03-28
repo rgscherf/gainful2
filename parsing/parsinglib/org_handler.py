@@ -49,6 +49,40 @@ class Brampton(Organization):
         get_icims_jobs("GTA - Peel", "Brampton", self.soup)
 
 
+class YorkRegion(Organization):
+    def __init__(self):
+        Organization.__init__(self, "york_region")
+
+    def make_url(cs):
+        """ there's a bunch of junk in these job urls
+        including an expiring token. Luckily, we can chop out the token
+        and the server will insert one for us on request.
+        (saving the chopped URL ensures we'll properly detect uniques in the DB)
+        """
+        tempurl = cs[1].a["href"]
+        tempurl = tempurl.split("clid=")[1].split("&BRID=")[0]
+        url = "http://clients.njoyn.com/cl2/xweb/Xweb.asp?clid={}".format(tempurl)
+        return url
+
+    def parse_detail_page(job):
+        req = requests.get(job.url_detail)
+        soup = BeautifulSoup(req.text, "html5lib")
+        TODO: parse deail page!!
+
+    def parse(self):
+        t = self.soup.find(id="searchtable").find_all("tr")[1:]
+        for r in t:
+            job = JobContainer()
+            cols = r.find_all("td")
+            job.url_detail = self.make_url(cols)
+            if not job.is_unique():
+                continue
+            job.region = "GTA - York"
+            job.organization = "York Region"
+            job.title = cols[1].text
+            job.date_closing = d.parse(cols[2].text).date()
+            self.parse_detail_page(job)
+
 class Toronto(Organization):
     def __init__(self):
         Organization.__init__(self, "toronto")
@@ -103,10 +137,11 @@ class Toronto(Organization):
 # the main parse util calls find_jobs to kick off web scraping.
 # make sure current_orgs is always up to date.
 
-current_orgs = [ Brampton()
-               , PeelRegion()
-               , Mississauga()
-               , Toronto()
+current_orgs = [ YorkRegion()
+               # , Brampton()
+               # , PeelRegion()
+               # , Mississauga()
+               # , Toronto()
                ]
 
 def find_jobs():
