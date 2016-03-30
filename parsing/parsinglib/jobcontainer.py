@@ -32,21 +32,12 @@ class JobContainer():
         self.salary_waged = True if self.salary_amount < 5000 else False # totally arbitray amount
         self.date_collected = datetime.date.today()
 
-    def get_fields(self):
-        return [ self.organization
-               , self.title
-               , self.division
-               , self.date_posted
-               , self.date_closing
-               , self.date_collected
-               , self.url_detail
-               , self.salary_waged
-               , self.salary_amount
-               , self.region
-               ]
-
     def validate(self):
-        return False if None in self.get_fields() else True
+        field_dict = self.__dict__
+        attributes = {k:v for k, v in field_dict.items() if not k.startswith("_")}
+        for k, v in attributes.items():
+            if v == None:
+                raise KeyError("Job {} was missing {}".format(self.url_detail, k))
 
     def save(self):
         """ Save job to DB, after final checks.
@@ -55,22 +46,20 @@ class JobContainer():
             print("{} tried to save a job that is not unique!".format(self.organization))
             return
         self.cleanup()
-        if not self.validate():
-            raise KeyError("Fields missing for {}".format(self))
-        else:
-            print("Saved job to DB: {}".format(self))
-            j = Job(organization=self.organization
-                    , title=self.title
-                    , division=self.division
-                    , date_posted=self.date_posted
-                    , date_closing=self.date_closing
-                    , url_detail=self.url_detail
-                    , salary_waged=self.salary_waged
-                    , salary_amount=self.salary_amount
-                    , region=self.region
-                    , date_collected = self.date_collected
-                    )
-            j.save()
+        self.validate()
+        print("Saved job to DB: {}".format(self))
+        j = Job(organization=self.organization
+                , title=self.title
+                , division=self.division
+                , date_posted=self.date_posted
+                , date_closing=self.date_closing
+                , url_detail=self.url_detail
+                , salary_waged=self.salary_waged
+                , salary_amount=self.salary_amount
+                , region=self.region
+                , date_collected = self.date_collected
+                )
+        j.save()
 
     def __str__(self):
         return "{} at {}".format(self.title, self.organization)

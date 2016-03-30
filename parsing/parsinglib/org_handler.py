@@ -40,7 +40,7 @@ class Mississauga(Organization):
 
 
 class Brampton(Organization):
-    # brampton works, but does not capture closing dates for season vacancies
+    # brampton works, but does not capture closing dates for seasonal vacancies
     # (these dates are written inline on the page)
     def __init__(self):
         Organization.__init__(self, "brampton")
@@ -53,7 +53,7 @@ class YorkRegion(Organization):
     def __init__(self):
         Organization.__init__(self, "york_region")
 
-    def make_url(cs):
+    def make_url(self, cs):
         """ there's a bunch of junk in these job urls
         including an expiring token. Luckily, we can chop out the token
         and the server will insert one for us on request.
@@ -64,10 +64,48 @@ class YorkRegion(Organization):
         url = "http://clients.njoyn.com/cl2/xweb/Xweb.asp?clid={}".format(tempurl)
         return url
 
-    def parse_detail_page(job):
+    def parse_detail_page(self, job):
+        def stringops_removechar(char, string):
+            if char in string:
+                return "".join(filter(lambda a: a != char, string))
+            else:
+                return string
         req = requests.get(job.url_detail)
         soup = BeautifulSoup(req.text, "html5lib")
-        TODO: parse deail page!!
+        info_table = soup.find("table").find_all("tr")
+        # search header table for basic info
+        for r in info_table:
+            cells = r.find_all("td")
+            field_name = cells[0].text
+            try:
+                val = cells[1].text.strip()
+            except IndexError:
+                continue
+            if "Department" in field_name:
+                if " Department" in val:
+                    val = val.split(" Department")[0]
+                job.division = val
+            elif "Date Posted" in field_name:
+                job.date_posted = d.parse(val)
+            elif "Date Closing" in field_name:
+                job.date_closing = d.parse(val)
+        if not job.date_closing:
+            job.date_closing = date.today() + timedelta(weeks=3)
+        # now searching the body text for salary information
+        # I think we only incur regex expense when we compile
+        # so iteration is not too too bad.
+        body = soup.find_all("p")
+        ex = re.compile(r"\$[0-9]*(.|,)[0-9]*")
+        for p in body:
+            text = p.text
+            result = ex.search(text)
+            if result:
+                result = result.group(0)[1:]
+                result = stringops_removechar(",", result)
+                job.salary_amount = float(result)
+            else:
+                pass
+
 
     def parse(self):
         t = self.soup.find(id="searchtable").find_all("tr")[1:]
@@ -80,8 +118,8 @@ class YorkRegion(Organization):
             job.region = "GTA - York"
             job.organization = "York Region"
             job.title = cols[1].text
-            job.date_closing = d.parse(cols[2].text).date()
             self.parse_detail_page(job)
+            job.save()
 
 class Toronto(Organization):
     def __init__(self):
