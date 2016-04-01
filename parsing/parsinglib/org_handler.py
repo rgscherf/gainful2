@@ -176,10 +176,10 @@ class Toronto(Organization):
 # make sure current_orgs is always up to date.
 
 current_orgs = [ YorkRegion()
-               # , Brampton()
-               # , PeelRegion()
-               # , Mississauga()
-               # , Toronto()
+               , Brampton()
+               , PeelRegion()
+               , Mississauga()
+               , Toronto()
                ]
 
 def find_jobs():
