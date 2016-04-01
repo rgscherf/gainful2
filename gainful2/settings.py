@@ -26,7 +26,7 @@ SECRET_KEY = '(dr!_lzd%7%2sn#olaw%o&)7@_=@)(j)+lr&w9oc!@@%zfunrt'
 DEBUG = False
 # DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -126,5 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = "~/gainful2-static/"
+STATIC_URL = 'http://159.203.41.72/static/'
+# STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATICFILES_DIRS = ('/root/gainful2/parsing/static/',)
