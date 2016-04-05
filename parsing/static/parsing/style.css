@@ -83,7 +83,7 @@ button:focus {
 
 /* JOB TABLE */
 
-.notVisible {
+.visible {
   box-shadow: inset 3px 3px 3px 0px #5F466B;
 }
 
