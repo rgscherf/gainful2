@@ -11,16 +11,9 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import dbsettings
 
 from django.core.exceptions import ImproperlyConfigured
-
-def get_env_variable(var):
-    try:
-        return os.environ[var]
-    except KeyError:
-        err = "Did not set {} environment variable!".format(var)
-        raise ImproperlyConfigured(err)
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -94,9 +87,9 @@ WSGI_APPLICATION = 'gainful2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': get_env_variable('DATABASE_NAME'),
-        'USER': get_env_variable('DATABASE_USER'),
-        'PASSWORD': get_env_variable('DATABASE_PASSWORD'),
+        'NAME': dbsettings.dbsettings['NAME'],
+        'USER': dbsettings.dbsettings['USER'],
+        'PASSWORD': dbsettings.dbsettings['PASSWORD'],
         'HOST': '',
         'PORT': '',
     }
