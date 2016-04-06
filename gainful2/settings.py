@@ -11,9 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
-import dbsettings
-
-from django.core.exceptions import ImproperlyConfigured
+from .dbsettings import dbsettings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -87,9 +85,9 @@ WSGI_APPLICATION = 'gainful2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': dbsettings.dbsettings['NAME'],
-        'USER': dbsettings.dbsettings['USER'],
-        'PASSWORD': dbsettings.dbsettings['PASSWORD'],
+        'NAME': dbsettings['NAME'],
+        'USER': dbsettings['USER'],
+        'PASSWORD': dbsettings['PASSWORD'],
         'HOST': '',
         'PORT': '',
     }
