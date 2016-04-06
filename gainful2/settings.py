@@ -12,6 +12,16 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
+from django.core.exceptions import ImproperlyConfigured
+
+def get_env_variable(var):
+    try:
+        return os.environ[var]
+    except KeyError:
+        err = "Did not set {} environment variable!".format(var)
+        raise ImproperlyConfigured(err)
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -24,7 +34,6 @@ SECRET_KEY = '(dr!_lzd%7%2sn#olaw%o&)7@_=@)(j)+lr&w9oc!@@%zfunrt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -84,8 +93,12 @@ WSGI_APPLICATION = 'gainful2.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': get_env_variable('DATABASE_NAME'),
+        'USER': get_env_variable('DATABASE_USER'),
+        'PASSWORD': get_env_variable('DATABASE_PASSWORD'),
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -126,7 +139,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-# STATIC_URL = 'http://159.203.41.72/static/'
-STATIC_URL = '/static/'
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-# STATICFILES_DIRS = ('/root/gainful2/parsing/static/',)
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, '../parsing/static'),)

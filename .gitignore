@@ -1,6 +1,9 @@
 # Elm build stuff
 elm/elm-stuff
 
+#secrets
+bin/activate
+
 # Vim
 *.swp
 *.un~
