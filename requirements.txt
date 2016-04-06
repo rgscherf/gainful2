@@ -1,8 +1,10 @@
 beautifulsoup4==4.4.1
+dj-database-url==0.4.0
 Django==1.9.2
 djangorestframework==3.3.2
 gunicorn==19.4.5
 html5lib==0.9999999
+psycopg2==2.6.1
 PyPDF2==1.25.1
 python-dateutil==2.4.2
 requests==2.9.1
