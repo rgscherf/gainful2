@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
-from .dbsettings import dbsettings
+import dj_database_url
+# from .dbsettings import dbsettings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -81,16 +82,19 @@ WSGI_APPLICATION = 'gainful2.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': dbsettings['NAME'],
-        'USER': dbsettings['USER'],
-        'PASSWORD': dbsettings['PASSWORD'],
-        'HOST': '',
-        'PORT': '',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': dbsettings['NAME'],
+#         'USER': dbsettings['USER'],
+#         'PASSWORD': dbsettings['PASSWORD'],
+#         'HOST': '',
+#         'PORT': '',
+#     }
+# }
+
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 
 # Password validation
