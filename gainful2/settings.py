@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'parsing',
+    'corsheaders',
     'rest_framework',
-    'corsheaders'
 ]
 
 REST_FRAMEWORK = {
@@ -65,6 +65,10 @@ MIDDLEWARE_CLASSES = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = ( 'localhost:8000', )
 
 ROOT_URLCONF = 'gainful2.urls'
 
