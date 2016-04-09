@@ -19,7 +19,6 @@
     var gainful = Elm.embed(Elm.Main, elmDiv, {localStorageToElm: "", jsonLocation: ""});
 
     var jobSource = '{% static "parsing/jobs.json" %}';
-    console.log(jobSource);
     gainful.ports.jsonLocation.send(jobSource);
 
     // initialize visibleOrgs from previous session
