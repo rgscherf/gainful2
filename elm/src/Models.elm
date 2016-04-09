@@ -4,7 +4,8 @@ import Dict exposing (Dict)
 
 type Action
  = NoOp
- | GetJobs
+ --| GetJobs
+ | InitiateJobsFromJson String
  | ShowInitialJobs (Maybe Jobs)
  | SortJobs JobField
  | ToggleFilter JobField String

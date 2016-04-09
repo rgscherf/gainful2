@@ -22,7 +22,9 @@ app = StartApp.start
   { init = init
   , view = view
   , update = update
-  , inputs = [Signal.map (\s -> FromStorage s) localStorageToElm]
+  , inputs = [ Signal.map (\s -> FromStorage s) localStorageToElm
+             , Signal.map InitiateJobsFromJson jsonLocation 
+             ]
   }
 
 main : Signal Html
@@ -43,13 +45,18 @@ startModel =
   , fromStorage = ""
   }
 
+--init : (Model, Effects Action)
+--init = (startModel, getJobs)
+
 init : (Model, Effects Action)
-init = (startModel, getJobs)
+init = (startModel, Effects.none)
 
 port tasks : Signal (Task.Task Effects.Never ())
 port tasks = app.tasks
 
 port localStorageToElm : Signal String
+
+port jsonLocation : Signal String
 
 port localStorageFromElm : Signal String
 port localStorageFromElm = jobsToStorage.signal
@@ -68,8 +75,10 @@ update action model =
       ( { model | jobs = sortJobs s model.jobs } , Effects.none)
     NoOp ->
       (model, Effects.none)
-    GetJobs ->
-      (model, getJobs)
+    --GetJobs ->
+    --  (model, getJobs)
+    InitiateJobsFromJson str ->
+      (model, getJobsFromFile str)
     ShowInitialJobs maybeJobs ->
       let newModel = makeFilter model.jobFilter {model | jobs = maybeJobs}
       in ( {newModel | jobs = sortJobs Organization newModel.jobs } , Effects.none)
@@ -201,15 +210,22 @@ makeSingleEntity j f =
 -- EFFECTS
 ----------
 
-jobsUrl : String
-jobsUrl = "http://localhost:8000/jobs/"
+--jobsUrl : String
+--jobsUrl = "http://localhost:8000/jobs/"
 
-getJobs : Effects Action
-getJobs =
-  Http.get decodeJobList jobsUrl
+getJobsFromFile : String -> Effects Action
+getJobsFromFile s =
+  Http.get decodeJobList s
     |> Task.toMaybe
     |> Task.map ShowInitialJobs
     |> Effects.task
+
+--getJobs : Effects Action
+--getJobs =
+--  Http.get decodeJobList jobsUrl
+--    |> Task.toMaybe
+--    |> Task.map ShowInitialJobs
+--    |> Effects.task
 
 
 decodeJob : Decoder Job

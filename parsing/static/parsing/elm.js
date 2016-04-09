@@ -11226,11 +11226,11 @@ Elm.Models.make = function (_elm) {
    var ToggleFilter = F2(function (a,b) {    return {ctor: "ToggleFilter",_0: a,_1: b};});
    var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
    var ShowInitialJobs = function (a) {    return {ctor: "ShowInitialJobs",_0: a};};
-   var GetJobs = {ctor: "GetJobs"};
+   var InitiateJobsFromJson = function (a) {    return {ctor: "InitiateJobsFromJson",_0: a};};
    var NoOp = {ctor: "NoOp"};
    return _elm.Models.values = {_op: _op
                                ,NoOp: NoOp
-                               ,GetJobs: GetJobs
+                               ,InitiateJobsFromJson: InitiateJobsFromJson
                                ,ShowInitialJobs: ShowInitialJobs
                                ,SortJobs: SortJobs
                                ,ToggleFilter: ToggleFilter
@@ -11436,8 +11436,7 @@ Elm.Main.make = function (_elm) {
       A2($Json$Decode._op[":="],"date_posted",$Json$Decode.string));
    }();
    var decodeJobList = $Json$Decode.list(decodeJob);
-   var jobsUrl = "http://localhost:8000/jobs/";
-   var getJobs = $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,jobsUrl))));
+   var getJobsFromFile = function (s) {    return $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,s))));};
    var makeSingleEntity = F2(function (j,f) {
       var _p0 = A2($Dict.get,j.region,f.allRegions);
       if (_p0.ctor === "Nothing") {
@@ -11520,7 +11519,7 @@ Elm.Main.make = function (_elm) {
       switch (_p4.ctor)
       {case "SortJobs": return {ctor: "_Tuple2",_0: _U.update(model,{jobs: A2($Models.sortJobs,_p4._0,model.jobs)}),_1: $Effects.none};
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
-         case "GetJobs": return {ctor: "_Tuple2",_0: model,_1: getJobs};
+         case "InitiateJobsFromJson": return {ctor: "_Tuple2",_0: model,_1: getJobsFromFile(_p4._0)};
          case "ShowInitialJobs": var newModel = A2(makeFilter,model.jobFilter,_U.update(model,{jobs: _p4._0}));
            return {ctor: "_Tuple2",_0: _U.update(newModel,{jobs: A2($Models.sortJobs,$Models.Organization,newModel.jobs)}),_1: $Effects.none};
          case "FromStorage": var newModel = _U.update(model,{fromStorage: _p4._0});
@@ -11534,6 +11533,11 @@ Elm.Main.make = function (_elm) {
            return {ctor: "_Tuple2",_0: newModel,_1: toLocalStorage};}
    });
    var localStorageFromElm = Elm.Native.Port.make(_elm).outboundSignal("localStorageFromElm",function (v) {    return v;},jobsToStorage.signal);
+   var jsonLocation = Elm.Native.Port.make(_elm).inboundSignal("jsonLocation",
+   "String",
+   function (v) {
+      return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",v);
+   });
    var localStorageToElm = Elm.Native.Port.make(_elm).inboundSignal("localStorageToElm",
    "String",
    function (v) {
@@ -11541,11 +11545,12 @@ Elm.Main.make = function (_elm) {
    });
    var startFilter = {allRegions: $Dict.empty,allOrgs: $Dict.empty,visibleRegions: _U.list([]),visibleOrgs: _U.list([])};
    var startModel = {jobs: $Maybe.Nothing,jobFilter: startFilter,fromStorage: ""};
-   var init = {ctor: "_Tuple2",_0: startModel,_1: getJobs};
+   var init = {ctor: "_Tuple2",_0: startModel,_1: $Effects.none};
    var app = $StartApp.start({init: init
                              ,view: $Site.view
                              ,update: update
-                             ,inputs: _U.list([A2($Signal.map,function (s) {    return $Models.FromStorage(s);},localStorageToElm)])});
+                             ,inputs: _U.list([A2($Signal.map,function (s) {    return $Models.FromStorage(s);},localStorageToElm)
+                                              ,A2($Signal.map,$Models.InitiateJobsFromJson,jsonLocation)])});
    var main = app.html;
    var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",app.tasks);
    return _elm.Main.values = {_op: _op
@@ -11561,8 +11566,7 @@ Elm.Main.make = function (_elm) {
                              ,makeFilter: makeFilter
                              ,makeEntitiesVisible: makeEntitiesVisible
                              ,makeSingleEntity: makeSingleEntity
-                             ,jobsUrl: jobsUrl
-                             ,getJobs: getJobs
+                             ,getJobsFromFile: getJobsFromFile
                              ,decodeJob: decodeJob
                              ,decodeJobList: decodeJobList};
 };
