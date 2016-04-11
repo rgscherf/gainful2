@@ -12,10 +12,7 @@ class Command(BaseCommand):
         print("Got new jobs.")
         print("Dumping jobs to file...")
         objs = Job.objects.all()
-        serializer = []
-        for o in objs:
-            i = JobSerializer(o).data
-            serializer.append(i)
+        serializer = map(lambda o: JobSerializer(o).data, objs)
         content = JSONRenderer().render(serializer)
         with (open("parsing/static/parsing/jobs.json", "wb")) as FILE:
             FILE.write(content)
