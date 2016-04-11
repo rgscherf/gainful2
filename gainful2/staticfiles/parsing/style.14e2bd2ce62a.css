@@ -22,7 +22,7 @@ nav {
 #filterwrapper {
   display: flex;
   width: 95%;
-  background-color: #4FECDB;
+  background-color: #8874EC;
   margin-left: auto;
   margin-right: auto;
   align-items: center;
@@ -32,7 +32,7 @@ nav {
 #filternewsletter {
   padding-left: 15px;
   padding-right: 10px;
-  border-left: 1px solid #0B211F;
+  border-left: 1px solid black;
   width: 150px; }
 
 #filtertable {
@@ -43,24 +43,24 @@ nav {
 #filterannounce {
   width: 130px;
   padding-left: 5px;
-  font-family: "Lobster Two", cursive;
+  font-family: 'Lobster Two', cursive;
   font-size: 2em;
   text-align: center; }
 
 .filtertitle {
   margin: 5px;
   padding-right: 10px;
-  font-family: "Lobster Two", cursive;
+  font-family: 'Lobster Two', cursive;
   width: 150px;
   font-size: 1.7em;
   text-align: right; }
 
 button {
-  background-color: #4FECDB;
+  background-color: #C9A8D4;
   margin: 3px;
   padding: 7px;
   font-size: 16px;
-  border: 1px solid #0B211F;
+  border: 0px;
   border-radius: 5px; }
 
 button:focus {
@@ -68,7 +68,7 @@ button:focus {
 
 /* JOB TABLE */
 .visible {
-  box-shadow: inset 3px 3px 3px 0px #0B211F; }
+  box-shadow: inset 3px 3px 3px 0px #5F466B; }
 
 #jobtable {
   margin-left: auto;
@@ -92,13 +92,13 @@ td {
   padding-right: 3px; }
 
 th {
-  background-color: #4FECDB; }
+  background-color: #8874EC; }
 
 .shadedRow {
-  background-color: #DBEDE9; }
+  background-color: #89C6D4; }
 
 .unshadedRow {
-  background-color: white; }
+  background-color: #8BB8D6; }
 
 /* GENERAL */
 .shadow {
@@ -108,12 +108,13 @@ th {
 
 table {
   vertical-align: middle;
+  background-color: #8874EC;
   border-spacing: 0px;
   font-size: 13px; }
 
 body {
-  background: white;
-  font-family: "Roboto", "Open Sans", sans-serif; }
+  background: #8BBFA4;
+  font-family: 'Roboto', 'Open Sans', sans-serif; }
 
 html {
   height: 102%; }

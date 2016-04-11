@@ -1,0 +1,20 @@
+nav {
+  background-color: #C2F7DD;
+  height: 80px; }
+
+.logo {
+  font-family: "Lobster Two", cursive;
+  position: relative;
+  float: left;
+  top: -10px;
+  left: 15px;
+  font-size: 70px;
+  color: #606B6B; }
+
+.nav-icon {
+  position: relative;
+  float: right;
+  top: 20px;
+  color: #606B6B; }
+
+/*# sourceMappingURL=style.css.map */

@@ -60,7 +60,7 @@ button {
   margin: 3px;
   padding: 7px;
   font-size: 16px;
-  border: 1px solid #0B211F;
+  border: 0px;
   border-radius: 5px; }
 
 button:focus {

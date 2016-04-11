@@ -22,7 +22,7 @@ nav {
 #filterwrapper {
   display: flex;
   width: 95%;
-  background-color: #4FECDB;
+  background-color: white;
   margin-left: auto;
   margin-right: auto;
   align-items: center;
@@ -56,11 +56,11 @@ nav {
   text-align: right; }
 
 button {
-  background-color: #4FECDB;
+  background-color: #F78995;
   margin: 3px;
   padding: 7px;
   font-size: 16px;
-  border: 1px solid #0B211F;
+  border: 0px;
   border-radius: 5px; }
 
 button:focus {
@@ -92,7 +92,7 @@ td {
   padding-right: 3px; }
 
 th {
-  background-color: #4FECDB; }
+  background-color: #0B211F; }
 
 .shadedRow {
   background-color: #DBEDE9; }
@@ -108,12 +108,13 @@ th {
 
 table {
   vertical-align: middle;
+  background-color: #8874EC;
   border-spacing: 0px;
   font-size: 13px; }
 
 body {
-  background: white;
-  font-family: "Roboto", "Open Sans", sans-serif; }
+  background: #8BBFA4;
+  font-family: 'Roboto', 'Open Sans', sans-serif; }
 
 html {
   height: 102%; }
