@@ -47,11 +47,13 @@ type alias Filter =
   , visibleOrgs : List String
   }
 
+sortOnCriteria : JobField -> List Job -> List Job
+sortOnCriteria f js = List.sortWith (compareJob f) js
 
 sortJobs : JobField -> Maybe Jobs -> Maybe Jobs
 sortJobs criteria jobs =
   let currentJobsList = Maybe.withDefault [] jobs
-      sortedCurrentList = List.sortWith (compareJob criteria) currentJobsList
+      sortedCurrentList = sortOnCriteria criteria currentJobsList
   in
     if currentJobsList == sortedCurrentList
       then Just (List.reverse sortedCurrentList)

@@ -11306,9 +11306,9 @@ Elm.Site.make = function (_elm) {
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
       var sortIndicator = function (f) {
          return _U.eq(A2($Models.sortOnCriteria,f,jobs),jobs) ? A2($Html.i,
-         _U.list([$Html$Attributes.$class("fa fa-arrow-down")]),
+         _U.list([$Html$Attributes.$class("fa fa-arrow-circle-down")]),
          _U.list([])) : _U.eq(A2($Models.sortOnCriteria,f,jobs),$List.reverse(jobs)) ? A2($Html.i,
-         _U.list([$Html$Attributes.$class("fa fa-arrow-up")]),
+         _U.list([$Html$Attributes.$class("fa fa-arrow-circle-up")]),
          _U.list([])) : A2($Html.span,_U.list([]),_U.list([]));
       };
       return A2($Html.table,

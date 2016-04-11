@@ -101,18 +101,22 @@ viewJobs address fil maybeJobs =
       shaded = List.concat <| List.repeat (List.length jobs) [True, False]
       jobAndClass = List.map2 (,) shaded jobs
       tbody = List.concatMap individualJob jobAndClass
-      -- sortIndicator s f =
-      --   -- TODO change "v" and "^" to indicators from FontAwesome
-      --   ( if sortJobs f (Just jobs) == Just (List.reverse jobs) then "v " else "^ " ) ++ s
+      sortIndicator f =
+        if sortOnCriteria f jobs == jobs
+        then i [class "fa fa-arrow-down"] []
+        else
+          if sortOnCriteria f  jobs == List.reverse jobs
+          then i [class "fa fa-arrow-up"] []
+          else span [] []
   in
     table [id "jobtable", class "shadow"]
       (
         [ tr [class "jobTableHeader"]
-          [ th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization"]
-          , th [onClick address (SortJobs Title), class "leftHead"] [text "Title"]
-          , th [onClick address (SortJobs Salary), class "rightHead"] [text "Salary/Wage"]
-          , th [onClick address (SortJobs PostingDate), class "rightHead"] [text "Posted"]
-          , th [onClick address (SortJobs ClosingDate), class "rightHead"] [text "Closing"]
+          [ th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization ", sortIndicator Organization]
+          , th [onClick address (SortJobs Title), class "leftHead"] [text "Title ", sortIndicator Title]
+          , th [onClick address (SortJobs Salary), class "rightHead"] [text "Salary/Wage ", sortIndicator Salary]
+          , th [onClick address (SortJobs PostingDate), class "rightHead"] [text "Posted ", sortIndicator PostingDate]
+          , th [onClick address (SortJobs ClosingDate), class "rightHead"] [text "Closing ", sortIndicator ClosingDate]
           ]
         ]
         ++ tbody
@@ -123,17 +127,18 @@ individualJob (shaded, job) =
   let
       orgAndDiv = if job.division /= "" then job.organization ++ ", " ++ job.division else job.organization
       rowClass = if shaded then "shadedRow" else "unshadedRow"
+      shortTitle title = if String.contains "(" title then Maybe.withDefault "" <| List.head <| String.split "(" title else title
   in
   [tr [class rowClass]
     [
       td [] [text <| orgAndDiv]
     , td [] [a
               [href job.urlDetail]
-              [text job.title]
+              [text <| shortTitle job.title] -- sections of job titles in parens are seldom useful
             ]
     , td [align "right"] [text <| salary job.salaryAmount job.salaryWaged]
-    , td [align "right"] [text <| job.datePosted]
-    , td [align "right"] [text job.dateClosing]
+    , td [align "right"] [text <| String.dropLeft 5 job.datePosted]
+    , td [align "right"] [text <| String.dropLeft 5 job.dateClosing]
     ]
   ]
 

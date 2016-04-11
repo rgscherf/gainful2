@@ -11208,10 +11208,9 @@ Elm.Models.make = function (_elm) {
          case "ClosingDate": return A4(comp,j.dateClosing,k.dateClosing,j,k);
          default: return A4(comp,j.urlDetail,k.urlDetail,j,k);}
    });
-   var sortOnCriteria = F2(function (f,js) {    return A2($List.sortWith,compareJob(f),js);});
    var sortJobs = F2(function (criteria,jobs) {
       var currentJobsList = A2($Maybe.withDefault,_U.list([]),jobs);
-      var sortedCurrentList = A2(sortOnCriteria,criteria,currentJobsList);
+      var sortedCurrentList = A2($List.sortWith,compareJob(criteria),currentJobsList);
       return _U.eq(currentJobsList,sortedCurrentList) ? $Maybe.Just($List.reverse(sortedCurrentList)) : $Maybe.Just(sortedCurrentList);
    });
    var Region = {ctor: "Region"};
@@ -11246,7 +11245,6 @@ Elm.Models.make = function (_elm) {
                                ,URL: URL
                                ,Model: Model
                                ,Filter: Filter
-                               ,sortOnCriteria: sortOnCriteria
                                ,sortJobs: sortJobs
                                ,compareJob: compareJob};
 };
@@ -11304,13 +11302,12 @@ Elm.Site.make = function (_elm) {
       var shaded = $List.concat(A2($List.repeat,$List.length(jobs),_U.list([true,false])));
       var jobAndClass = A3($List.map2,F2(function (v0,v1) {    return {ctor: "_Tuple2",_0: v0,_1: v1};}),shaded,jobs);
       var tbody = A2($List.concatMap,individualJob,jobAndClass);
-      var sortIndicator = function (f) {
-         return _U.eq(A2($Models.sortOnCriteria,f,jobs),jobs) ? A2($Html.i,
-         _U.list([$Html$Attributes.$class("fa fa-arrow-down")]),
-         _U.list([])) : _U.eq(A2($Models.sortOnCriteria,f,jobs),$List.reverse(jobs)) ? A2($Html.i,
-         _U.list([$Html$Attributes.$class("fa fa-arrow-up")]),
-         _U.list([])) : A2($Html.span,_U.list([]),_U.list([]));
-      };
+      var sortIndicator = F2(function (f,s) {
+         return A2($Basics._op["++"],
+         _U.eq(A2($Models.sortJobs,f,$Maybe.Just(jobs)),$Maybe.Just($List.reverse(jobs))) ? "v " : _U.eq(A2($Models.sortJobs,f,$Maybe.Just(jobs)),
+         $Maybe.Just(jobs)) ? "^ " : "",
+         s);
+      });
       return A2($Html.table,
       _U.list([$Html$Attributes.id("jobtable"),$Html$Attributes.$class("shadow")]),
       A2($Basics._op["++"],
@@ -11318,19 +11315,19 @@ Elm.Site.make = function (_elm) {
       _U.list([$Html$Attributes.$class("jobTableHeader")]),
       _U.list([A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Organization)),$Html$Attributes.$class("leftHead")]),
-              _U.list([$Html.text("Organization "),sortIndicator($Models.Organization)]))
+              _U.list([$Html.text(A2(sortIndicator,$Models.Organization,"Organization"))]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Title)),$Html$Attributes.$class("leftHead")]),
-              _U.list([$Html.text("Title "),sortIndicator($Models.Title)]))
+              _U.list([$Html.text("Title")]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Salary)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text("Salary/Wage "),sortIndicator($Models.Salary)]))
+              _U.list([$Html.text("Salary/Wage")]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.PostingDate)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text("Posted "),sortIndicator($Models.PostingDate)]))
+              _U.list([$Html.text("Posted")]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.ClosingDate)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text("Closing "),sortIndicator($Models.ClosingDate)]))]))]),
+              _U.list([$Html.text("Closing")]))]))]),
       tbody));
    });
    var filterBox = F2(function (a,f) {
