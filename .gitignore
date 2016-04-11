@@ -1,6 +1,9 @@
 # Elm build stuff
 elm/elm-stuff
 
+# staticfiles build stuff
+gainful2/staticfiles
+
 #secrets
 bin/activate
 
