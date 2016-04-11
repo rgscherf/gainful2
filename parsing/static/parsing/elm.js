@@ -11353,7 +11353,7 @@ Elm.Site.make = function (_elm) {
                               ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$List.sort($Dict.keys(f.allOrgs))))]))]))]))
               ,A2($Html.div,
               _U.list([$Html$Attributes.id("filternewsletter")]),
-              _U.list([A2($Html.button,_U.list([]),_U.list([$Html.text("Save filters to daily newsletter")]))]))]))]);
+              _U.list([A2($Html.button,_U.list([$Html$Attributes.id("newsletterbutton")]),_U.list([$Html.text("Save filters to daily newsletter")]))]))]))]);
    });
    var navBar = A2($Html.nav,
    _U.list([]),

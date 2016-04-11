@@ -1,6 +1,5 @@
 /* PAGE HEADER */
 nav {
-  background-color: white;
   height: 80px; }
 
 .logo {
@@ -10,13 +9,13 @@ nav {
   top: -10px;
   left: 15px;
   font-size: 70px;
-  color: #0B211F; }
+  color: #040D0C; }
 
 .nav-icon {
   position: relative;
   float: right;
   top: 20px;
-  color: #0B211F; }
+  color: #040D0C; }
 
 /* FILTER BOX */
 #filterwrapper {
@@ -32,7 +31,7 @@ nav {
 #filternewsletter {
   padding-left: 15px;
   padding-right: 10px;
-  border-left: 1px solid #0B211F;
+  border-left: 1px solid #040D0C;
   width: 150px; }
 
 #filtertable {
@@ -55,12 +54,15 @@ nav {
   font-size: 1.7em;
   text-align: right; }
 
+#newsletterbutton {
+  background-color: #9AA7F7; }
+
 button {
   background-color: #4FECDB;
   margin: 3px;
   padding: 7px;
   font-size: 16px;
-  border: 1px solid #0B211F;
+  border: 1px solid #040D0C;
   border-radius: 5px; }
 
 button:focus {
@@ -68,12 +70,18 @@ button:focus {
 
 /* JOB TABLE */
 .visible {
-  box-shadow: inset 3px 3px 3px 0px #0B211F; }
+  box-shadow: inset 3px 3px 3px 0px #040D0C; }
 
 #jobtable {
+  border: 3px solid #4FECDB;
+  border-radius: 5px;
   margin-left: auto;
   margin-right: auto;
   width: 95%; }
+  #jobtable a:link {
+    color: #040D0C; }
+  #jobtable a:visited {
+    color: #7D9C98; }
 
 td {
   padding-left: 3px;
@@ -83,15 +91,8 @@ td {
   font-size: 1.1em;
   height: 30px; }
 
-.leftHead {
-  text-align: left;
-  padding-left: 3px; }
-
-.rightHead {
-  text-align: right;
-  padding-right: 3px; }
-
 th {
+  text-align: center;
   background-color: #4FECDB; }
 
 .shadedRow {
@@ -112,7 +113,7 @@ table {
   font-size: 13px; }
 
 body {
-  background: white;
+  background: #DBEDE9;
   font-family: "Roboto", "Open Sans", sans-serif; }
 
 html {

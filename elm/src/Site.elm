@@ -85,7 +85,7 @@ filterBox a f =
                         <| Dict.keys f.allOrgs )]]]
       , div
           [id "filternewsletter"]
-          [ button [] [text "Save filters to daily newsletter"]]
+          [ button [id "newsletterbutton"] [text "Save filters to daily newsletter"]]
       ]
     ]
 

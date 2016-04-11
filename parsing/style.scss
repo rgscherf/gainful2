@@ -1,9 +1,10 @@
 // colors
 $color-primary: #4FECDB;
-$color-dark-grey: #0B211F;
+$color-dark-grey: #040D0C;
 $color-light-grey: #DBEDE9;
 $color-white: white;
-$color-accent: #F78995;
+$color-accent: #9AA7F7;
+$color-link-visited: #7D9C98;
 
 // fonts
 $cursive: 'Lobster Two', cursive;
@@ -12,7 +13,6 @@ $body: 'Roboto', 'Open Sans', sans-serif;
 /* PAGE HEADER */
 
 nav {
-  background-color: $color-white;
   height: 80px;
 }
 
@@ -78,6 +78,10 @@ nav {
   text-align: right;
 }
 
+#newsletterbutton {
+  background-color: $color-accent;
+}
+
 button {
   background-color: $color-primary;
   margin: 3px;
@@ -86,7 +90,6 @@ button {
   border: 1px solid $color-dark-grey;
   border-radius: 5px;
 }
-// got to here
 
 button:focus {
   outline: none;
@@ -101,9 +104,17 @@ button:focus {
 
 
 #jobtable {
+  border: 3px solid $color-primary;
+  border-radius: 5px;
   margin-left: auto;
   margin-right: auto;
   width: 95%;
+  a:link {
+    color: $color-dark-grey;
+  }
+  a:visited {
+    color: $color-link-visited;
+  }
 }
 
 td {
@@ -116,17 +127,18 @@ td {
   height: 30px;
 }
 
-.leftHead {
-  text-align: left;
-  padding-left: 3px;
-}
+// .leftHead {
+//   text-align: left;
+//   padding-left: 3px;
+// }
 
-.rightHead {
-  text-align: right;
-  padding-right: 3px;
-}
+// .rightHead {
+//   text-align: right;
+//   padding-right: 3px;
+// }
 
 th {
+  text-align: center;
   background-color: $color-primary;
 }
 
@@ -149,13 +161,12 @@ th {
 
 table {
   vertical-align: middle;
-  // background-color: #8874EC;
   border-spacing: 0px;
   font-size: 13px;
 }
 
 body {
-  background: $color-white;
+  background: $color-light-grey;
   font-family: $body;
 }
 
