@@ -21,7 +21,7 @@ nav {
 #filterwrapper {
   display: flex;
   width: 95%;
-  background-color: #4FECDB;
+  background-color: #3FBDAF;
   margin-left: auto;
   margin-right: auto;
   align-items: center;
@@ -55,10 +55,10 @@ nav {
   text-align: right; }
 
 #newsletterbutton {
-  background-color: #9AA7F7; }
+  background-color: #72F7B4; }
 
 button {
-  background-color: #4FECDB;
+  background-color: #3FBDAF;
   margin: 3px;
   padding: 7px;
   font-size: 16px;
@@ -73,7 +73,7 @@ button:focus {
   box-shadow: inset 3px 3px 3px 0px #040D0C; }
 
 #jobtable {
-  border: 3px solid #4FECDB;
+  border: 3px solid #3FBDAF;
   border-radius: 5px;
   margin-left: auto;
   margin-right: auto;
@@ -93,7 +93,7 @@ td {
 
 th {
   text-align: center;
-  background-color: #4FECDB; }
+  background-color: #3FBDAF; }
 
 .shadedRow {
   background-color: #DBEDE9; }
