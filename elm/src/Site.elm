@@ -107,7 +107,7 @@ viewJobs address fil maybeJobs =
         else
           if sortOnCriteria f  jobs == List.reverse jobs
           then i [class "fa fa-arrow-up"] []
-          else span [] []
+          else i [class "fa fa-arrow-up", style [("opacity", "0")]] []
   in
     table [id "jobtable", class "shadow"]
       (

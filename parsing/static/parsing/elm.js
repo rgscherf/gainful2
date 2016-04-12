@@ -11309,7 +11309,9 @@ Elm.Site.make = function (_elm) {
          _U.list([$Html$Attributes.$class("fa fa-arrow-down")]),
          _U.list([])) : _U.eq(A2($Models.sortOnCriteria,f,jobs),$List.reverse(jobs)) ? A2($Html.i,
          _U.list([$Html$Attributes.$class("fa fa-arrow-up")]),
-         _U.list([])) : A2($Html.span,_U.list([]),_U.list([]));
+         _U.list([])) : A2($Html.i,
+         _U.list([$Html$Attributes.$class("fa fa-arrow-up"),$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "opacity",_1: "0"}]))]),
+         _U.list([]));
       };
       return A2($Html.table,
       _U.list([$Html$Attributes.id("jobtable"),$Html$Attributes.$class("shadow")]),
