@@ -4,4 +4,5 @@ urls = { "toronto": "https://www.brainhunter.com/frontoffice/searchSeekerJobActi
        , "peel_region": "https://careers-peelregion.icims.com/jobs/search?hashed=0&in_iframe=1"
        , "brampton": "https://careers-brampton.icims.com/jobs/search?hashed=0&in_iframe=1"
        , "york_region": "http://clients.njoyn.com/cl2/xweb/xweb.asp?page=joblisting&clid=60295"
+       , "halton": "http://webaps.halton.ca/about/jobs/JobPostings.cfm"
        }

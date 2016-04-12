@@ -18,8 +18,8 @@ Think about rendering OPS and Federal jobs for each region?
 - DONE Markham
 
 ## GTA - Durham
-- Durham Region
-- Oshawa
+- Durham Region (skipping--job site is crap)
+- Oshawa 
 - Pickering/Ajax?
 
 ## GTA - Halton
