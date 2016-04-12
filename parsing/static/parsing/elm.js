@@ -11360,7 +11360,7 @@ Elm.Site.make = function (_elm) {
                       _U.list([]),
                       _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("...by region:")]))
                               ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Region),$List.sort($Dict.keys(f.allRegions))))]))
-                      ,A2($Html.tr,_U.list([]),_U.list([A2($Html.td,_U.list([]),_U.list([$Html.text(" ")]))]))
+                      ,A2($Html.tr,_U.list([$Html$Attributes.$class("blankrow")]),_U.list([A2($Html.td,_U.list([$Html$Attributes.colspan(2)]),_U.list([]))]))
                       ,A2($Html.tr,
                       _U.list([]),
                       _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("...by organization:")]))

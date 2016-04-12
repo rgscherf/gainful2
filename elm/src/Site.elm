@@ -77,7 +77,7 @@ filterBox a f =
                         <| List.sort
                         <| Dict.keys f.allRegions )
             ]
-          , tr [] [td [] [text <| " "]]
+          , tr [class "blankrow"] [td [colspan 2] []]
           , tr []
             [ td [class "filtertitle"] [text "...by organization:"]
             , td [] <| ( List.map (btn f Organization)

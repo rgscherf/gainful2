@@ -2,7 +2,6 @@
 elm/elm-stuff
 
 # staticfiles build stuff
-.sass-cache/
 gainful2/staticfiles
 
 #secrets
