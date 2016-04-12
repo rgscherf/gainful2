@@ -114,9 +114,9 @@ viewJobs address fil maybeJobs =
         [ tr [class "jobTableHeader"]
           [ th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization ", sortIndicator Organization]
           , th [onClick address (SortJobs Title), class "leftHead"] [text "Title ", sortIndicator Title]
-          , th [onClick address (SortJobs Salary), class "rightHead"] [text "Salary/Wage ", sortIndicator Salary]
-          , th [onClick address (SortJobs PostingDate), class "rightHead"] [text "Posted ", sortIndicator PostingDate]
-          , th [onClick address (SortJobs ClosingDate), class "rightHead"] [text "Closing ", sortIndicator ClosingDate]
+          , th [onClick address (SortJobs Salary), class "rightHead"] [sortIndicator Salary, text " Salary/Wage"]
+          , th [onClick address (SortJobs PostingDate), class "rightHead"] [sortIndicator PostingDate, text " Posted"]
+          , th [onClick address (SortJobs ClosingDate), class "rightHead"] [sortIndicator ClosingDate, text " Closing"]
           ]
         ]
         ++ tbody
@@ -168,7 +168,9 @@ aboutMessage = Markdown.toHtml """
 
 Job searching is bad. Government websites are bad. This makes searching for government jobs extra bad.
 
-Gainful makes government job postings simple and sane. Every day, it finds all the newest postings and present them in a table. You can filter and sort listings however you want, and save your results as a daily email newsletter.
+Gainful makes government job postings simple and sane. 
+Every day, it finds all the newest postings and present them in a table. 
+  You can filter and sort listings however you want, and save your results as a daily email newsletter.
 
 No signups, no ads. It could not be easier.
 

@@ -4,13 +4,13 @@
 # import os
 import requests
 import re
+import dateutil.parser as d
 from datetime import date, timedelta
-from itertools import takewhile, dropwhile
 from bs4 import BeautifulSoup
 from .jobcontainer import JobContainer
 from .org_urls import urls
 from .utils_icims import get_icims_jobs
-import dateutil.parser as d
+from .utils_brainhunter import parse_brainhunter_job_table, parse_brainhunter_detail_page
 
 
 class Organization():
@@ -106,7 +106,6 @@ class YorkRegion(Organization):
             else:
                 pass
 
-
     def parse(self):
         t = self.soup.find(id="searchtable").find_all("tr")[1:]
         for r in t:
@@ -126,56 +125,38 @@ class Toronto(Organization):
         Organization.__init__(self, "toronto")
 
     def parse(self):
-        job_table = self.soup.find("table", "job_list_table")
-        rows = job_table.find_all('tr')[1:]
-        for row in rows:
-            job = JobContainer()
-            cols = row.find_all('td')
-            job.url_detail = "https://www.brainhunter.com/frontoffice/{}".format(cols[1].a["href"])
-            if not job.is_unique():
-                continue
-            self.parse_detail_page(job)
+        detail_dict = { "division": "Division"
+                      , "date_posted": "Posting Date"
+                      , "date_closing": "Closing Date"
+                      , "salary_amount": "Salary/Rate"
+                      }
+        for j in parse_brainhunter_job_table(self.soup):
+            j.region = "GTA - Toronto"
+            j.organization = "Toronto"
+            parse_brainhunter_detail_page(detail_dict, j)
 
-    def parse_detail_page(self, job):
-        """ Grab City of Toronto job info from detail page:
-        title, division, salary type and amount, posting date and closing date.
-         """
-        r = requests.get(job.url_detail)
-        soup = BeautifulSoup(r.text, "html5lib")
-        job.region = "GTA - Toronto"
-        job.organization = "Toronto"
-        job.title = soup.find("div", class_="tableheadertext_job_description").text.strip()
-        rows = soup.find("table", class_="tablebackground_job_description").find_all("tr")
+class Markham(Organization):
+    def __init__(self):
+        Organization.__init__(self, "markham")
 
-        cols = ["Division", "Salary/Rate", "Posting Date", "Closing Date"]
-        rowdict = {}
-        for row in rows:
-            col = row.find(class_="job_header_text_bold").text.strip()
-            if col in cols:
-                rowdict[col] = row.find(class_="job_header_text").text.strip()
-        job.division = rowdict["Division"]
-        job.date_posted = d.parse(rowdict["Posting Date"]).date()
-        job.date_closing = d.parse(rowdict["Closing Date"]).date()
-        try: # it's rare, but sometime Toronto doesn't post salary
-            job.salary_amount = self.salary(rowdict["Salary/Rate"])
-        except KeyError:
-            job.salary_amount = 0
-        job.save()
-
-    def salary(self, string):
-        s = "".join(dropwhile(lambda x: not x.isdigit(), string))
-        s = "".join(takewhile(lambda x: not x.isspace(), s))
-        if "," in s:
-            s = "".join(filter(lambda a: a != ",", s))
-        amount = float("".join(s))
-        return amount
+    def parse(self):
+        detail_dict = { "division": "Department"
+                      , "date_posted": "Posting Date"
+                      , "date_closing": "Expiry Date"
+                      , "salary_amount": "Salary/Rate"
+                      }
+        for j in parse_brainhunter_job_table(self.soup):
+            j.region = "GTA - York"
+            j.organization = "Markham"
+            parse_brainhunter_detail_page(detail_dict, j)
 
 
 
 # the main parse util calls find_jobs to kick off web scraping.
 # make sure current_orgs is always up to date.
 
-current_orgs = [ YorkRegion()
+current_orgs = [ Markham()
+               , YorkRegion()
                , Brampton()
                , PeelRegion()
                , Mississauga()

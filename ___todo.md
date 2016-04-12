@@ -10,12 +10,12 @@ Think about rendering OPS and Federal jobs for each region?
 - DONE Mississauga
 - DONE Peel Region
 - DONE Brampton
-- Caledon (skipping--no current opportunities!)
+- Caledon (skipping--no current jobs)
 
 ## GTA - York
-- York Region
-- Vaughan
-- Markham
+- DONE York Region
+- Vaughan (skipping--no current jobs)
+- DONE Markham
 
 ## GTA - Durham
 - Durham Region

@@ -11270,7 +11270,7 @@ Elm.Site.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
    var _op = {};
-   var aboutMessage = $Markdown.toHtml("\n\n# What is Gainful?\n\nJob searching is bad. Government websites are bad. This makes searching for government jobs extra bad.\n\nGainful makes government job postings simple and sane. Every day, it finds all the newest postings and present them in a table. You can filter and sort listings however you want, and save your results as a daily email newsletter.\n\nNo signups, no ads. It could not be easier.\n\n## What job sites does Gainful search?\n\nGlad you asked. Gainful searches the following sources:\n\n- City of Toronto\n- City of Victoria\n- City of Mississauga\n- Ontario Public Service in the GTA (TODO)\n- ...etc\n\n## Can I help?\n\n[twitter]: http://www.twitter.com/rgscherf\n\nYes! [Get in touch][twitter] or make a [pull request](http://www.github.com/rgscherf/gainful2).\n\n## Who wrote Gainful?\n\nGainful is written by Robert Scherf. He\'s looking for a job--[hire him][twitter]!\n\n");
+   var aboutMessage = $Markdown.toHtml("\n\n# What is Gainful?\n\nJob searching is bad. Government websites are bad. This makes searching for government jobs extra bad.\n\nGainful makes government job postings simple and sane. \nEvery day, it finds all the newest postings and present them in a table. \n  You can filter and sort listings however you want, and save your results as a daily email newsletter.\n\nNo signups, no ads. It could not be easier.\n\n## What job sites does Gainful search?\n\nGlad you asked. Gainful searches the following sources:\n\n- City of Toronto\n- City of Victoria\n- City of Mississauga\n- Ontario Public Service in the GTA (TODO)\n- ...etc\n\n## Can I help?\n\n[twitter]: http://www.twitter.com/rgscherf\n\nYes! [Get in touch][twitter] or make a [pull request](http://www.github.com/rgscherf/gainful2).\n\n## Who wrote Gainful?\n\nGainful is written by Robert Scherf. He\'s looking for a job--[hire him][twitter]!\n\n");
    var addCommas = function (amt) {
       var start = $String.reverse($Basics.toString($Basics.round(amt)));
       var len = $String.length(start);
@@ -11326,13 +11326,13 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text("Title "),sortIndicator($Models.Title)]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Salary)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text("Salary/Wage "),sortIndicator($Models.Salary)]))
+              _U.list([sortIndicator($Models.Salary),$Html.text(" Salary/Wage")]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.PostingDate)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text("Posted "),sortIndicator($Models.PostingDate)]))
+              _U.list([sortIndicator($Models.PostingDate),$Html.text(" Posted")]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.ClosingDate)),$Html$Attributes.$class("rightHead")]),
-              _U.list([$Html.text("Closing "),sortIndicator($Models.ClosingDate)]))]))]),
+              _U.list([sortIndicator($Models.ClosingDate),$Html.text(" Closing")]))]))]),
       tbody));
    });
    var filterBox = F2(function (a,f) {
