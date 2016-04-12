@@ -9,19 +9,19 @@ nav {
   top: -10px;
   left: 15px;
   font-size: 70px;
-  color: #040D0C; }
+  color: #080F0B; }
 
 .nav-icon {
   position: relative;
   float: right;
   top: 20px;
-  color: #040D0C; }
+  color: #080F0B; }
 
 /* FILTER BOX */
 #filterwrapper {
   display: flex;
   width: 95%;
-  background-color: #3FBDAF;
+  background-color: #58B27F;
   margin-left: auto;
   margin-right: auto;
   align-items: center;
@@ -31,7 +31,7 @@ nav {
 #filternewsletter {
   padding-left: 15px;
   padding-right: 10px;
-  border-left: 1px solid #040D0C;
+  border-left: 1px solid #080F0B;
   width: 150px; }
 
 #filtertable {
@@ -58,14 +58,14 @@ nav {
   text-align: right; }
 
 #newsletterbutton {
-  background-color: #72F7B4; }
+  background-color: #BED3ED; }
 
 button {
-  background-color: #3FBDAF;
+  background-color: #58B27F;
   margin: 3px;
   padding: 7px;
   font-size: 16px;
-  border: 1px solid #040D0C;
+  border: 1px solid #080F0B;
   border-radius: 5px; }
 
 button:focus {
@@ -73,16 +73,16 @@ button:focus {
 
 /* JOB TABLE */
 .visible {
-  box-shadow: inset 3px 3px 3px 0px #040D0C; }
+  box-shadow: inset 3px 3px 3px 0px #080F0B; }
 
 #jobtable {
-  border: 3px solid #3FBDAF;
+  border: 3px solid #58B27F;
   border-radius: 5px;
   margin-left: auto;
   margin-right: auto;
   width: 95%; }
   #jobtable a:link {
-    color: #040D0C; }
+    color: #080F0B; }
   #jobtable a:visited {
     color: #7D9C98; }
 
@@ -104,10 +104,10 @@ td {
 
 th {
   text-align: center;
-  background-color: #3FBDAF; }
+  background-color: #58B27F; }
 
 .shadedRow {
-  background-color: #DBEDE9; }
+  background-color: #F0FAF0; }
 
 .unshadedRow {
   background-color: white; }
@@ -124,7 +124,7 @@ table {
   font-size: 13px; }
 
 body {
-  background: #DBEDE9;
+  background: #F0FAF0;
   font-family: "Roboto", "Open Sans", sans-serif; }
 
 html {
