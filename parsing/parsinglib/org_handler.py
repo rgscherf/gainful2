@@ -188,11 +188,51 @@ class Halton(Organization):
             elif "posting ex" in field:
                 job.date_closing = d.parse(val).date()
 
+class Burlington(Organization):
+    def __init__(self):
+        Organization.__init__(self, "burlington")
+
+    def parse(self):
+        rows = self.soup.find(class_="TPListTbl").find_all("tr")[1:]
+        for r in rows:
+            cols = r.find_all("td")
+            job = JobContainer()
+            job.url_detail = "http://careers2.hiredesk.net" + cols[0].a["href"]
+            if not job.is_unique():
+                continue
+            job.title = cols[0].text.strip()
+            job.region = "GTA - Halton"
+            job.organization = "Burlington"
+            job.date_posted = date.today()
+            job.date_closing = d.parse(cols[4].text.strip()).date()
+            self.parse_detail_page(job)
+            job.save()
+
+    def parse_detail_page(self, job):
+        """ get job's department and salary
+        """
+        r = requests.get(job.url_detail)
+        soup = BeautifulSoup(r.text, "html5lib")
+        rows = soup.find(class_="FormContent").find_all("tr")
+        for r in rows:
+            cols = r.find_all("td")
+            if len(cols) < 2:
+                continue
+            field = cols[0].text.strip().lower()
+            val = cols[1].text.strip()
+            if field == "department":
+                job.division = val
+            elif field == "salary range" or field == "hourly rate":
+                job.salary_amount = brainhunter_extract_salary(val)
+        if job.division == None:
+            job.division = ""
+
 
 # the main parse util calls find_jobs to kick off web scraping.
 # make sure current_orgs is always up to date.
 
-current_orgs = [ Halton()
+current_orgs = [ Burlington()
+               , Halton()
                , Markham()
                , YorkRegion()
                , Brampton()

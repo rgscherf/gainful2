@@ -45,6 +45,8 @@ def parse_brainhunter_detail_page(field_dict, job):
 def brainhunter_extract_salary(string):
     s = "".join(dropwhile(lambda x: not x.isdigit(), string))
     s = "".join(takewhile(lambda x: not x.isspace(), s))
+    if "-" in s:
+        s = s.split("-")[0]
     if "," in s:
         s = "".join(filter(lambda a: a != ",", s))
     amount = float("".join(s))

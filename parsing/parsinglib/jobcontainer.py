@@ -24,7 +24,7 @@ class JobContainer():
             if len(Job.objects.filter(url_detail=self.url_detail)) == 0:
                 return True
             else:
-                print("Job already exists in DB: {}".format(self.url_detail))
+                # print("Job already exists in DB: {}".format(self.url_detail))
                 return False
 
     def cleanup(self):
