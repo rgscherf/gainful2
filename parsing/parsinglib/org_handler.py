@@ -193,12 +193,12 @@ class Halton(Organization):
 # make sure current_orgs is always up to date.
 
 current_orgs = [ Halton()
-               # , Markham()
-               # , YorkRegion()
-               # , Brampton()
-               # , PeelRegion()
-               # , Mississauga()
-               # , Toronto()
+               , Markham()
+               , YorkRegion()
+               , Brampton()
+               , PeelRegion()
+               , Mississauga()
+               , Toronto()
                ]
 
 def find_jobs():
