@@ -233,62 +233,60 @@ class Oakville(Organization):
         Organization.__init__(self, "oakville")
 
     def parse(self):
+        
+        def trim_url(url):
+            if "jsessionid" in url:
+                spl = url.split(";jsessionid=")
+                fst = spl[0]
+                snd = "".join(spl).split("?org=")[1]
+                return fst + "?org=" + snd
+            else:
+                return url
+
         rows = self.soup.find(id="cws-search-results").find_all("tr")[1:]
         for r in rows:
-            cols = r.find_all("td")
             job = JobContainer()
-            job.url_detail = cols[0].a["href"]
+            cols = r.find_all("td")
+            job.url_detail = trim_url(cols[0].a["href"])
             if not job.is_unique():
                 continue
             job.region = "GTA - Halton"
             job.organization = "Oakville"
             job.title = cols[0].text.strip()
-            job.date_posted = d.parse(cols[2].text.strip()).date()
-            job.date_closing = d.parse(cols[3].text.strip()).date()
+            job.date_posted = d.parse(cols[2].text.strip(), dayfirst=True).date()
+            job.date_closing = d.parse(cols[3].text.strip(), dayfirst=True).date()
             self.parse_detail_page(job)
-            print(job, job.salary_amount, job.division)
-            #job.save()
+            job.save()
 
     def parse_detail_page(self, job):
-        def has_attr(elem):
-            try:
-                return elem["role"] == "presentation"
-            except KeyError:
-                return False
-
         r = requests.get(job.url_detail)
-        soup = BeautifulSoup(r.text, "html5lib")
-        tables = soup.find_all("table")
-        tables = list(filter(has_attr, tables))
-        # if len(tables) != 1:
-        #     raise IndexError("did not target correct job table for Oakville")
-        # else:
-        rows = tables[0]
+        soup = BeautifulSoup(r.text, "html.parser") # html5lib failed here..
+        rows = soup.find(id="taleoContent").table.find_all("tr")[4:]
         for r in rows:
-            print(r)
             cols = r.find_all("td")
             if cols[0].text.strip().lower() == "department:":
                 job.division = cols[1].text.strip()
             elif cols[0].text.strip().lower() == "location:":
                 sal = cols[4].text.strip()
-                job.salary_amount = brainhunter_extract_salary(sal)
-                # except IndexError:
-                #     job.salary_amount = 0
+                try:
+                    job.salary_amount = brainhunter_extract_salary(sal)
+                except IndexError:
+                    job.salary_amount = 0
 
 
 
 # the main parse util calls find_jobs to kick off web scraping.
 # make sure current_orgs is always up to date.
 
-current_orgs = [ Oakville()
-               # , Burlington()
-               # , Halton()
-               # , Markham()
-               # , YorkRegion()
-               # , Brampton()
-               # , PeelRegion()
-               # , Mississauga()
-               # , Toronto()
+current_orgs = [  Oakville()
+               , Burlington()
+               , Halton()
+               , Markham()
+               , YorkRegion()
+               , Brampton()
+               , PeelRegion()
+               , Mississauga()
+               , Toronto()
                ]
 
 def find_jobs():

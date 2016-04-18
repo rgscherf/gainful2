@@ -24,7 +24,7 @@ Think about rendering OPS and Federal jobs for each region?
 
 ## GTA - Halton
 - DONE Halton Region
-- Oakville
+- DONE Oakville
 - DONE Burlington
 - Milton
 - Halton Hill

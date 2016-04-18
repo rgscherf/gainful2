@@ -49,7 +49,7 @@ def brainhunter_extract_salary(string):
         s = s.split("-")[0]
     if "," in s:
         s = "".join(filter(lambda a: a != ",", s))
-    if len(filter(lambda c: c.isdigit(), s)) == 0: # float() will fail if this is true, but just want to be explicit about it
+    if len(list(filter(lambda c: c.isdigit(), s))) == 0: # float() will fail if this is true, but just want to be explicit about it
         raise IndexError("Tried to extract salary from non-number: {}".format(s))
     amount = float("".join(s))
     return amount
