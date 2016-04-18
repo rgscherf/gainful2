@@ -11192,6 +11192,7 @@ Elm.Models.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
+   var getOrgRegion = F2(function (org,allOrgs) {    return A2($Maybe.withDefault,"",A2($Dict.get,org,allOrgs));});
    var Filter = F4(function (a,b,c,d) {    return {allRegions: a,allOrgs: b,visibleRegions: c,visibleOrgs: d};});
    var Model = F3(function (a,b,c) {    return {jobs: a,jobFilter: b,fromStorage: c};});
    var URL = {ctor: "URL"};
@@ -11246,6 +11247,7 @@ Elm.Models.make = function (_elm) {
                                ,URL: URL
                                ,Model: Model
                                ,Filter: Filter
+                               ,getOrgRegion: getOrgRegion
                                ,sortOnCriteria: sortOnCriteria
                                ,sortJobs: sortJobs
                                ,compareJob: compareJob};
@@ -11349,6 +11351,14 @@ Elm.Site.make = function (_elm) {
                  ,A2($Html$Events.onClick,a,A2($Models.ToggleFilter,field,x))]),
          _U.list([$Html.text(x)]));
       });
+      var orgRoster = A2($List.map,
+      A2(btn,f,$Models.Organization),
+      A2($List.sortBy,
+      function (a) {
+         return A2($Models.getOrgRegion,a,f.allOrgs);
+      },
+      A2($List.filter,function (a) {    return A2($List.member,A2($Models.getOrgRegion,a,f.allOrgs),f.visibleRegions);},$Dict.keys(f.allOrgs))));
+      var regionRoster = A2($List.map,A2(btn,f,$Models.Region),$List.sort($Dict.keys(f.allRegions)));
       return _U.list([A2($Html.div,
       _U.list([$Html$Attributes.id("filterwrapper"),$Html$Attributes.$class("shadow")]),
       _U.list([A2($Html.div,_U.list([$Html$Attributes.id("filterannounce")]),_U.list([$Html.text("Filter jobs")]))
@@ -11359,12 +11369,12 @@ Elm.Site.make = function (_elm) {
               _U.list([A2($Html.tr,
                       _U.list([]),
                       _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("...by region:")]))
-                              ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Region),$List.sort($Dict.keys(f.allRegions))))]))
+                              ,A2($Html.td,_U.list([]),regionRoster)]))
                       ,A2($Html.tr,_U.list([$Html$Attributes.$class("blankrow")]),_U.list([A2($Html.td,_U.list([$Html$Attributes.colspan(2)]),_U.list([]))]))
                       ,A2($Html.tr,
                       _U.list([]),
                       _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("...by organization:")]))
-                              ,A2($Html.td,_U.list([]),A2($List.map,A2(btn,f,$Models.Organization),$List.sort($Dict.keys(f.allOrgs))))]))]))]))
+                              ,A2($Html.td,_U.list([]),orgRoster)]))]))]))
               ,A2($Html.div,
               _U.list([$Html$Attributes.id("filternewsletter")]),
               _U.list([A2($Html.button,_U.list([$Html$Attributes.id("newsletterbutton")]),_U.list([$Html.text("Save filters to daily newsletter")]))]))]))]);
@@ -11404,17 +11414,16 @@ Elm.Site.make = function (_elm) {
                              ,addCommas: addCommas
                              ,aboutMessage: aboutMessage};
 };
-Elm.Main = Elm.Main || {};
-Elm.Main.make = function (_elm) {
+Elm.Update = Elm.Update || {};
+Elm.Update.make = function (_elm) {
    "use strict";
-   _elm.Main = _elm.Main || {};
-   if (_elm.Main.values) return _elm.Main.values;
+   _elm.Update = _elm.Update || {};
+   if (_elm.Update.values) return _elm.Update.values;
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
    $Dict = Elm.Dict.make(_elm),
    $Effects = Elm.Effects.make(_elm),
-   $Html = Elm.Html.make(_elm),
    $Http = Elm.Http.make(_elm),
    $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
@@ -11423,8 +11432,6 @@ Elm.Main.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Set = Elm.Set.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $Site = Elm.Site.make(_elm),
-   $StartApp = Elm.StartApp.make(_elm),
    $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
@@ -11451,6 +11458,7 @@ Elm.Main.make = function (_elm) {
    }();
    var decodeJobList = $Json$Decode.list(decodeJob);
    var getJobsFromFile = function (s) {    return $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,s))));};
+   var jobsToStorage = $Signal.mailbox("");
    var makeSingleEntity = F2(function (j,f) {
       var _p0 = A2($Dict.get,j.region,f.allRegions);
       if (_p0.ctor === "Nothing") {
@@ -11489,7 +11497,10 @@ Elm.Main.make = function (_elm) {
    var toggleFilter = F3(function (field,identifier,fil) {
       var _p3 = field;
       switch (_p3.ctor)
-      {case "Region": return A2($List.member,identifier,fil.visibleRegions) ? _U.update(fil,
+      {case "Organization": return A2($List.member,identifier,fil.visibleOrgs) ? _U.update(fil,
+           {visibleOrgs: A2($List.filter,function (x) {    return !_U.eq(x,identifier);},fil.visibleOrgs)}) : _U.update(fil,
+           {visibleOrgs: A2($List._op["::"],identifier,fil.visibleOrgs)});
+         case "Region": return A2($List.member,identifier,fil.visibleRegions) ? _U.update(fil,
            {visibleRegions: A2($List.filter,function (x) {    return !_U.eq(x,identifier);},fil.visibleRegions)
            ,visibleOrgs: A2($List.filter,
            function (x) {
@@ -11500,34 +11511,9 @@ Elm.Main.make = function (_elm) {
            ,visibleOrgs: $Set.toList($Set.fromList(A2($Basics._op["++"],
            A2($Maybe.withDefault,_U.list([]),A2($Dict.get,identifier,fil.allRegions)),
            fil.visibleOrgs)))});
-         case "Organization": if (A2($List.member,identifier,fil.visibleOrgs)) {
-                 var newFil = _U.update(fil,{visibleOrgs: A2($List.filter,function (x) {    return !_U.eq(x,identifier);},fil.visibleOrgs)});
-                 var regionOfOrg = function (i) {    return A2($Maybe.withDefault,"",A2($Dict.get,i,newFil.allOrgs));};
-                 return _U.update(newFil,
-                 {visibleRegions: A2($List.any,
-                 function (x) {
-                    return A2($List.member,x,newFil.visibleOrgs);
-                 },
-                 A2($Maybe.withDefault,_U.list([]),A2($Dict.get,regionOfOrg(identifier),newFil.allRegions))) ? newFil.visibleRegions : A2($List.filter,
-                 function (x) {
-                    return !_U.eq(x,regionOfOrg(identifier));
-                 },
-                 newFil.visibleRegions)});
-              } else return _U.update(fil,
-              {visibleOrgs: A2($List._op["::"],identifier,fil.visibleOrgs)
-              ,visibleRegions: A2($List.all,
-              function (x) {
-                 return A2($List.member,x,fil.visibleOrgs);
-              },
-              A2($Maybe.withDefault,_U.list([]),A2($Dict.get,identifier,fil.allRegions))) ? A2($List.member,
-              A2($Maybe.withDefault,"",A2($Dict.get,identifier,fil.allOrgs)),
-              fil.visibleRegions) ? fil.visibleRegions : A2($List._op["::"],
-              A2($Maybe.withDefault,"",A2($Dict.get,identifier,fil.allOrgs)),
-              fil.visibleRegions) : fil.visibleRegions});
          default: return fil;}
    });
    var makeString = function (l) {    return A3($List.foldl,F2(function (x,y) {    return A2($Basics._op["++"],x,y);}),"",A2($List.intersperse,",",l));};
-   var jobsToStorage = $Signal.mailbox("");
    var update = F2(function (action,model) {
       var _p4 = action;
       switch (_p4.ctor)
@@ -11546,7 +11532,40 @@ Elm.Main.make = function (_elm) {
            }));
            return {ctor: "_Tuple2",_0: newModel,_1: toLocalStorage};}
    });
-   var localStorageFromElm = Elm.Native.Port.make(_elm).outboundSignal("localStorageFromElm",function (v) {    return v;},jobsToStorage.signal);
+   return _elm.Update.values = {_op: _op
+                               ,update: update
+                               ,makeString: makeString
+                               ,toggleFilter: toggleFilter
+                               ,makeFilter: makeFilter
+                               ,makeEntitiesVisible: makeEntitiesVisible
+                               ,makeSingleEntity: makeSingleEntity
+                               ,jobsToStorage: jobsToStorage
+                               ,getJobsFromFile: getJobsFromFile
+                               ,decodeJob: decodeJob
+                               ,decodeJobList: decodeJobList};
+};
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values) return _elm.Main.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models = Elm.Models.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Site = Elm.Site.make(_elm),
+   $StartApp = Elm.StartApp.make(_elm),
+   $Task = Elm.Task.make(_elm),
+   $Update = Elm.Update.make(_elm);
+   var _op = {};
+   var localStorageFromElm = Elm.Native.Port.make(_elm).outboundSignal("localStorageFromElm",function (v) {    return v;},$Update.jobsToStorage.signal);
    var jsonLocation = Elm.Native.Port.make(_elm).inboundSignal("jsonLocation",
    "String",
    function (v) {
@@ -11562,25 +11581,10 @@ Elm.Main.make = function (_elm) {
    var init = {ctor: "_Tuple2",_0: startModel,_1: $Effects.none};
    var app = $StartApp.start({init: init
                              ,view: $Site.view
-                             ,update: update
+                             ,update: $Update.update
                              ,inputs: _U.list([A2($Signal.map,function (s) {    return $Models.FromStorage(s);},localStorageToElm)
                                               ,A2($Signal.map,$Models.InitiateJobsFromJson,jsonLocation)])});
    var main = app.html;
    var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",app.tasks);
-   return _elm.Main.values = {_op: _op
-                             ,app: app
-                             ,main: main
-                             ,startFilter: startFilter
-                             ,startModel: startModel
-                             ,init: init
-                             ,jobsToStorage: jobsToStorage
-                             ,update: update
-                             ,makeString: makeString
-                             ,toggleFilter: toggleFilter
-                             ,makeFilter: makeFilter
-                             ,makeEntitiesVisible: makeEntitiesVisible
-                             ,makeSingleEntity: makeSingleEntity
-                             ,getJobsFromFile: getJobsFromFile
-                             ,decodeJob: decodeJob
-                             ,decodeJobList: decodeJobList};
+   return _elm.Main.values = {_op: _op,app: app,main: main,startFilter: startFilter,startModel: startModel,init: init};
 };

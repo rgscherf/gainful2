@@ -47,6 +47,10 @@ type alias Filter =
   , visibleOrgs : List String
   }
 
+getOrgRegion : String -> Dict String String -> String
+getOrgRegion org allOrgs =
+  Dict.get org allOrgs |> Maybe.withDefault ""
+
 sortOnCriteria : JobField -> List Job -> List Job
 sortOnCriteria f js = List.sortWith (compareJob f) js
 

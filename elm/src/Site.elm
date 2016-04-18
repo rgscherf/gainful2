@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown
-import Dict
+import Dict exposing (Dict)
 import String
 
 import Models exposing (..)
@@ -12,7 +12,6 @@ import Models exposing (..)
 ------------
 -- MAIN VIEW
 ------------
-
 
 view : Signal.Address Action -> Model -> Html
 view address model =
@@ -62,28 +61,36 @@ filterBox a f =
                    else "notVisible"
         , onClick a (ToggleFilter  field x) ]
         [ text x ]
+    orgRoster = 
+      Dict.keys f.allOrgs
+        |> List.filter (\a -> List.member (getOrgRegion a f.allOrgs) f.visibleRegions) 
+        |> List.sortBy (\a -> getOrgRegion a f.allOrgs)
+        |> List.map (btn f Organization)
+    regionRoster = 
+       List.map (btn f Region)
+        <| List.sort
+        <| Dict.keys f.allRegions 
   in
     [div [id "filterwrapper", class "shadow"]
       [ div
         [ id "filterannounce" ]
-        [ text <| "Filter jobs" ]
+        [ text "Filter jobs" ]
       , div
         [id "filtertable"]
         [ table
           []
-          [ tr []
+          [ tr [] -- filter for regions
             [ td [class "filtertitle"] [text "...by region:"]
-            , td [] <| ( List.map (btn f Region)
-                        <| List.sort
-                        <| Dict.keys f.allRegions )
+            , td [] regionRoster
             ]
           , tr [class "blankrow"] [td [colspan 2] []]
-          , tr []
+          , tr [] -- filter for organizations
             [ td [class "filtertitle"] [text "...by organization:"]
-            , td [] <| ( List.map (btn f Organization)
-                        <| List.sort
-                        <| Dict.keys f.allOrgs )]]]
-      , div
+            , td [] orgRoster 
+            ]
+          ]
+        ]
+      , div -- newsletter button
           [id "filternewsletter"]
           [ button [id "newsletterbutton"] [text "Save filters to daily newsletter"]]
       ]
