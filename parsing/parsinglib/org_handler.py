@@ -228,17 +228,67 @@ class Burlington(Organization):
             job.division = ""
 
 
+class Oakville(Organization):
+    def __init__(self):
+        Organization.__init__(self, "oakville")
+
+    def parse(self):
+        rows = self.soup.find(id="cws-search-results").find_all("tr")[1:]
+        for r in rows:
+            cols = r.find_all("td")
+            job = JobContainer()
+            job.url_detail = cols[0].a["href"]
+            if not job.is_unique():
+                continue
+            job.region = "GTA - Halton"
+            job.organization = "Oakville"
+            job.title = cols[0].text.strip()
+            job.date_posted = d.parse(cols[2].text.strip()).date()
+            job.date_closing = d.parse(cols[3].text.strip()).date()
+            self.parse_detail_page(job)
+            print(job, job.salary_amount, job.division)
+            #job.save()
+
+    def parse_detail_page(self, job):
+        def has_attr(elem):
+            try:
+                return elem["role"] == "presentation"
+            except KeyError:
+                return False
+
+        r = requests.get(job.url_detail)
+        soup = BeautifulSoup(r.text, "html5lib")
+        tables = soup.find_all("table")
+        tables = list(filter(has_attr, tables))
+        # if len(tables) != 1:
+        #     raise IndexError("did not target correct job table for Oakville")
+        # else:
+        rows = tables[0]
+        for r in rows:
+            print(r)
+            cols = r.find_all("td")
+            if cols[0].text.strip().lower() == "department:":
+                job.division = cols[1].text.strip()
+            elif cols[0].text.strip().lower() == "location:":
+                sal = cols[4].text.strip()
+                job.salary_amount = brainhunter_extract_salary(sal)
+                # except IndexError:
+                #     job.salary_amount = 0
+
+
+
 # the main parse util calls find_jobs to kick off web scraping.
 # make sure current_orgs is always up to date.
 
-current_orgs = [ Burlington()
-               , Halton()
-               , Markham()
-               , YorkRegion()
-               , Brampton()
-               , PeelRegion()
-               , Mississauga()
-               , Toronto()
+current_orgs = [ Oakville()
+               # , Burlington()
+               # , Halton()
+               # , Markham()
+               # , YorkRegion()
+               # , Brampton()
+               # , PeelRegion()
+               # , Mississauga()
+               # , Toronto()
                ]
 
 def find_jobs():

@@ -6,4 +6,5 @@ urls = { "toronto": "https://www.brainhunter.com/frontoffice/searchSeekerJobActi
        , "york_region": "http://clients.njoyn.com/cl2/xweb/xweb.asp?page=joblisting&clid=60295"
        , "halton": "http://webaps.halton.ca/about/jobs/JobPostings.cfm"
        , "burlington": "http://careers2.hiredesk.net/ViewJobs/?Comp=COB&sPERS_ID=&TP_ID=1&JB_ID=&PROJ_ID=&LAN=en-US"
+       , "oakville": "https://trr.tbe.taleo.net/trr01/ats/careers/searchResults.jsp?org=TOWNOFOA&cws=1"
        }

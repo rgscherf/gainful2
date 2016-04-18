@@ -95,19 +95,19 @@ filterBox a f =
 viewJobs : Signal.Address Action -> Filter -> Maybe Jobs -> Html
 viewJobs address fil maybeJobs =
   let
-      jobs =
-        List.filter (\j -> List.member j.organization fil.visibleOrgs)
-        <| Maybe.withDefault [] maybeJobs
-      shaded = List.concat <| List.repeat (List.length jobs) [True, False]
-      jobAndClass = List.map2 (,) shaded jobs
-      tbody = List.concatMap individualJob jobAndClass
-      sortIndicator f =
-        if sortOnCriteria f jobs == jobs
-        then i [class "fa fa-arrow-down"] []
-        else
-          if sortOnCriteria f  jobs == List.reverse jobs
-          then i [class "fa fa-arrow-up"] []
-          else i [class "fa fa-arrow-up", style [("opacity", "0")]] []
+    jobs =
+      List.filter (\j -> List.member j.organization fil.visibleOrgs)
+      <| Maybe.withDefault [] maybeJobs
+    shaded = List.concat <| List.repeat (List.length jobs) [True, False]
+    jobAndClass = List.map2 (,) shaded jobs
+    tbody = List.concatMap individualJob jobAndClass
+    sortIndicator f =
+      if sortOnCriteria f jobs == jobs
+      then i [class "fa fa-arrow-down"] []
+      else
+        if sortOnCriteria f  jobs == List.reverse jobs
+        then i [class "fa fa-arrow-up"] []
+        else i [class "fa fa-arrow-up", style [("opacity", "0")]] []
   in
     table [id "jobtable", class "shadow"]
       (
