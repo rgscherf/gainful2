@@ -18,7 +18,7 @@ nav {
   color: #0A0C0A; }
 
 /* FILTER BOX */
-#filterwrapper {
+.filterwrapper {
   display: flex;
   width: 95%;
   background-color: #66CFAB;
@@ -38,12 +38,14 @@ nav {
   flex-grow: 1;
   margin-left: auto;
   margin-right: auto; }
+  #filtertable tr {
+    height: 50px; }
 
 .blankrow {
   height: 10px !important; }
 
 #filterannounce {
-  width: 130px;
+  width: 120px;
   padding-left: 5px;
   font-family: "Lobster Two", cursive;
   font-size: 2em;
@@ -53,7 +55,7 @@ nav {
   margin: 5px;
   padding-right: 10px;
   font-family: "Lobster Two", cursive;
-  width: 150px;
+  width: 125px;
   font-size: 1.7em;
   text-align: right; }
 

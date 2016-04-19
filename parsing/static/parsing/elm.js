@@ -11281,7 +11281,7 @@ Elm.Site.make = function (_elm) {
       A2($Basics._op["++"],",",A2($String.dropLeft,3,start))));
    };
    var salary = F2(function (amount,waged) {
-      var postfix = waged ? " /hr" : " /yr";
+      var postfix = waged ? " /h" : " /y";
       var stringSalary = waged ? $Basics.toString(amount) : addCommas(amount);
       return _U.eq(amount,0) ? "--" : A2($Basics._op["++"],"$ ",A2($Basics._op["++"],stringSalary,postfix));
    });
@@ -11328,7 +11328,7 @@ Elm.Site.make = function (_elm) {
               _U.list([$Html.text("Title "),sortIndicator($Models.Title)]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.Salary)),$Html$Attributes.$class("rightHead")]),
-              _U.list([sortIndicator($Models.Salary),$Html.text(" Salary/Wage")]))
+              _U.list([sortIndicator($Models.Salary),$Html.text(" Salary")]))
               ,A2($Html.th,
               _U.list([A2($Html$Events.onClick,address,$Models.SortJobs($Models.PostingDate)),$Html$Attributes.$class("rightHead")]),
               _U.list([sortIndicator($Models.PostingDate),$Html.text(" Posted")]))
@@ -11360,22 +11360,26 @@ Elm.Site.make = function (_elm) {
       A2($List.filter,function (a) {    return A2($List.member,A2($Models.getOrgRegion,a,f.allOrgs),f.visibleRegions);},$Dict.keys(f.allOrgs))));
       var regionRoster = A2($List.map,A2(btn,f,$Models.Region),$List.sort($Dict.keys(f.allRegions)));
       return _U.list([A2($Html.div,
-      _U.list([$Html$Attributes.id("filterwrapper"),$Html$Attributes.$class("shadow")]),
-      _U.list([A2($Html.div,_U.list([$Html$Attributes.id("filterannounce")]),_U.list([$Html.text("Filter jobs")]))
+      _U.list([$Html$Attributes.$class("filterwrapper shadow")]),
+      _U.list([A2($Html.div,_U.list([$Html$Attributes.id("filterannounce")]),_U.list([$Html.text("Filter by...")]))
               ,A2($Html.div,
               _U.list([$Html$Attributes.id("filtertable")]),
               _U.list([A2($Html.table,
               _U.list([]),
               _U.list([A2($Html.tr,
                       _U.list([]),
-                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("...by region:")]))
+                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("regions:")]))
                               ,A2($Html.td,_U.list([]),regionRoster)]))
                       ,A2($Html.tr,_U.list([$Html$Attributes.$class("blankrow")]),_U.list([A2($Html.td,_U.list([$Html$Attributes.colspan(2)]),_U.list([]))]))
                       ,A2($Html.tr,
                       _U.list([]),
-                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("...by organization:")]))
+                      _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("organizations:")]))
                               ,A2($Html.td,_U.list([]),orgRoster)]))]))]))]))]);
    });
+   var newsletter = A2($Html.div,
+   _U.list([$Html$Attributes.$class("filterwrapper shadow")]),
+   _U.list([$Html.text("Want daily updates with these filter settings? Newsletter coming soon!")]));
+   var spacer = A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]));
    var navBar = A2($Html.nav,
    _U.list([]),
    _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("logo")]),_U.list([$Html.text("Gainful")]))
@@ -11391,19 +11395,13 @@ Elm.Site.make = function (_elm) {
    var view = F2(function (address,model) {
       return A2($Html.div,
       _U.list([]),
-      _U.list([navBar
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([]),A2(filterBox,address,model.jobFilter))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A3(viewJobs,address,model.jobFilter,model.jobs)
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))
-              ,A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]))]));
+      _U.list([navBar,spacer,A2($Html.div,_U.list([]),A2(filterBox,address,model.jobFilter)),spacer,A3(viewJobs,address,model.jobFilter,model.jobs),spacer]));
    });
    return _elm.Site.values = {_op: _op
                              ,view: view
                              ,navBar: navBar
+                             ,spacer: spacer
+                             ,newsletter: newsletter
                              ,filterBox: filterBox
                              ,viewJobs: viewJobs
                              ,individualJob: individualJob

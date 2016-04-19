@@ -36,7 +36,7 @@ nav {
 
 /* FILTER BOX */
 
-#filterwrapper {
+.filterwrapper {
   display: flex;
   width: 95%;
   background-color: $color-primary;
@@ -58,6 +58,9 @@ nav {
   flex-grow: 1;
   margin-left: auto;
   margin-right: auto;
+  tr {
+    height: 50px;
+  }
 }
 
 .blankrow {
@@ -65,7 +68,7 @@ nav {
 }
 
 #filterannounce {
-  width: 130px;
+  width: 120px;
   padding-left: 5px;
   font-family: $cursive;
   font-size: 2em;
@@ -77,7 +80,7 @@ nav {
   margin: 5px;
   padding-right: 10px;
   font-family: $cursive;
-  width: 150px;
+  width: 125px;
   font-size: 1.7em;
   text-align: right;
 }

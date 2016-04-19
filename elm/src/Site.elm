@@ -19,16 +19,13 @@ view address model =
     []
     [
       navBar
-    -- , div [] [text <| toString model.jobFilter]
-    , div [class "spacer"] []
+    --, spacer
+    --, newsletter
+    , spacer
     , div [] <| filterBox address model.jobFilter
-    , div [class "spacer"] []
+    , spacer    
     , viewJobs address model.jobFilter model.jobs
-    , div [class "spacer"] []
-    , div [class "spacer"] []
-    , div [class "spacer"] []
-    , div [class "spacer"] []
-    -- , aboutMessage
+    , spacer
     ]
 
 -- NAV
@@ -44,6 +41,14 @@ navBar =
              [i [class "fa fa-2x fa-fw fa-twitter nav-icon"] []]
          ]
 
+-- SPACER
+spacer : Html
+spacer = div [class "spacer"] []
+
+-- NEWSLETTER
+newsletter : Html
+newsletter =
+  div [class "filterwrapper shadow"] [text <| "Want daily updates with these filter settings? Newsletter coming soon!"]
 
 -- FILTERBOX
 
@@ -71,21 +76,21 @@ filterBox a f =
         <| List.sort
         <| Dict.keys f.allRegions 
   in
-    [div [id "filterwrapper", class "shadow"]
+    [div [class "filterwrapper shadow"]
       [ div
         [ id "filterannounce" ]
-        [ text "Filter jobs" ]
+        [ text "Filter by..." ]
       , div
         [id "filtertable"]
         [ table
           []
           [ tr [] -- filter for regions
-            [ td [class "filtertitle"] [text "...by region:"]
+            [ td [class "filtertitle"] [text "regions:"]
             , td [] regionRoster
             ]
           , tr [class "blankrow"] [td [colspan 2] []]
           , tr [] -- filter for organizations
-            [ td [class "filtertitle"] [text "...by organization:"]
+            [ td [class "filtertitle"] [text "organizations:"]
             , td [] orgRoster 
             ]
           ]
@@ -121,7 +126,7 @@ viewJobs address fil maybeJobs =
         [ tr [class "jobTableHeader"]
           [ th [onClick address (SortJobs Organization), class "leftHead"] [text "Organization ", sortIndicator Organization]
           , th [onClick address (SortJobs Title), class "leftHead"] [text "Title ", sortIndicator Title]
-          , th [onClick address (SortJobs Salary), class "rightHead"] [sortIndicator Salary, text " Salary/Wage"]
+          , th [onClick address (SortJobs Salary), class "rightHead"] [sortIndicator Salary, text " Salary"]
           , th [onClick address (SortJobs PostingDate), class "rightHead"] [sortIndicator PostingDate, text " Posted"]
           , th [onClick address (SortJobs ClosingDate), class "rightHead"] [sortIndicator ClosingDate, text " Closing"]
           ]
@@ -152,7 +157,7 @@ individualJob (shaded, job) =
 salary : Float -> Bool -> String
 salary amount waged =
   let stringSalary = if waged then toString amount else addCommas amount
-      postfix = if waged then " /hr" else " /yr"
+      postfix = if waged then " /h" else " /y"
   in
     if amount == 0 then "--" else "$ " ++ stringSalary ++ postfix
 
