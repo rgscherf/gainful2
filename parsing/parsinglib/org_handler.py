@@ -241,7 +241,7 @@ class Oakville(Organization):
                 snd = "".join(spl).split("?org=")[1]
                 return fst + "?org=" + snd
             else:
-                return url
+                raise IndexError("malformed Oakville URL")
 
         rows = self.soup.find(id="cws-search-results").find_all("tr")[1:]
         for r in rows:
