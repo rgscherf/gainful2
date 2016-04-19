@@ -19,10 +19,10 @@ view address model =
     []
     [
       navBar
-    --, spacer
-    --, newsletter
     , spacer
     , div [] <| filterBox address model.jobFilter
+    --, spacer
+    --, newsletter
     , spacer    
     , viewJobs address model.jobFilter model.jobs
     , spacer
