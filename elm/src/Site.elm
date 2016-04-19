@@ -90,9 +90,9 @@ filterBox a f =
             ]
           ]
         ]
-      , div -- newsletter button
-          [id "filternewsletter"]
-          [ button [id "newsletterbutton"] [text "Save filters to daily newsletter"]]
+      --, div -- newsletter button
+      --    [id "filternewsletter"]
+      --    [ button [id "newsletterbutton"] [text "Save filters to daily newsletter"]]
       ]
     ]
 

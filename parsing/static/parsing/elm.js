@@ -11374,10 +11374,7 @@ Elm.Site.make = function (_elm) {
                       ,A2($Html.tr,
                       _U.list([]),
                       _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("...by organization:")]))
-                              ,A2($Html.td,_U.list([]),orgRoster)]))]))]))
-              ,A2($Html.div,
-              _U.list([$Html$Attributes.id("filternewsletter")]),
-              _U.list([A2($Html.button,_U.list([$Html$Attributes.id("newsletterbutton")]),_U.list([$Html.text("Save filters to daily newsletter")]))]))]))]);
+                              ,A2($Html.td,_U.list([]),orgRoster)]))]))]))]))]);
    });
    var navBar = A2($Html.nav,
    _U.list([]),
