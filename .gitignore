@@ -3,7 +3,7 @@ elm/elm-stuff
 
 # staticfiles build stuff
 gainful2/staticfiles
-*.json
+**.json
 
 #secrets
 bin/activate
