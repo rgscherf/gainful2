@@ -7,7 +7,7 @@ import datetime
 import os
 
 orgs = org_handler.current_orgs
-filename = "parsing/static/parsing/jobs.json"
+filename = os.path.abspath(".") + "/parsing/static/parsing/jobs.json"
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
@@ -25,7 +25,7 @@ class Command(BaseCommand):
         if os.path.isfile(filename):
             print("jobs.json exists; deleting.")
             os.remove(filename)
-        with (open(filename, "wb")) as FILE:
+        with open(filename, "wb") as FILE:
             FILE.write(content)
             print("Wrote jobs to {}".format(filename))
 
