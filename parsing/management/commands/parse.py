@@ -4,6 +4,7 @@ from parsing.models import Job
 from parsing.serializers import JobSerializer
 from rest_framework.renderers import JSONRenderer
 import datetime
+import os
 
 orgs = org_handler.current_orgs
 filename = "parsing/static/parsing/jobs.json"
@@ -21,6 +22,9 @@ class Command(BaseCommand):
         serializer = map(lambda o: JobSerializer(o).data, objs)
         content = JSONRenderer().render(serializer)
 
+        if os.path.isfile(filename):
+            print("jobs.json exists; deleting.")
+            os.remove(filename)
         with (open(filename, "wb")) as FILE:
             FILE.write(content)
             print("Wrote jobs to {}".format(filename))
