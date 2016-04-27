@@ -37,7 +37,7 @@ class Command(BaseCommand):
             os.remove(filename)
         with open(filename, "wb") as FILE:
             FILE.write(content)
-            print("Wrote {} jobs to {}".format(len(content), filename))
+            print("Wrote {} bytes to {}".format(len(content), filename))
 
 
 
