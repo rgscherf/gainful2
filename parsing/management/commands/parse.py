@@ -11,12 +11,22 @@ filename = os.path.abspath(".") + "/parsing/static/parsing/jobs.json"
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        self.get_jobs()
+        self.delete_expired_jobs()
+        self.write_jobs()
+
+    def get_jobs(self):
+        print("Getting new jobs.")
         org_handler.find_jobs()
         print("Got new jobs.")
+
+    def delete_expired_jobs(self):
         print("Deleting expired jobs...")
         expired_jobs = Job.objects.filter(date_closing__lt=datetime.date.today())
         deletion_result = expired_jobs.delete()
         print("Deleted {} jobs.".format(deletion_result[0]))
+
+    def write_jobs(self):
         print("Writing jobs to file...")
         objs = Job.objects.all()
         serializer = map(lambda o: JobSerializer(o).data, objs)
@@ -27,7 +37,7 @@ class Command(BaseCommand):
             os.remove(filename)
         with open(filename, "wb") as FILE:
             FILE.write(content)
-            print("Wrote jobs to {}".format(filename))
+            print("Wrote {} jobs to {}".format(len(content), filename))
 
 
 
