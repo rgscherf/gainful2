@@ -29,6 +29,10 @@ class Command(BaseCommand):
     def write_jobs(self):
         print("Writing jobs to file...")
         objs = Job.objects.all()
+        today = Job.objects.all().filter(date_posted=datetime.date.today())
+        print("jobs for today:")
+        for t in today:
+            print(t)
         serializer = map(lambda o: JobSerializer(o).data, objs)
         content = JSONRenderer().render(serializer)
 
