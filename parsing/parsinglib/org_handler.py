@@ -11,7 +11,7 @@ from itertools import dropwhile
 from .jobcontainer import JobContainer
 from .org_urls import urls
 from .utils_icims import get_icims_jobs
-from .utils_brainhunter import parse_brainhunter_job_table, parse_brainhunter_detail_page, brainhunter_extract_salary
+from .utils_brainhunter import parse_brainhunter_job_table, parse_brainhunter_detail_page, brainhunter_extract_salary, brainhunter_detail_page_exception
 
 
 class Organization():
@@ -134,7 +134,11 @@ class Toronto(Organization):
         for j in parse_brainhunter_job_table(self.soup):
             j.region = "GTA - Toronto"
             j.organization = "Toronto"
-            parse_brainhunter_detail_page(detail_dict, j)
+            try:
+                parse_brainhunter_detail_page(detail_dict, j)
+            except KeyError as e:
+                brainhunter_detail_page_exception(j, e)
+
 
 class Markham(Organization):
     def __init__(self):
