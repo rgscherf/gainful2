@@ -1,4 +1,5 @@
 import requests
+import datetime
 import dateutil.parser as d
 from bs4 import BeautifulSoup
 from itertools import takewhile, dropwhile
@@ -36,11 +37,14 @@ def parse_brainhunter_detail_page(field_dict, job):
     job.division = rowdict[field_dict["division"]]
     job.date_posted = d.parse(rowdict[field_dict["date_posted"]]).date()
     job.date_closing = d.parse(rowdict[field_dict["date_closing"]]).date()
-    try: # it's rare, but sometime Toronto doesn't post salary
+    try: 
         job.salary_amount = brainhunter_extract_salary(rowdict[field_dict["salary_amount"]])
     except KeyError:
         job.salary_amount = 0
     job.save()
+
+def brainhunter_detail_page_exception(job, error):
+    print("BRAINHUNTER DETAIL PARSE FAILED for key {} on job {}".format(error, job.url_detail))
 
 def brainhunter_extract_salary(string):
     s = "".join(dropwhile(lambda x: not x.isdigit(), string))
