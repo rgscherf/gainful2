@@ -29,5 +29,6 @@ class Command(BaseCommand):
         with open(file, "wb") as FILE:
             FILE.write(content)
             print("Wrote {} bytes to {}".format(len(content), file))
+        print("File finder result: ".format(os.path.isfile(file)))
 
 
