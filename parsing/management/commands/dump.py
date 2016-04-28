@@ -14,21 +14,15 @@ class Command(BaseCommand):
         objs = Job.objects.all().order_by("-date_posted")
         print("Found {} jobs in DB".format(len(objs)))
         print("Writing jobs to file...")
-        # today = Job.objects.all().filter(date_posted=datetime.date.today())
-        # print("jobs for today:")
-        # for t in today:
-        #     print(t)
         serializer = []
         for o in objs:
             serializer.append(JobSerializer(o).data)
-        # serializer = map(lambda o: JobSerializer(o).data, objs)
         content = JSONRenderer().render(serializer)
-        # if os.path.isfile(file):
-        #     print("jobs.json exists; deleting.")
-        #     os.remove(file)
         with open(file, "wb") as FILE:
             FILE.write(content)
-            print("Wrote {} bytes to {}".format(len(content), file))
-        print("File finder result: ".format(os.path.isfile(file)))
+        if os.path.isfile(file):
+            print("Wrote jobs.json to {}".format(file))
+        else:
+            print("Failed to write jobs.json to {}".format(file))
 
 
