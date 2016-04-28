@@ -11,7 +11,7 @@ class Command(BaseCommand):
         self.write_jobs(filename)
 
     def write_jobs(self, file):
-        objs = Job.objects.all()
+        objs = Job.objects.all().order_by("-date_posted")
         print("Found {} jobs in DB".format(len(objs)))
         print("Writing jobs to file...")
         # today = Job.objects.all().filter(date_posted=datetime.date.today())
