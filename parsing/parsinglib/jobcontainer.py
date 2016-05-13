@@ -29,6 +29,7 @@ class JobContainer():
 
     def cleanup(self):
         self.title = self.title.title() if self.title.isupper() else self.title
+        self.salary_amount = 0 if self.salary_amount == None else self.salary_amount
         self.salary_waged = True if self.salary_amount < 5000 else False # totally arbitray amount
         self.date_collected = datetime.date.today()
 
