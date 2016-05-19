@@ -21,7 +21,7 @@ update action model =
       (model, getJobsFromFile str)
     ShowInitialJobs maybeJobs ->
       let newModel = makeFilter model.jobFilter {model | jobs = maybeJobs}
-      in ( {newModel | jobs = sortJobs Organization newModel.jobs } , Effects.none)
+      in ( {newModel | jobs = sortJobs PostingDate (sortJobs PostingDate newModel.jobs) } , Effects.none)
     FromStorage str ->
       let newModel = {model | fromStorage = str}
       in ( makeFilter newModel.jobFilter newModel, Effects.none )

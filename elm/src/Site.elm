@@ -21,8 +21,6 @@ view address model =
       navBar
     , spacer
     , div [] <| filterBox address model.jobFilter
-    --, spacer
-    --, newsletter
     , spacer    
     , viewJobs address model.jobFilter model.jobs
     , spacer
@@ -44,11 +42,6 @@ navBar =
 -- SPACER
 spacer : Html
 spacer = div [class "spacer"] []
-
--- NEWSLETTER
-newsletter : Html
-newsletter =
-  div [class "filterwrapper shadow"] [text <| "Want daily updates with these filter settings? Newsletter coming soon!"]
 
 -- FILTERBOX
 
@@ -95,9 +88,6 @@ filterBox a f =
             ]
           ]
         ]
-      --, div -- newsletter button
-      --    [id "filternewsletter"]
-      --    [ button [id "newsletterbutton"] [text "Save filters to daily newsletter"]]
       ]
     ]
 

@@ -11516,7 +11516,9 @@ Elm.Update.make = function (_elm) {
          case "NoOp": return {ctor: "_Tuple2",_0: model,_1: $Effects.none};
          case "InitiateJobsFromJson": return {ctor: "_Tuple2",_0: model,_1: getJobsFromFile(_p4._0)};
          case "ShowInitialJobs": var newModel = A2(makeFilter,model.jobFilter,_U.update(model,{jobs: _p4._0}));
-           return {ctor: "_Tuple2",_0: _U.update(newModel,{jobs: A2($Models.sortJobs,$Models.Organization,newModel.jobs)}),_1: $Effects.none};
+           return {ctor: "_Tuple2"
+                  ,_0: _U.update(newModel,{jobs: A2($Models.sortJobs,$Models.PostingDate,A2($Models.sortJobs,$Models.PostingDate,newModel.jobs))})
+                  ,_1: $Effects.none};
          case "FromStorage": var newModel = _U.update(model,{fromStorage: _p4._0});
            return {ctor: "_Tuple2",_0: A2(makeFilter,newModel.jobFilter,newModel),_1: $Effects.none};
          default: var newModel = _U.update(model,{jobFilter: A3(toggleFilter,_p4._0,_p4._1,model.jobFilter)});
