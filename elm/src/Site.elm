@@ -20,11 +20,28 @@ view address model =
     [
       navBar
     , spacer
+    , if model.showWelcome then welcomeMsg address else div [] []
+    , if model.showWelcome then spacer else div [] []
     , div [] <| filterBox address model.jobFilter
     , spacer    
     , viewJobs address model.jobFilter model.jobs
     , spacer
     ]
+
+welcomeString = "Job searching is bad. Government websites are bad. It makes searching for government jobs **really** bad.
+\n\n
+Gainful makes government job postings simple and sane.
+\n\n
+Every morning, we find the newest postings and present them in a table. You can filter and sort the table however you want.
+\n\n
+No signups. No ads. It could not be easier."
+
+welcomeMsg : Signal.Address Action -> Html
+welcomeMsg address =
+  div [id "welcomeWrapper", class "shadow"] 
+      [ span [class "welcomeLeft"] [Markdown.toHtml welcomeString]
+      , button [class "welcomeRight", onClick address HideWelcome] [text "Got it!"]
+      ]
 
 -- NAV
 

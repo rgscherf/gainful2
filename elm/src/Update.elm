@@ -31,6 +31,8 @@ update action model =
                       `Task.andThen` (\_ -> Task.succeed NoOp)
                         |> Effects.task
       in (newModel, toLocalStorage)
+    HideWelcome ->
+      ( { model | showWelcome = False } , Effects.none )
 
 makeString : List String -> String
 makeString l =

@@ -17,6 +17,23 @@ nav {
   top: 20px;
   color: #0A0C0A; }
 
+#welcomeLeft {
+  font-size: 1.25em;
+  width: 80%; }
+
+#welcomeRight {
+  left: -10%; }
+
+#welcomeWrapper {
+  display: flex;
+  align-items: center;
+  width: 95%;
+  background-color: #66CFAB;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px;
+  border-radius: 5px; }
+
 /* FILTER BOX */
 .filterwrapper {
   display: flex;

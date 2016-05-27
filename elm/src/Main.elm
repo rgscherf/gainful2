@@ -40,6 +40,7 @@ startModel =
   { jobs = Nothing
   , jobFilter = startFilter
   , fromStorage = ""
+  , showWelcome = True
   }
 
 init : (Model, Effects Action)

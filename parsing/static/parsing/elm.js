@@ -11194,7 +11194,7 @@ Elm.Models.make = function (_elm) {
    var _op = {};
    var getOrgRegion = F2(function (org,allOrgs) {    return A2($Maybe.withDefault,"",A2($Dict.get,org,allOrgs));});
    var Filter = F4(function (a,b,c,d) {    return {allRegions: a,allOrgs: b,visibleRegions: c,visibleOrgs: d};});
-   var Model = F3(function (a,b,c) {    return {jobs: a,jobFilter: b,fromStorage: c};});
+   var Model = F4(function (a,b,c,d) {    return {jobs: a,jobFilter: b,fromStorage: c,showWelcome: d};});
    var URL = {ctor: "URL"};
    var compareJob = F3(function (f,j,k) {
       var comp = F4(function (af,bf,a,b) {    return _U.eq(af,bf) ? A3(compareJob,URL,a,b) : _U.cmp(af,bf) > 0 ? $Basics.GT : $Basics.LT;});
@@ -11224,6 +11224,7 @@ Elm.Models.make = function (_elm) {
    var Job = F9(function (a,b,c,d,e,f,g,h,i) {
       return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g,region: h,datePosted: i};
    });
+   var HideWelcome = {ctor: "HideWelcome"};
    var FromStorage = function (a) {    return {ctor: "FromStorage",_0: a};};
    var ToggleFilter = F2(function (a,b) {    return {ctor: "ToggleFilter",_0: a,_1: b};});
    var SortJobs = function (a) {    return {ctor: "SortJobs",_0: a};};
@@ -11237,6 +11238,7 @@ Elm.Models.make = function (_elm) {
                                ,SortJobs: SortJobs
                                ,ToggleFilter: ToggleFilter
                                ,FromStorage: FromStorage
+                               ,HideWelcome: HideWelcome
                                ,Job: Job
                                ,Title: Title
                                ,Organization: Organization
@@ -11376,9 +11378,6 @@ Elm.Site.make = function (_elm) {
                       _U.list([A2($Html.td,_U.list([$Html$Attributes.$class("filtertitle")]),_U.list([$Html.text("organizations:")]))
                               ,A2($Html.td,_U.list([]),orgRoster)]))]))]))]))]);
    });
-   var newsletter = A2($Html.div,
-   _U.list([$Html$Attributes.$class("filterwrapper shadow")]),
-   _U.list([$Html.text("Want daily updates with these filter settings? Newsletter coming soon!")]));
    var spacer = A2($Html.div,_U.list([$Html$Attributes.$class("spacer")]),_U.list([]));
    var navBar = A2($Html.nav,
    _U.list([]),
@@ -11392,16 +11391,33 @@ Elm.Site.make = function (_elm) {
            ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.twitter.com/rgscherf")]),
            _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-twitter nav-icon")]),_U.list([]))]))]));
+   var welcomeString = "Job searching is bad. Government websites are bad. It makes searching for government jobs **really** bad.\n\n\n\nGainful makes government job postings simple and sane.\n\n\n\nEvery morning, we find the newest postings and present them in a table. You can filter and sort the table however you want.\n\n\n\nNo signups. No ads. It could not be easier.";
+   var welcomeMsg = function (address) {
+      return A2($Html.div,
+      _U.list([$Html$Attributes.id("welcomeWrapper"),$Html$Attributes.$class("shadow")]),
+      _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("welcomeLeft")]),_U.list([$Markdown.toHtml(welcomeString)]))
+              ,A2($Html.button,
+              _U.list([$Html$Attributes.$class("welcomeRight"),A2($Html$Events.onClick,address,$Models.HideWelcome)]),
+              _U.list([$Html.text("Got it!")]))]));
+   };
    var view = F2(function (address,model) {
       return A2($Html.div,
       _U.list([]),
-      _U.list([navBar,spacer,A2($Html.div,_U.list([]),A2(filterBox,address,model.jobFilter)),spacer,A3(viewJobs,address,model.jobFilter,model.jobs),spacer]));
+      _U.list([navBar
+              ,spacer
+              ,model.showWelcome ? welcomeMsg(address) : A2($Html.div,_U.list([]),_U.list([]))
+              ,model.showWelcome ? spacer : A2($Html.div,_U.list([]),_U.list([]))
+              ,A2($Html.div,_U.list([]),A2(filterBox,address,model.jobFilter))
+              ,spacer
+              ,A3(viewJobs,address,model.jobFilter,model.jobs)
+              ,spacer]));
    });
    return _elm.Site.values = {_op: _op
                              ,view: view
+                             ,welcomeString: welcomeString
+                             ,welcomeMsg: welcomeMsg
                              ,navBar: navBar
                              ,spacer: spacer
-                             ,newsletter: newsletter
                              ,filterBox: filterBox
                              ,viewJobs: viewJobs
                              ,individualJob: individualJob
@@ -11521,13 +11537,14 @@ Elm.Update.make = function (_elm) {
                   ,_1: $Effects.none};
          case "FromStorage": var newModel = _U.update(model,{fromStorage: _p4._0});
            return {ctor: "_Tuple2",_0: A2(makeFilter,newModel.jobFilter,newModel),_1: $Effects.none};
-         default: var newModel = _U.update(model,{jobFilter: A3(toggleFilter,_p4._0,_p4._1,model.jobFilter)});
+         case "ToggleFilter": var newModel = _U.update(model,{jobFilter: A3(toggleFilter,_p4._0,_p4._1,model.jobFilter)});
            var toLocalStorage = $Effects.task(A2($Task.andThen,
            A2($Signal.send,jobsToStorage.address,makeString(newModel.jobFilter.visibleOrgs)),
            function (_p5) {
               return $Task.succeed($Models.NoOp);
            }));
-           return {ctor: "_Tuple2",_0: newModel,_1: toLocalStorage};}
+           return {ctor: "_Tuple2",_0: newModel,_1: toLocalStorage};
+         default: return {ctor: "_Tuple2",_0: _U.update(model,{showWelcome: false}),_1: $Effects.none};}
    });
    return _elm.Update.values = {_op: _op
                                ,update: update
@@ -11574,7 +11591,7 @@ Elm.Main.make = function (_elm) {
       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",v);
    });
    var startFilter = {allRegions: $Dict.empty,allOrgs: $Dict.empty,visibleRegions: _U.list([]),visibleOrgs: _U.list([])};
-   var startModel = {jobs: $Maybe.Nothing,jobFilter: startFilter,fromStorage: ""};
+   var startModel = {jobs: $Maybe.Nothing,jobFilter: startFilter,fromStorage: "",showWelcome: true};
    var init = {ctor: "_Tuple2",_0: startModel,_1: $Effects.none};
    var app = $StartApp.start({init: init
                              ,view: $Site.view

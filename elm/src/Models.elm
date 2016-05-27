@@ -10,6 +10,7 @@ type Action
  | SortJobs JobField
  | ToggleFilter JobField String
  | FromStorage String
+ | HideWelcome
 
 type alias Job =
   { title : String
@@ -38,6 +39,7 @@ type alias Model =
   { jobs : Maybe Jobs
   , jobFilter : Filter
   , fromStorage : String
+  , showWelcome : Bool
   }
 
 type alias Filter =

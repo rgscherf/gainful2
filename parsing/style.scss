@@ -33,6 +33,25 @@ nav {
   color: $color-dark-grey;
 }
 
+#welcomeLeft {
+  font-size: 1.25em;
+  width: 80%;
+}
+
+#welcomeRight {
+  left: -10%;  
+}
+
+#welcomeWrapper {
+  display: flex;
+  align-items: center;
+  width: 95%;
+  background-color: $color-primary;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px;
+  border-radius: 5px;
+}
 
 /* FILTER BOX */
 
