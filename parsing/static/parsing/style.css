@@ -18,11 +18,17 @@ nav {
   color: #0A0C0A; }
 
 #welcomeLeft {
-  font-size: 1.25em;
-  width: 80%; }
+  font-size: 1.5em;
+  width: 80%;
+  margin-left: 10px;
+  margin-right: 10px; }
 
 #welcomeRight {
-  left: -10%; }
+  display: inline-block;
+  margin: auto; }
+  #welcomeRight button {
+    margin: 10px;
+    font-size: 1.5em; }
 
 #welcomeWrapper {
   display: flex;

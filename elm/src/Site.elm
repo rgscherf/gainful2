@@ -28,19 +28,19 @@ view address model =
     , spacer
     ]
 
-welcomeString = "Job searching is bad. Government websites are bad. It makes searching for government jobs **really** bad.
-\n\n
-Gainful makes government job postings simple and sane.
-\n\n
-Every morning, we find the newest postings and present them in a table. You can filter and sort the table however you want.
-\n\n
+-- welcome message
+
+welcomeString = "Job searches are tedious. Government websites are awful. It makes searching for government jobs uniquely painful.
+
+Gainful makes government job postings simple and sane. Every morning, we find the newest postings and present them in a table. You can filter and sort the table however you want. 
+
 No signups. No ads. It could not be easier."
 
 welcomeMsg : Signal.Address Action -> Html
 welcomeMsg address =
   div [id "welcomeWrapper", class "shadow"] 
-      [ span [class "welcomeLeft"] [Markdown.toHtml welcomeString]
-      , button [class "welcomeRight", onClick address HideWelcome] [text "Got it!"]
+      [ div [id "welcomeLeft"] [Markdown.toHtml welcomeString]
+      , div [id "welcomeRight"] [button [onClick address HideWelcome] [text "Got it!"]]
       ]
 
 -- NAV
@@ -48,8 +48,6 @@ welcomeMsg address =
 navBar : Html
 navBar =
   nav [] [ span [class "logo"] [text "Gainful"]
-         , a [href "http://www.google.com"]
-             [i [class "fa fa-2x fa-fw fa-info-circle nav-icon"] []]
          , a [href "http://www.github.com/rgscherf/gainful2"]
              [i [class "fa fa-2x fa-fw fa-github nav-icon"] []]
          , a [href "http://www.twitter.com/rgscherf"]

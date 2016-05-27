@@ -31,8 +31,14 @@ update action model =
                       `Task.andThen` (\_ -> Task.succeed NoOp)
                         |> Effects.task
       in (newModel, toLocalStorage)
+    -- welcome status, persisted from localstorage
+    InitiateWelcomeStatus status ->
+      ( { model | showWelcome = status }, Effects.none )
     HideWelcome ->
-      ( { model | showWelcome = False } , Effects.none )
+      let toLocalStorage = (Signal.send welcomeToStorage.address False)
+                              `Task.andThen` (\_ -> Task.succeed NoOp)
+                                |> Effects.task
+      in ( { model | showWelcome = False } , toLocalStorage )
 
 makeString : List String -> String
 makeString l =
@@ -121,6 +127,9 @@ makeSingleEntity j f =
     
 jobsToStorage : Signal.Mailbox String
 jobsToStorage = Signal.mailbox ""
+
+welcomeToStorage : Signal.Mailbox Bool
+welcomeToStorage = Signal.mailbox True
 
 getJobsFromFile : String -> Effects Action
 getJobsFromFile s =

@@ -16,14 +16,14 @@
 
   <script type="text/javascript">
     var elmDiv = document.getElementById('elm-page');
-    var gainful = Elm.embed(Elm.Main, elmDiv, {localStorageToElm: "", jsonLocation: ""});
+    var gainful = Elm.embed(Elm.Main, elmDiv, {localStorageToElm: "", jsonLocation: "", welcomeStatusToElm: true});
 
     // var jobSource = '{% static "parsing/jobs.json" %}';
     var jobSource = '/jobs/'
     gainful.ports.jsonLocation.send(jobSource);
 
     // initialize visibleOrgs from previous session
-    var store = localStorage['visibleOrgs']
+    var store = localStorage['visibleOrgs'];
     if(!store) {
       localStorage['visibleOrgs'] = "";
     } else {
@@ -34,6 +34,18 @@
     gainful.ports.localStorageFromElm.subscribe(function(x) {
       localStorage['visibleOrgs'] = x;
     })
+
+    var welcome = localStorage['welcomeStatus'];
+    if (!welcome) {
+      localStorage['welcomeStatus'] = 'true';
+    } else {
+      gainful.ports.welcomeStatusToElm.send(JSON.parse(welcome));
+    }
+    
+    gainful.ports.welcomeStatusFromElm.subscribe(
+      function(x) {
+        localStorage['welcomeStatus'] = x;
+      })
   </script>
 
 </html>

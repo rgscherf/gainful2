@@ -21,6 +21,7 @@ app = StartApp.start
   , update = update
   , inputs = [ Signal.map (\s -> FromStorage s) localStorageToElm
              , Signal.map InitiateJobsFromJson jsonLocation 
+             , Signal.map InitiateWelcomeStatus welcomeStatusToElm
              ]
   }
 
@@ -55,3 +56,8 @@ port jsonLocation : Signal String
 
 port localStorageFromElm : Signal String
 port localStorageFromElm = jobsToStorage.signal
+
+port welcomeStatusFromElm : Signal Bool
+port welcomeStatusFromElm = welcomeToStorage.signal
+
+port welcomeStatusToElm : Signal Bool

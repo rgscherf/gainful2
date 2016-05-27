@@ -11224,6 +11224,7 @@ Elm.Models.make = function (_elm) {
    var Job = F9(function (a,b,c,d,e,f,g,h,i) {
       return {title: a,organization: b,division: c,urlDetail: d,dateClosing: e,salaryWaged: f,salaryAmount: g,region: h,datePosted: i};
    });
+   var InitiateWelcomeStatus = function (a) {    return {ctor: "InitiateWelcomeStatus",_0: a};};
    var HideWelcome = {ctor: "HideWelcome"};
    var FromStorage = function (a) {    return {ctor: "FromStorage",_0: a};};
    var ToggleFilter = F2(function (a,b) {    return {ctor: "ToggleFilter",_0: a,_1: b};});
@@ -11239,6 +11240,7 @@ Elm.Models.make = function (_elm) {
                                ,ToggleFilter: ToggleFilter
                                ,FromStorage: FromStorage
                                ,HideWelcome: HideWelcome
+                               ,InitiateWelcomeStatus: InitiateWelcomeStatus
                                ,Job: Job
                                ,Title: Title
                                ,Organization: Organization
@@ -11383,22 +11385,19 @@ Elm.Site.make = function (_elm) {
    _U.list([]),
    _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("logo")]),_U.list([$Html.text("Gainful")]))
            ,A2($Html.a,
-           _U.list([$Html$Attributes.href("http://www.google.com")]),
-           _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-info-circle nav-icon")]),_U.list([]))]))
-           ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.github.com/rgscherf/gainful2")]),
            _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-github nav-icon")]),_U.list([]))]))
            ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.twitter.com/rgscherf")]),
            _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-twitter nav-icon")]),_U.list([]))]))]));
-   var welcomeString = "Job searching is bad. Government websites are bad. It makes searching for government jobs **really** bad.\n\n\n\nGainful makes government job postings simple and sane.\n\n\n\nEvery morning, we find the newest postings and present them in a table. You can filter and sort the table however you want.\n\n\n\nNo signups. No ads. It could not be easier.";
+   var welcomeString = "Job searches are tedious. Government websites are awful. It makes searching for government jobs uniquely painful.\n\nGainful makes government job postings simple and sane. Every morning, we find the newest postings and present them in a table. You can filter and sort the table however you want. \n\nNo signups. No ads. It could not be easier.";
    var welcomeMsg = function (address) {
       return A2($Html.div,
       _U.list([$Html$Attributes.id("welcomeWrapper"),$Html$Attributes.$class("shadow")]),
-      _U.list([A2($Html.span,_U.list([$Html$Attributes.$class("welcomeLeft")]),_U.list([$Markdown.toHtml(welcomeString)]))
-              ,A2($Html.button,
-              _U.list([$Html$Attributes.$class("welcomeRight"),A2($Html$Events.onClick,address,$Models.HideWelcome)]),
-              _U.list([$Html.text("Got it!")]))]));
+      _U.list([A2($Html.div,_U.list([$Html$Attributes.id("welcomeLeft")]),_U.list([$Markdown.toHtml(welcomeString)]))
+              ,A2($Html.div,
+              _U.list([$Html$Attributes.id("welcomeRight")]),
+              _U.list([A2($Html.button,_U.list([A2($Html$Events.onClick,address,$Models.HideWelcome)]),_U.list([$Html.text("Got it!")]))]))]));
    };
    var view = F2(function (address,model) {
       return A2($Html.div,
@@ -11469,6 +11468,7 @@ Elm.Update.make = function (_elm) {
    }();
    var decodeJobList = $Json$Decode.list(decodeJob);
    var getJobsFromFile = function (s) {    return $Effects.task(A2($Task.map,$Models.ShowInitialJobs,$Task.toMaybe(A2($Http.get,decodeJobList,s))));};
+   var welcomeToStorage = $Signal.mailbox(true);
    var jobsToStorage = $Signal.mailbox("");
    var makeSingleEntity = F2(function (j,f) {
       var _p0 = A2($Dict.get,j.region,f.allRegions);
@@ -11544,7 +11544,13 @@ Elm.Update.make = function (_elm) {
               return $Task.succeed($Models.NoOp);
            }));
            return {ctor: "_Tuple2",_0: newModel,_1: toLocalStorage};
-         default: return {ctor: "_Tuple2",_0: _U.update(model,{showWelcome: false}),_1: $Effects.none};}
+         case "InitiateWelcomeStatus": return {ctor: "_Tuple2",_0: _U.update(model,{showWelcome: _p4._0}),_1: $Effects.none};
+         default: var toLocalStorage = $Effects.task(A2($Task.andThen,
+           A2($Signal.send,welcomeToStorage.address,false),
+           function (_p6) {
+              return $Task.succeed($Models.NoOp);
+           }));
+           return {ctor: "_Tuple2",_0: _U.update(model,{showWelcome: false}),_1: toLocalStorage};}
    });
    return _elm.Update.values = {_op: _op
                                ,update: update
@@ -11554,6 +11560,7 @@ Elm.Update.make = function (_elm) {
                                ,makeEntitiesVisible: makeEntitiesVisible
                                ,makeSingleEntity: makeSingleEntity
                                ,jobsToStorage: jobsToStorage
+                               ,welcomeToStorage: welcomeToStorage
                                ,getJobsFromFile: getJobsFromFile
                                ,decodeJob: decodeJob
                                ,decodeJobList: decodeJobList};
@@ -11579,6 +11586,12 @@ Elm.Main.make = function (_elm) {
    $Task = Elm.Task.make(_elm),
    $Update = Elm.Update.make(_elm);
    var _op = {};
+   var welcomeStatusToElm = Elm.Native.Port.make(_elm).inboundSignal("welcomeStatusToElm",
+   "Bool",
+   function (v) {
+      return typeof v === "boolean" ? v : _U.badPort("a boolean (true or false)",v);
+   });
+   var welcomeStatusFromElm = Elm.Native.Port.make(_elm).outboundSignal("welcomeStatusFromElm",function (v) {    return v;},$Update.welcomeToStorage.signal);
    var localStorageFromElm = Elm.Native.Port.make(_elm).outboundSignal("localStorageFromElm",function (v) {    return v;},$Update.jobsToStorage.signal);
    var jsonLocation = Elm.Native.Port.make(_elm).inboundSignal("jsonLocation",
    "String",
@@ -11597,7 +11610,8 @@ Elm.Main.make = function (_elm) {
                              ,view: $Site.view
                              ,update: $Update.update
                              ,inputs: _U.list([A2($Signal.map,function (s) {    return $Models.FromStorage(s);},localStorageToElm)
-                                              ,A2($Signal.map,$Models.InitiateJobsFromJson,jsonLocation)])});
+                                              ,A2($Signal.map,$Models.InitiateJobsFromJson,jsonLocation)
+                                              ,A2($Signal.map,$Models.InitiateWelcomeStatus,welcomeStatusToElm)])});
    var main = app.html;
    var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",app.tasks);
    return _elm.Main.values = {_op: _op,app: app,main: main,startFilter: startFilter,startModel: startModel,init: init};

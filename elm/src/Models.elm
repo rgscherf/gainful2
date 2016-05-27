@@ -4,13 +4,13 @@ import Dict exposing (Dict)
 
 type Action
  = NoOp
- --| GetJobs
  | InitiateJobsFromJson String
  | ShowInitialJobs (Maybe Jobs)
  | SortJobs JobField
  | ToggleFilter JobField String
  | FromStorage String
  | HideWelcome
+ | InitiateWelcomeStatus Bool
 
 type alias Job =
   { title : String
