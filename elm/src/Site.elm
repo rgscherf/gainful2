@@ -32,7 +32,7 @@ view address model =
 
 welcomeString = "Job searches are tedious. Government websites are awful. It makes searching for government jobs uniquely painful.
 
-Gainful makes government job postings simple and sane. Every morning, we find the newest postings and present them in a table. You can filter and sort the table however you want. 
+Gainful makes government job postings simple and sane. Every morning, we find the newest jobs and present them in a table. You can filter and sort the table however you want. 
 
 No signups. No ads. It could not be easier."
 
