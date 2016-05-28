@@ -11390,7 +11390,7 @@ Elm.Site.make = function (_elm) {
            ,A2($Html.a,
            _U.list([$Html$Attributes.href("http://www.twitter.com/rgscherf")]),
            _U.list([A2($Html.i,_U.list([$Html$Attributes.$class("fa fa-2x fa-fw fa-twitter nav-icon")]),_U.list([]))]))]));
-   var welcomeString = "Job searches are tedious. Government websites are awful. It makes searching for government jobs uniquely painful.\n\nGainful makes government job postings simple and sane. Every morning, we find the newest postings and present them in a table. You can filter and sort the table however you want. \n\nNo signups. No ads. It could not be easier.";
+   var welcomeString = "Job searches are tedious. Government websites are awful. It makes searching for government jobs uniquely painful.\n\nGainful makes government job postings simple and sane. Every morning, we find the newest jobs and present them in a table. You can filter and sort the table however you want. \n\nNo signups. No ads. It could not be easier.";
    var welcomeMsg = function (address) {
       return A2($Html.div,
       _U.list([$Html$Attributes.id("welcomeWrapper"),$Html$Attributes.$class("shadow")]),
