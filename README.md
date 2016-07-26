@@ -1,20 +1,24 @@
 # What is Gainful?
 
-Job searching is bad. Government websites are bad. This makes searching for government jobs extra bad.
+Job searches are tedious. Government websites are awful. It makes searching for government jobs uniquely painful.
 
-Gainful makes government job postings simple and sane. Every day, it finds all the newest postings and present them in a table. You can filter and sort listings however you want, and save your results as a daily email newsletter.
+Gainful makes government job postings simple and sane. Every morning, we find the newest jobs and present them in a table. You can filter and sort the table however you want.
 
-No signups, no ads. It could not be easier.
+No signups. No ads. Using Gainful could not be easier.
 
 ## What job sites does Gainful search?
 
 Glad you asked. Gainful searches the following sources:
 
 - City of Toronto
-- City of Victoria
+- City of Brampton
 - City of Mississauga
-- Ontario Public Service in the GTA (TODO)
-- ...etc
+- Peel Region
+- York Region
+- City of Markham
+- Halton Region
+- City of Oakville
+- City of Burlington
 
 ## Can I help?
 
@@ -24,4 +28,4 @@ Yes! [Get in touch][twitter] or make a [pull request](http://www.github.com/rgsc
 
 ## Who wrote Gainful?
 
-Gainful is written by Robert Scherf. He's looking for a job--[hire him][twitter]!
+Gainful is written by Robert Scherf. He's looking for a job--[hire him](http://scherf.works)!
