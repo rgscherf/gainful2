@@ -55,5 +55,9 @@ def brainhunter_extract_salary(string):
         s = "".join(filter(lambda a: a != ",", s))
     if len(list(filter(lambda c: c.isdigit(), s))) == 0: # float() will fail if this is true, but just want to be explicit about it
         raise IndexError("Tried to extract salary from non-number: {}".format(s))
-    amount = float("".join(s))
+    try:
+        amount = float("".join(s))
+    except ValueError:
+        print("BAINHUNTER PARSE ERROR ON VALUE: {}".format(amount))
+        return 0
     return amount
