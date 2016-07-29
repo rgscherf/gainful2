@@ -58,6 +58,6 @@ def brainhunter_extract_salary(string):
     try:
         amount = float("".join(s))
     except (ValueError, IndexError):
-        print("BAINHUNTER PARSE ERROR ON VALUE: {}".format(amount))
+        print("BAINHUNTER PARSE ERROR ON VALUE: {}".format(s))
         amount = 0
     return amount
