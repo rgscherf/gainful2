@@ -15,6 +15,7 @@ from .utils_brainhunter import parse_brainhunter_job_table, parse_brainhunter_de
 
 
 class Organization():
+
     def __init__(self, org_name):
         request_url = urls[org_name]
         r = requests.get(request_url)
@@ -25,6 +26,7 @@ class Organization():
 
 
 class PeelRegion(Organization):
+
     def __init__(self):
         Organization.__init__(self, "peel_region")
 
@@ -33,6 +35,7 @@ class PeelRegion(Organization):
 
 
 class Mississauga(Organization):
+
     def __init__(self):
         Organization.__init__(self, "mississauga")
 
@@ -43,6 +46,7 @@ class Mississauga(Organization):
 class Brampton(Organization):
     # brampton works, but does not capture closing dates for seasonal vacancies
     # (these dates are written inline on the page)
+
     def __init__(self):
         Organization.__init__(self, "brampton")
 
@@ -51,6 +55,7 @@ class Brampton(Organization):
 
 
 class YorkRegion(Organization):
+
     def __init__(self):
         Organization.__init__(self, "york_region")
 
@@ -62,7 +67,8 @@ class YorkRegion(Organization):
         """
         tempurl = cs[1].a["href"]
         tempurl = tempurl.split("clid=")[1].split("&BRID=")[0]
-        url = "http://clients.njoyn.com/cl2/xweb/Xweb.asp?clid={}".format(tempurl)
+        url = "http://clients.njoyn.com/cl2/xweb/Xweb.asp?clid={}".format(
+            tempurl)
         return url
 
     def parse_detail_page(self, job):
@@ -121,16 +127,15 @@ class YorkRegion(Organization):
             self.parse_detail_page(job)
             job.save()
 
+
 class Toronto(Organization):
+
     def __init__(self):
         Organization.__init__(self, "toronto")
 
     def parse(self):
-        detail_dict = { "division": "Division"
-                      , "date_posted": "Posting Date"
-                      , "date_closing": "Closing Date"
-                      , "salary_amount": "Salary/Rate"
-                      }
+        detail_dict = {"division": "Division", "date_posted": "Posting Date", "date_closing": "Closing Date", "salary_amount": "Salary/Rate"
+                       }
         for j in parse_brainhunter_job_table(self.soup):
             j.region = "GTA - Toronto"
             j.organization = "Toronto"
@@ -141,21 +146,21 @@ class Toronto(Organization):
 
 
 class Markham(Organization):
+
     def __init__(self):
         Organization.__init__(self, "markham")
 
     def parse(self):
-        detail_dict = { "division": "Department"
-                      , "date_posted": "Posting Date"
-                      , "date_closing": "Expiry Date"
-                      , "salary_amount": "Salary/Rate"
-                      }
+        detail_dict = {"division": "Department", "date_posted": "Posting Date", "date_closing": "Expiry Date", "salary_amount": "Salary/Rate"
+                       }
         for j in parse_brainhunter_job_table(self.soup):
             j.region = "GTA - York"
             j.organization = "Markham"
             parse_brainhunter_detail_page(detail_dict, j)
 
+
 class Halton(Organization):
+
     def __init__(self):
         Organization.__init__(self, "halton")
 
@@ -164,7 +169,11 @@ class Halton(Organization):
         for r in rows:
             job = JobContainer()
             cols = r.find_all("td")
-            job.url_detail = "http://webaps.halton.ca/about/jobs/" + cols[0].a["href"]
+            try:
+                job.url_detail = "http://webaps.halton.ca/about/jobs/" + \
+                    cols[0].a["href"]
+            except TypeError:
+                return
             if not job.is_unique():
                 continue
             job.organization = "Halton Region"
@@ -192,7 +201,9 @@ class Halton(Organization):
             elif "posting ex" in field:
                 job.date_closing = d.parse(val).date()
 
+
 class Burlington(Organization):
+
     def __init__(self):
         Organization.__init__(self, "burlington")
 
@@ -233,11 +244,12 @@ class Burlington(Organization):
 
 
 class Oakville(Organization):
+
     def __init__(self):
         Organization.__init__(self, "oakville")
 
     def parse(self):
-        
+
         def trim_url(url):
             if "jsessionid" in url:
                 spl = url.split(";jsessionid=")
@@ -257,14 +269,16 @@ class Oakville(Organization):
             job.region = "GTA - Halton"
             job.organization = "Oakville"
             job.title = cols[0].text.strip()
-            job.date_posted = d.parse(cols[2].text.strip(), dayfirst=True).date()
-            job.date_closing = d.parse(cols[3].text.strip(), dayfirst=True).date()
+            job.date_posted = d.parse(
+                cols[2].text.strip(), dayfirst=True).date()
+            job.date_closing = d.parse(
+                cols[3].text.strip(), dayfirst=True).date()
             self.parse_detail_page(job)
             job.save()
 
     def parse_detail_page(self, job):
         r = requests.get(job.url_detail)
-        soup = BeautifulSoup(r.text, "html.parser") # html5lib failed here..
+        soup = BeautifulSoup(r.text, "html.parser")  # html5lib failed here..
         rows = soup.find(id="taleoContent").table.find_all("tr")[4:]
         for r in rows:
             cols = r.find_all("td")
@@ -278,22 +292,13 @@ class Oakville(Organization):
                     job.salary_amount = 0
 
 
-
 # the main parse util calls find_jobs to kick off web scraping.
 # make sure current_orgs is always up to date.
 
-current_orgs = [  Oakville()
-               , Burlington()
-               , Halton()
-               , Markham()
-               , YorkRegion()
-               , Brampton()
-               , PeelRegion()
-               , Mississauga()
-               , Toronto()
-               ]
+current_orgs = [Oakville(), Burlington(), Halton(), Markham(), YorkRegion(), Brampton(), PeelRegion(), Mississauga(), Toronto()
+                ]
+
 
 def find_jobs():
     for o in current_orgs:
         o.parse()
-
