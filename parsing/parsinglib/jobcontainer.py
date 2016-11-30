@@ -64,7 +64,11 @@ class JobContainer():
         print("Saved job to DB: {}".format(self))
         j = Job(organization=self.organization, title=self.title, division=self.division, date_posted=self.date_posted, date_closing=self.date_closing, url_detail=self.url_detail, salary_waged=self.salary_waged, salary_amount=self.salary_amount, region=self.region, date_collected=self.date_collected
                 )
-        j.save()
+        try:
+            j.save()
+        except Exception as err:
+            print("|| Exception")
+            print("|| ", err)
 
     def __str__(self):
         return "{} at {}".format(self.title, self.organization)
