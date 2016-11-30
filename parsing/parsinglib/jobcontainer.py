@@ -57,8 +57,7 @@ class JobContainer():
         try:
             self.validate()
         except KeyError as err:
-            print("|| EXCEPTION")
-            print("|| ", err)
+            print("|| EXCEPTION ", err)
             return
 
         print("Saved job to DB: {}".format(self))
@@ -67,8 +66,7 @@ class JobContainer():
         try:
             j.save()
         except Exception as err:
-            print("|| Exception")
-            print("|| ", err)
+            print("|| Exception ", err)
 
     def __str__(self):
         return "{} at {}".format(self.title, self.organization)
