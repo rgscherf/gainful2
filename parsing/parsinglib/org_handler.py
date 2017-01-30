@@ -79,7 +79,10 @@ class YorkRegion(Organization):
                 return string
         req = requests.get(job.url_detail)
         soup = BeautifulSoup(req.text, "html5lib")
-        info_table = soup.find("table").find_all("tr")
+        try:
+            info_table = soup.find("table").find_all("tr")
+        except AttributeError:
+            return
         # search header table for basic info
         for r in info_table:
             cells = r.find_all("td")
@@ -189,7 +192,8 @@ class Halton(Organization):
         rows = soup.find_all("tr")
         for r in rows:
             cols = r.find_all("td")
-            cols = list(dropwhile(lambda x: x.text.strip().lower() == "", cols))
+            cols = list(
+                dropwhile(lambda x: x.text.strip().lower() == "", cols))
             if len(cols) < 2:
                 continue
             field = cols[0].text.strip().lower()
